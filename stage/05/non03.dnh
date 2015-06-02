@@ -1,0 +1,54 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St5 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 5;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(32);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let period = 10 - getDifficulty;
+	TWorkOD;
+	//let period = 180 - 15 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		loop (7) {
+			let s = CreateShotOA1(objBoss, rand(1, 3), rand(0, 360), DS_RICE_S_ORANGE + truncate(rand(0, 2)), 0);
+			ObjMove_AddPatternA2(s, 15, NO_CHANGE, NO_CHANGE, 0.01, rand(4.5, 7.5) * randomSign, 3);
+			ObjMove_AddPatternA2(s, 55, NO_CHANGE, NO_CHANGE, -0.01, 0, rand(0.5, 1));
+		}
+		wait(period);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let shot = CreateShotA1(rand(0, width), 0, rand(0.8, 1.2), rand(80, 100), DS_BALL_S_A_RED, 0);
+		ObjMove_AddPatternA4(shot, 120, NO_CHANGE, rand(-5, 5), 0, 0, 5, GetPlayerObjectID, DS_BALL_S_A_ORANGE);
+		wait(period);
+	}
+}

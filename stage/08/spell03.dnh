@@ -1,0 +1,85 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 33;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(8500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(90);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+let R = 5;
+let L = 150;
+
+function intersectCL(xoff, yoff, theta) {
+	// Shot is too far away.
+	if (xoff ^ 2 + yoff ^ 2 > L ^ 2) {return false;}
+	let a = R * cos(theta);
+	let b = R * sin(theta);
+	// a y - b x = 0
+	let x0 = xoff - b;
+	let y0 = yoff + a;
+	let x1 = xoff + b;
+	let y1 = yoff - a;
+	// If the two edge points are on different sides of the line,
+	// then ax - by for each have different signs.
+	return (a * y0 - b * x0 < 0) != (a * y1 - b * x1 < 0);
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2 - 100;
+	let d = getDifficulty;
+	let lav = 2 + 0.2 * d;
+	let amp = 6 + 2 * d;
+	let freq = 1 / 120 + 1 / 600 * d;
+	let p = 0.06 + 0.015 * d;
+	let a = rand(0, 360);
+	task swingTheLaser(laser, off) {
+		wait(120);
+		while (!Obj_IsDeleted(laser)) {
+			ObjStLaser_SetAngle(laser, a + off);
+			yield;
+		}
+	}
+	swingTheLaser(CreateStraightLaserA1(cx, cy, a, L, 20, 99999, DS_BEAM_YELLOW, 120), 0);
+	swingTheLaser(CreateStraightLaserA1(cx, cy, a + 180, L, 20, 99999, DS_BEAM_YELLOW, 120), 180);
+	task rainDrop(s) {
+		snake(s, amp, freq);
+		while (!intersectCL(ObjMove_GetX(s) - cx, ObjMove_GetY(s) - cy, a)) {
+			if (Obj_IsDeleted(s)) {return;}
+			yield;
+		}
+		CreateShotOA1(s, rand(2, 3), rand(60, 120), DS_RICE_S_SKY, 0);
+		// fuck you steam
+		Obj_Delete(s);
+	}
+	a -= 120 * lav;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		a += lav;
+		if (rand(0, 1) < p) {
+			rainDrop(CreateShotA1(rand(0, width), height, rand(1, 1.5), -90, DS_BALL_S_WHITE, 30));
+		}
+		yield;
+	}
+}

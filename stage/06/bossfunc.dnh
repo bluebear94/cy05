@@ -1,0 +1,11 @@
+function water(x, y, a) {
+	ascent (i in 0 .. 20) {
+		let dx = rand(-10, 10);
+		CreateShotA1(x + dx * sin(a), y - dx * cos(a), rand(2, 5), a,
+			[
+				DS_BALL_S_SKY, DS_BALL_S_BLUE, DS_BALL_L_SKY, DS_SCALE_A_BLUE,
+				DS_LIGHT_SKY, DS_BALL_L_BLUE, DS_BALL_M_BLUE, DS_BALL_M_SKY
+			][truncate(rand(0, 8))],
+			i);
+	}
+}

@@ -1,0 +1,6 @@
+./../resource/boss/st06.png
+0
+May I make a boat out of you?
+0
+You're getting too desperate!
+1

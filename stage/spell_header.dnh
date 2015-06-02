@@ -1,0 +1,157 @@
+#include "../item/itemConsts.dnh"
+#include "../language.dnh"
+#include "../system/healthbar.dnh"
+let objBoss;
+
+let bombDamageRates = [100, 100, 90, 80, 70, 60, 50, 40, -20, 0, 0, 0];
+
+let list = [];
+@Initialize {
+	objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+	ObjEnemy_Regist(objBoss);
+	ObjMove_SetDestAtFrame(objBoss, GetStgFrameWidth / 2, 90, 30);
+	ObjEnemy_SetDamageRate(objBoss, 0, 0);
+	setBoss(objBoss);
+	if (id != 0 && !IsReplay) {saveHistoryPre(id);}
+	TRender;
+	TCutIn;
+	TTimer;
+	TEnd;
+}
+
+@MainLoop {
+	// Set boss's hitbox
+	let ex = ObjMove_GetX(objBoss);
+	let ey = ObjMove_GetY(objBoss);
+	ObjEnemy_SetIntersectionCircleToShot(objBoss,
+		ex, ey, 24);
+	ObjEnemy_SetIntersectionCircleToPlayer(objBoss,
+		ex, ey, 24);
+	yield;
+}
+
+task TCutIn {
+	while (GetPlayerInvincibilityFrame > 0) {yield;}
+	ObjEnemy_SetDamageRate(objBoss, 100, bombDamageRates[level - 1]);
+	if (bombDamageRates[level - 1] < 0) {capHealth;}
+	if (id != 0) {
+		ObjEnemyBossScene_StartSpell(GetEnemyBossSceneObjectID);
+		let scName = getSpellNames(id)[getDifficulty];
+		let spellText = textOfWW(scName, 300, 16 * fontScale, 525);
+		ObjText_SetHorizontalAlignment(spellText, ALIGNMENT_RIGHT);
+		ObjText_SetFontBorderWidth(spellText, 1);
+		ObjText_SetFontBorderType(spellText, BORDER_FULL);
+		ObjText_SetFontBorderColor(spellText, 0, 0, 0);
+		ObjRender_SetX(spellText, GetStgFrameWidth - 360);
+		//Obj_SetRenderPriority(spellText, 0.2);
+		let width = GetStgFrameWidth;
+		let height = GetStgFrameHeight;
+		let enemyPortrait = ObjPrim_Create(OBJ_SPRITE_2D);
+		ObjPrim_SetTexture(enemyPortrait, GetCurrentScriptDirectory ~ "../resource/boss/st" ~ rtos("00", level)
+			~ ".png");
+		// 224 wide, 368 tall
+		ObjSprite2D_SetSourceRect(enemyPortrait, 0, 144, 223, 511);
+		descent (i in 0 .. 90) {
+			ObjSprite2D_SetDestRect(enemyPortrait, width - 223 + i, height - 367, width + i, height);
+			ObjRender_SetY(spellText, 30 + i);
+			yield;
+		}
+		let bonusText = ObjText_Create;
+		ObjText_SetFontSize(bonusText, 8);
+		ObjText_SetMaxWidth(bonusText, 400);
+		ObjText_SetHorizontalAlignment(bonusText, ALIGNMENT_RIGHT);
+		ObjText_SetFontBorderWidth(bonusText, 1);
+		ObjText_SetFontBorderType(bonusText, BORDER_FULL);
+		ObjText_SetFontBorderColor(bonusText, 0, 0, 0);
+		ObjRender_SetX(bonusText, -40);
+		ObjRender_SetY(bonusText, 35 + ObjText_GetTotalHeight(spellText));
+		list = list ~ [spellText, bonusText];
+		TBonusUpdate(bonusText);
+		Obj_Delete(enemyPortrait);
+	} else {
+		wait(30); // Wait so boss doesn't accidentally shoot at (0, 0)
+	}
+	dragToDefaults(30);
+	wait(30);
+	TWork;
+}
+
+task TBonusUpdate(txt) {
+	let bs = GetEnemyBossSceneObjectID;
+	let hist = getHistory(id);
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let score = roundScore(ObjEnemyBossScene_GetInfo(bs, INFO_SPELL_SCORE));
+		let success = ObjEnemyBossScene_GetInfo(bs, INFO_PLAYER_SHOOTDOWN_COUNT) == 0 &&
+			ObjEnemyBossScene_GetInfo(bs, INFO_PLAYER_SPELL_COUNT) == 0;
+		ObjText_SetText(txt, "Bonus " ~ ["Failed", IntToStringBase(score, base)][success] ~
+			" | History " ~ IntToStringBase(hist[0], base) ~ "/" ~ IntToStringBase(hist[1], base));
+		yield;
+	}
+}
+
+task TEnd {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+	yield;
+	let ex = ObjMove_GetX(objBoss);
+	let ey = ObjMove_GetY(objBoss);
+	let width = GetStgFrameWidth;
+	TExplosionA(ex, ey, 10, 0.6);
+	ascent(i in 0 .. 32 * (level + getDifficulty)) {
+		createItemU1(POINT_ITEM, ex + rand(-20, 20), ey + rand(-20, 20), 0);
+	}
+	
+	let len = length(list);
+	ascent (i in 0 .. len) {
+		Obj_Delete(list[i]);
+	}
+	let bs = GetEnemyBossSceneObjectID;
+	let success = ObjEnemyBossScene_GetInfo(bs, INFO_PLAYER_SHOOTDOWN_COUNT) == 0 &&
+		ObjEnemyBossScene_GetInfo(bs, INFO_PLAYER_SPELL_COUNT) == 0 &&
+		(ObjEnemyBossScene_GetInfo(bs, INFO_TIMERF) != 0 ||
+		ObjEnemyBossScene_GetInfo(bs, INFO_IS_DURABLE_SPELL));
+	if (success) {
+		if (id != 0) {NotifyEventAll(EV_GAIN_SPELL, id);}
+		createItemU1(2, rand(0, width), 0, 0);
+		createItemU1(3, rand(0, width), 0, 0);
+	}
+	if (id != 0 && !IsReplay) {saveHistoryPost(id, success);}
+	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
+	Obj_Delete(objBoss);
+	delBoss;
+	dragToDefaults(30);
+	wait(240);
+	// Please close the script at the end
+	CloseScript(GetOwnScriptID);
+}
+
+task capHealth {
+	while (!isDead) {
+		// Make sure that health never exceeds max
+		if (ObjEnemyBossScene_GetInfo(objBoss, INFO_CURRENT_LIFE) > ObjEnemyBossScene_GetInfo(objBoss, INFO_CURRENT_LIFE_MAX)) {
+			ObjEnemy_SetLife(objBoss, ObjEnemyBossScene_GetInfo(objBoss, INFO_CURRENT_LIFE_MAX));
+		}
+		yield;
+	}
+}
+
+function spellBonus {
+	return getPIV * 48 * (level + getDifficulty);
+}
+
+function isDead {
+	return ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0;
+}
+
+task shotSound {
+	playSE("sha00");
+}
+
+task TTimer {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let ticks = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF);
+		if (ticks % 60 == 0 && ticks != 0 && ticks <= 60 * base) {playSE("beep11");}
+		yield;
+	}
+}

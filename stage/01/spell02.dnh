@@ -1,0 +1,87 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp2"]
+#Text["Second spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 2;
+let level = 1;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(5500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(32);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth - 80;
+	let d = getDifficulty;
+	if (d >= 5) {d = 0;}
+	let separation = 18 - 2 * d;
+	let speed = 1 + 0.2 * d;
+	if (getDifficulty >= 1) {TWorkOD;}
+	if (getDifficulty >= 3) {TWorkOD2;}
+	if (getDifficulty >= 3 && getDifficulty < 5) {return;}
+	task buildPlant(x) {
+		let offset = rand(0, 360);
+		let i = height;
+		while (i > 0) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			let xoff = 40 * sin(i * 1.5 + offset);
+			let s = CreateShotA1(x + xoff, i, 0, rand(0, 360), DS_ICE_GREEN, 30);
+			ObjMove_AddPatternA2(s, 300, 0, NO_CHANGE, speed / 60, 0, speed);
+			i -= separation;
+			loop (5) {yield;}
+		}
+	}
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		buildPlant(rand(40, 40 + width));
+		loop (120) {yield;}
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let angle = GetAngleToPlayer(objBoss);
+		if (getDifficulty >= 3 || GetObjectDistance(objBoss, GetPlayerObjectID) < 100) {
+			ascent (i in -10 .. 10) {
+				CreateShotOA1(objBoss, 3, angle + 6 * i, DS_RICE_M_RED, 0);
+			}
+		}
+		loop(60) {yield};
+	}
+}
+
+task TWorkOD2 {
+	let n = 1;
+	let bc = 18 * getDifficulty;
+	loop {
+		if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+		ascent (i in 0 .. bc) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			let angle = 360 / bc * i;
+			let r = sin(n * angle) * 100;
+			let shot = CreateShotA1(192 + r * cos(angle),
+				150 + r * sin(angle),
+				0, angle + 6 * getDifficulty, DS_RICE_S_ORANGE, 0);
+			ObjMove_AddPatternA1(shot, 120, 3, NO_CHANGE);
+			yield;
+			if (getDifficulty < 4) {yield;}
+		}
+		n++;
+		if (n == 13) {n = 1;}
+	}
+}

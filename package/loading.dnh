@@ -1,0 +1,101 @@
+
+function loadingImage(name) {
+	let img = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(img, GetCurrentScriptDirectory ~ "../resource/" ~ name ~ ".png");
+	ObjSprite2D_SetSourceRect(img, 1, 0, 128, 63);
+	ObjSprite2D_SetDestRect(img, 481, 400, 608, 463);
+	Obj_SetRenderPriority(img, 0.95);
+	return img;
+}
+
+function loadingText {
+	let t = createTextPr(461, 410, getInterfaceStrings(LOADING), true,
+		[255, 255, 255], [224, 231, 255], 0.96, 18);
+	ObjText_SetFontType(t, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontBorderColor(t, 0, 0, 0);
+	return t;
+}
+
+function fileText {
+	let t = createTextPr(441, 440, "", true,
+		[255, 255, 255], [224, 231, 255], 0.96, 8);
+	ObjText_SetFontType(t, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontBorderColor(t, 0, 0, 0);
+	return t;
+}
+
+function load(img, sound, script) {
+	let done = false;
+	let fnameText = fileText;
+	task loadingMessage {
+		let triangle = loadingImage("loading");
+		let aura = loadingImage("aura");
+		ObjRender_SetBlendType(aura, BLEND_ADD_ARGB);
+		let t = loadingText;
+		let ctr = 0;
+		while (!done) {
+			ctr++;
+			ObjRender_SetAlpha(aura, 128 + 127 * sin(6 * ctr));
+			yield;
+		}
+		Obj_Delete(triangle);
+		Obj_Delete(aura);
+		Obj_Delete(t);
+	}
+	loadingMessage;
+	let l = length(img);
+	ascent (i in 0 .. l) {
+		let name = img[i];
+		LoadTextureInLoadThread(GetCurrentScriptDirectory ~ "../resource/" ~ name);
+		ObjText_SetText(fnameText, name);
+		yield;
+	}
+	l = length(sound);
+	ascent (i in 0 .. l) {
+		let name = sound[i];
+		LoadSound(GetCurrentScriptDirectory ~ "../se/" ~ name);
+		ObjText_SetText(fnameText, name);
+		yield;
+	}
+	l = length(script);
+	ascent (i in 0 .. l) {
+		let name = script[i];
+		LoadScriptInThread(GetCurrentScriptDirectory ~ "../" ~ name);
+		ObjText_SetText(fnameText, name);
+		yield;
+	}
+	done = true;
+	Obj_Delete(fnameText);
+}
+
+function loadWithDefaults {
+	load(
+		[
+			"cartouche.png",
+			"cenvos.png",
+			"digits.png",
+			"digits_small.png",
+			"enemy.png",
+			"hurtbox.png",
+			"items.png",
+			"laser.png",
+			"playershots.png",
+			"poc.png",
+			"star.png"
+		],
+		[
+			"beep11.wav",
+			"cut00.wav",
+			"eco01.wav",
+			"freeze07.wav",
+			"loop001.wav",
+			"on01.wav",
+			"paper00.wav",
+			"power14.wav",
+			"sha00.wav"
+		],
+		[
+			
+		]
+	);
+}

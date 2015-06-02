@@ -1,0 +1,129 @@
+#include "../item/itemConsts.dnh"
+#include "../prologue.dnh"
+
+let textures = 0;
+
+@Initialize {
+	LoadItemData(GetCurrentScriptDirectory ~ "../item/items.dnh");
+	SetDefaultBonusItemEnable(false);
+}
+
+@MainLoop {
+	yield;
+}
+
+task getItem(type, objItem) {
+	let x = ObjMove_GetX(objItem);
+	let y = ObjMove_GetY(objItem);
+	alternative (type)
+	case (POINT_ITEM) {
+		let piv = getPIV;
+		let y = GetPlayerY;
+		let poc = max(0, GetStgFrameHeight * (1 - 6144 / getElemPoints(FIRE)));
+		let multiplier = min(1, 1 - (y - poc) / 600);
+		if (multiplier < 1) {multiplier *= 0.8;}
+		addScore(multiplier * piv);
+		let fmultiplier = min(1, 1 - y / 600);
+		addElemPoints(FIRE, fmultiplier * fmultiplier * 16);
+		renderScore(x, y, roundScore(multiplier * piv), [[255, 255, 255], [255, 255, 64]][multiplier == 1]);
+	}
+	case (GREEN_ITEM) {
+		if (isHidden) {
+			let amt = 65536 + 32 * GetGraze;
+			addScore(amt);
+			renderScore(x, y, amt, [192, 255, 192]);
+		}
+		else {
+			let amt = 4096 + 16 * truncate(GetGraze / 256);
+			addPIV(amt);
+			renderScore(x, y, amt, [64, 192, 64]);
+		}
+	}
+	case (LIFE_FRAGMENT) {
+		setLifeFrag(getLifeFrag + 1);
+		while (getLifeFrag >= getLifeFragR) {
+			setLifeFrag(getLifeFrag - getLifeFragR);
+			SetPlayerLife(GetPlayerLife + 1);
+			setLifeFragR(getLifeFragRR + 2);
+			showExtend;
+		}
+		renderScore(x, y, 1, [255, 64, 255]);
+	}
+	case (BOMB_FRAGMENT) {
+		setBombFrag(getBombFrag + 1);
+		while (getBombFrag >= getBombFragR) {
+			setBombFrag(getBombFrag - getBombFragR);
+			SetPlayerSpell(GetPlayerSpell + 1);
+		}
+		renderScore(x, y, 1, [202, 255, 192]);
+	}
+	case (WHOLE_LIFE) {
+		SetPlayerLife(GetPlayerLife + 1);
+		showExtend;
+		renderScore(x, y, getLifeFragR, [255, 64, 255]);
+	}
+	case (WHOLE_BOMB) {
+		SetPlayerSpell(GetPlayerSpell + 1);
+		renderScore(x, y, getBombFragR, [202, 255, 192]);
+	}
+	case (7, 8, 9, 10) {
+		let elem = 10 - type;
+		let pct = 1 - y / GetStgFrameHeight;
+		let amt = 2 + truncate(pct * 256);
+		addElemPoints(elem, amt);
+		let col = [
+			[255, 255, 128],
+			[128, 255, 128],
+			[128, 128, 255],
+			[255, 128, 128]
+		][elem];
+		renderScore(x, y, amt, col);
+	}
+}
+
+task renderScore(x, y, amt, color) {
+	// Generate random numbers early so replays will synchronize properly
+	x += rand(-16, 16);
+	y += rand(-2, 2);
+	if (textures > 200 - 40 * getGraphicsCut) {return;}
+	textures++;
+	let pathDigit = GetCurrentScriptDirectory ~ "../resource/digits_small.png";
+	let obj = ObjPrim_Create(OBJ_SPRITE_LIST_2D);
+	ObjPrim_SetTexture(obj, pathDigit);
+	ObjRender_SetBlendType(obj, BLEND_ALPHA);
+	//ObjRender_SetAlpha(obj, 127);
+	ObjRender_SetColor(obj, color[0], color[1], color[2]);
+	let listNum = DigitToArrayBaseWC(amt, 16);
+	let digits = length(listNum);
+	ascent (j in 0 .. 30) {
+		ObjRender_SetY(obj, y - 8 - j);
+		ObjSpriteList2D_ClearVertexCount(obj);
+		ascent (iObj in 0 .. digits) {
+			let num = listNum[iObj];
+			ObjRender_SetX(obj, x + 4 * digits - 8 * iObj);
+			ObjSpriteList2D_SetSourceRect(obj, num * 16, 0, (num + 1) * 16, 16);
+			ObjSpriteList2D_SetDestRect(obj, 0, 0, 16, 16);
+			ObjSpriteList2D_AddVertex(obj);
+		}
+		yield;
+	}
+	ObjSpriteList2D_ClearVertexCount(obj);
+	ObjRender_SetY(obj, y - 22);
+	Obj_Delete(obj);
+	textures--;
+}
+
+@Event {
+	alternative (GetEventType)
+	case (EV_DELETE_SHOT_TO_ITEM) {
+		let shot = GetEventArgument(0);
+		let position = GetEventArgument(1);
+		if (length(position) > 0) {
+			createItemU1(GREEN_ITEM, position[0], position[1], 0);
+		}
+		CollectAllItems;
+	}
+	case (EV_GET_ITEM) {
+		getItem(GetEventArgument(0), GetEventArgument(1));
+	}
+}

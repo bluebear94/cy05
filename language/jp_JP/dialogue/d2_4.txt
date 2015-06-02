@@ -1,0 +1,6 @@
+./../resource/boss/st02.png
+0
+Pant, pant...
+1
+Well, I didn't hear another "I'll kill ou".
+0

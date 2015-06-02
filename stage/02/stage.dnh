@@ -1,0 +1,136 @@
+#TouhouDanmakufu[Stage]
+#ScriptVersion[3]
+#Title["St2"]
+#Text["Second stage!"]
+#Background["./stg_back.dnh"]
+#Player["./../../player/player0.dnh", "./../../player/player2.dnh"]
+#System["./../../system/system.dnh"]
+
+#include "./../../prologue.dnh"
+#include "./../../system/healthbar.dnh"
+let stage = "02";
+let done = false;
+let dialogueData;
+let dialogueData2;
+let bgm = 3;
+#include "./../stage_header.dnh"
+
+let width = GetStgFrameWidth;
+let height = GetStgFrameHeight;
+
+task TStage {
+	if (getCharacter < 2) {
+		dialogueData = readDD("d2_1");
+		dialogueData2 = readDD("d2_2");
+	}
+	else {
+		dialogueData = readDD("d2_3");
+		dialogueData2 = readDD("d2_4");
+	}
+	spawnEnemy05(-64, 64, 100, 200);
+	spawnEnemy05(width + 64, 64, width - 100, 200);
+	wait(120);
+	waitForClearScreen;
+	advanceBGIndex;
+	showStageTitle([128, 255, 255]);
+	wait(120);
+	spawnEnemy05(-64, 64, 100, 200);
+	spawnEnemy05(width + 64, 64, width - 100, 200);
+	spawnEnemy05(-64, 114, 200, 250);
+	spawnEnemy05(width + 64, 114, width - 200, 250);
+	waitForClearScreen;
+	spawnEnemy05(-64, 64, 200, 64);
+	spawnEnemy05(width + 64, 64, width - 200, 64);
+	spawnEnemy05(-64, 114, 150, 114);
+	spawnEnemy05(width + 64, 114, width - 150, 114);
+	spawnEnemy05(-64, 144, 100, 164);
+	spawnEnemy05(width + 64, 144, width - 100, 164);
+	waitForClearScreen;
+	wait(120);
+	loop (16) {
+		spawnEnemy06(rand(0, width), rand(1.5, 2.5), 60);
+		wait(20);
+	}
+	waitForClearScreen;
+	wait(120);
+	descent (i in 0 .. 16) {
+		spawnEnemy06(10 * i, 1, 120);
+		spawnEnemy06(width - 10 * i, 1, 120);
+		wait(10);
+	}
+	ascent (i in -2 .. 2) {
+		spawnEnemy07(width / 2 + 50 * i, 2, 60);
+	}
+	waitForClearScreen;
+	wait(120);
+	advanceBGIndex;
+	spawnEnemy05(64, -32, 144, 40);
+	spawnEnemy05(width - 64, -32, width - 144, 40);
+	descent (i in 0 .. 16) {
+		spawnEnemy06(10 * i, 0.5, 120 + 10 * i);
+		spawnEnemy06(width - 10 * i, 0.5, 120 + 10 * i);
+		wait(10);
+	}
+	ascent (i in -4 .. 4) {
+		spawnEnemy07(width / 2 + 30 * i, 2, 60);
+	}
+	waitForClearScreen;
+	wait(300);
+	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
+	TDialogue(dialogueData);
+	TBossPre;
+	TDialogue(dialogueData2);
+	TBossPost;
+}
+
+task spawnEnemy05(x1, y1, x2, y2) {
+	let period = 10 - getDifficulty;
+	let shots = 10 * getDifficulty;
+	let enemy = enemyOf(x1, y1, 0, 0,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		400, 100, 100, 8, 8,
+		[15, 0, 0, 0]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 60);
+	wait(60);
+	let time = 0;
+	while (!Obj_IsDeleted(enemy) && time < 600) {
+		CreateShotB2(x2, y2, rand(-2, 2), -rand(0, 2), 0, 0.02, 8, 4, DS_ICE_SKY, 0);
+		wait(period);
+		time += period;
+	}
+	Obj_Delete(enemy);
+	let angle = rand(0, 360);
+	ascent (i in 0 .. shots) {
+		CreateShotA1(x2, y2, 2, angle + i*360/shots, DS_ICE_RED, 0);
+	}
+}
+
+task spawnEnemy06(x, sp, delay) {
+	let spread = truncate(getDifficulty / 2);
+	let enemy = enemyOf(x, 0, sp, 90,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		200, 100, 100, 8, 8,
+		[10, 10, truncate(rand(0, 1.25)), 0]);
+	wait(delay);
+	let angle = GetAngleToPlayer(enemy);
+	ascent (j in -spread .. spread+1) {
+		ascent (i in 0 .. 16) {
+			CreateShotOA1(enemy, 4 + 0.1 * i, angle + 20 * j, DS_KUNAI_BLUE, 0);
+		}
+	}
+	ObjMove_SetAngle(enemy, 180 * round(rand(0, 1)));
+}
+
+task spawnEnemy07(x, sp, delay) {
+	let shots = 10 + 5 * getDifficulty;
+	let enemy = enemyOf(x, 0, sp, 90,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		200, 100, 100, 8, 8,
+		[10, 10, truncate(rand(0, 1.25)), 0]);
+	wait(delay);
+	let angle = GetAngleToPlayer(enemy);
+	loop (shots) {
+		CreateShotB2(x, sp * delay, rand(-2, 2), -rand(0, 1), 0, 0.01, 8, 4, DS_BALL_S_WHITE, 0);
+	}
+	ObjMove_SetAngle(enemy, 180 * round(rand(0, 1)));
+}

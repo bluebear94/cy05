@@ -1,0 +1,486 @@
+
+#include "./../prologue.dnh"
+#include "./system_mech.dnh"
+#include "./healthbar.dnh"
+#include "./../language.dnh"
+
+let dirCurrent = GetCurrentScriptDirectory();
+
+@Initialize {
+	//CreateCommonDataArea("Cy05");
+	if (getDifficulty == -2) {
+		LoadCommonDataAreaFromReplayFile("Replay");
+		let difficulty = GetAreaCommonData("Replay", "Difficulty", 1);
+		setDifficulty(difficulty);
+	}
+	else {
+		SetAreaCommonData("Replay", "Difficulty", getDifficulty);
+		setHidden(GetAreaCommonData("Cy05", "Hidden", false));
+	}
+	if (GetCommonData("Start", false)) {reset; resetContinue;}
+	SetCommonData("Dialogue", false);
+	StartItemScript(dirCurrent ~ "system_item.dnh");
+	let path = dirCurrent ~ "../player/playersd.dnh";
+	LoadEnemyShotData(path);
+	initFrame();
+	TScore(getInterfaceStrings(HISCORE), 8, false);
+	TScore(getInterfaceStrings(SCORE), 48, true);
+	TGraze();
+	TPlayerLife();
+	TPlayerSpell();
+	TPIV();
+	TBossLife();
+	TBossTimer();
+	TCurrentFps();
+	TReplayFps();
+	TElems();
+	TMech();
+	TDifficulty;
+	pollForGameOver;
+	if (!IsReplay) {
+		SaveCommonDataAreaToReplayFile("Replay");
+		SetSkipModeKey(KEY_INVALID);
+	}
+	else {
+		SetSkipModeKey(KEY_LCONTROL);
+	}
+}
+
+@MainLoop {
+	yield;
+}
+
+@Event {
+	WriteLog(IntToString(GetEventType) ~ "sys");
+	alternative (GetEventType())
+	case (EV_START_BOSS_SPELL) {
+		let path = dirCurrent ~ "system_magic_circle.dnh";
+		let id = LoadScript(path);
+		StartScript(id);
+	}
+	case (EV_GAIN_SPELL) {
+		let objScene = GetEnemyBossSceneObjectID();
+		let score = ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE);
+		TGainSpell(score);
+	}
+}
+
+task reset {
+	yield;
+	if (gameMode < MODE_SPELL) {
+		SetPlayerLife([64, 2][gameMode == MODE_ALL]);
+		SetPlayerSpell(3 + (getCharacter >= 2));
+	} else {
+		SetPlayerLife(0);
+		SetPlayerSpell(0);
+		let obj = GetEnemyBossSceneObjectID;
+		createBossHealthbar(obj, 70, 75);
+	}
+	setLifeFrag(0);
+	setLifeFragR([8, 12][isHidden]);
+	setBombFrag(0);
+	setPIV(524288 * (1 + getDifficulty));
+	AddGraze(-GetGraze);
+	resetSurvivalTime;
+	SetCommonData("Elem", [4096, 4096, 4096, 4096]);
+	SetCommonData("Age", 0);
+}
+
+
+function initFrame() {
+	let path = GetCurrentScriptDirectory() ~ "img/Default_SystemBackground.png";
+	let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(obj, path);
+	Obj_SetRenderPriority(obj, 0);
+	ObjSprite2D_SetSourceRect(obj, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	ObjSprite2D_SetDestRect(obj, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+}
+
+function createNumberObject(x, y) {
+	let path = GetCurrentScriptDirectory ~ "../resource/digits.png";
+	let obj = ObjPrim_Create(OBJ_SPRITE_LIST_2D);
+	ObjPrim_SetTexture(obj, path);
+	ObjRender_SetBlendType(obj, BLEND_ALPHA);
+	Obj_SetRenderPriority(obj, 0.1);
+	ObjRender_SetY(obj, y);
+	ObjRender_SetX(obj, x);
+	return obj;
+}
+
+function updateNumber(obj, n, d, s) {
+	let x = ObjRender_GetX(obj);
+	let y = ObjRender_GetY(obj);
+	let listNum = DigitToArrayBase(n, base, d);
+	ascent (iObj in 0 .. d) {
+		let num = listNum[iObj];
+		ObjRender_SetX(obj, x + iObj * 14 * s);
+		ObjSpriteList2D_SetSourceRect(obj, num * 64, 0, (num + 1) * 64, 64);
+		ObjSpriteList2D_SetDestRect(obj, 0, 0, 16 * s, 24 * s);
+		ObjSpriteList2D_AddVertex(obj);
+	}
+	ObjRender_SetX(obj, x);
+}
+
+task TScore(text, y, flag) {
+	let objScore = ObjText_Create();
+	ObjText_SetText(objScore, text);
+	ObjText_SetFontSize(objScore, 20 * fontScale);
+	ObjText_SetFontBold(objScore, true);
+	ObjText_SetFontColorTop(objScore, 200, 200, 255);
+	ObjText_SetFontColorBottom(objScore, 255, 255, 255);
+	ObjText_SetFontBorderType(objScore, BORDER_FULL);
+	ObjText_SetFontBorderColor(objScore, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objScore, 1);
+	ObjText_SetFontType(objScore, typeface);
+	Obj_SetRenderPriority(objScore, 0.01);
+	ObjRender_SetX(objScore, 428);
+	ObjRender_SetY(objScore, y);
+	let objNum = createNumberObject(428, y + 20);
+	loop {
+		ObjSpriteList2D_ClearVertexCount(objNum);
+		updateNumber(objNum, [getHighScore, GetScore][flag], 14, 1);
+		yield;
+	}
+}
+
+task TGraze() {
+	let objGraze = ObjText_Create();
+	ObjText_SetText(objGraze, getInterfaceStrings(GRAZE));
+	ObjText_SetFontSize(objGraze, 20 * fontScale);
+	ObjText_SetFontBold(objGraze, true);
+	ObjText_SetFontColorTop(objGraze, 255, 200, 200);
+	ObjText_SetFontColorBottom(objGraze, 255, 255, 255);
+	ObjText_SetFontBorderType(objGraze, BORDER_FULL);
+	ObjText_SetFontBorderColor(objGraze, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objGraze, 1);
+	ObjText_SetFontType(objGraze, typeface);
+	Obj_SetRenderPriority(objGraze, 0.01);
+	ObjRender_SetX(objGraze, 428);
+	ObjRender_SetY(objGraze, 98);
+	let objNum = createNumberObject(440, 122);
+	loop {
+		ObjSpriteList2D_ClearVertexCount(objNum);
+		updateNumber(objNum, min(GetGraze, 999999), 5, 1);
+		yield;
+	}
+}
+
+let difficultyLevels = ["Easy", "Normal", "Hard", "Very Hard", "Intense", "Extra", "Overdrive"];
+let difficultyColors = [
+	[128, 128, 128, 255, 255, 255, 255],
+	[255, 255, 128, 128, 128, 255, 255],
+	[128, 255, 255, 255, 128, 128, 255]
+];
+
+task TDifficulty {
+	let d = getDifficulty;
+	let objDifficulty = ObjText_Create();
+	ObjText_SetText(objDifficulty, getInterfaceStrings(I_DIFFICULTY + d));
+	ObjText_SetFontSize(objDifficulty, 20 * fontScale);
+	ObjText_SetFontBold(objDifficulty, true);
+	ObjText_SetFontColorTop(objDifficulty, difficultyColors[0][d], difficultyColors[1][d], difficultyColors[2][d]);
+	ObjText_SetFontColorBottom(objDifficulty, difficultyColors[0][d], difficultyColors[1][d], difficultyColors[2][d]);
+	ObjText_SetFontBorderType(objDifficulty, BORDER_FULL);
+	ObjText_SetFontBorderColor(objDifficulty, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objDifficulty, 1);
+	ObjText_SetFontType(objDifficulty, typeface);
+	Obj_SetRenderPriority(objDifficulty, 0.01);
+	ObjRender_SetX(objDifficulty, 520);
+	ObjRender_SetY(objDifficulty, 122);
+}
+
+task TPlayerLife {
+	let objText = ObjText_Create();
+	ObjText_SetText(objText, getInterfaceStrings(LIVES));
+	ObjText_SetFontSize(objText, 20 * fontScale);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 255, 200, 255);
+	ObjText_SetFontColorBottom(objText, 255, 255, 255);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 1, 1, 1);
+	ObjText_SetFontBorderWidth(objText, 1);
+	ObjText_SetFontType(objText, typeface);
+	Obj_SetRenderPriority(objText, 0.01);
+	ObjRender_SetX(objText, 428);
+	ObjRender_SetY(objText, 150);
+	let lifeFragText = ObjText_Create();
+	Obj_SetRenderPriority(lifeFragText, 0.01);
+	ObjRender_SetX(lifeFragText, 488);
+	ObjRender_SetY(lifeFragText, 180);
+	ObjText_SetFontSize(lifeFragText, 16);
+	ObjText_SetFontType(lifeFragText, typeface);
+	let objNum = createNumberObject(440, 174);
+	loop {
+		ObjText_SetText(lifeFragText,
+			"(" ~ getInterfaceStrings(PIECES) ~ ": " ~ IntToStringBase(getLifeFrag, base) ~ "/" ~
+			IntToStringBase(getLifeFragR, base) ~ ")"
+		);
+		ObjSpriteList2D_ClearVertexCount(objNum);
+		updateNumber(objNum, max(min(GetPlayerLife, 255), 0), 2, 1);
+		yield;
+	}
+}
+
+task TPlayerSpell {
+	let objText = ObjText_Create();
+	ObjText_SetText(objText, getInterfaceStrings(BOMBS));
+	ObjText_SetFontSize(objText, 20 * fontScale);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 200, 255, 200);
+	ObjText_SetFontColorBottom(objText, 255, 255, 255);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objText, 1);
+	ObjText_SetFontType(objText, typeface);
+	Obj_SetRenderPriority(objText, 0.01);
+	ObjRender_SetX(objText, 428);
+	ObjRender_SetY(objText, 202);
+	let bombFragText = ObjText_Create();
+	Obj_SetRenderPriority(bombFragText, 0.01);
+	ObjRender_SetX(bombFragText, 488);
+	ObjRender_SetY(bombFragText, 232);
+	ObjText_SetFontSize(bombFragText, 16);
+	ObjText_SetFontType(bombFragText, typeface);
+	let objNum = createNumberObject(440, 226);
+	loop {
+		ObjText_SetText(bombFragText,
+			"(" ~ getInterfaceStrings(PIECES) ~ ": " ~ IntToStringBase(getBombFrag, base) ~ "/" ~
+			IntToStringBase(getBombFragR, base) ~ ")"
+		);
+		ObjSpriteList2D_ClearVertexCount(objNum);
+		updateNumber(objNum, max(min(GetPlayerSpell, 255), 0), 2, 1);
+		yield;
+	}
+}
+
+task TPIV {
+	if (isHidden) {return;}
+	let objScore = ObjText_Create();
+	ObjText_SetText(objScore, getInterfaceStrings(CUR_PIV));
+	ObjText_SetFontSize(objScore, 20 * fontScale);
+	ObjText_SetFontBold(objScore, true);
+	ObjText_SetFontColorTop(objScore, 200, 200, 255);
+	ObjText_SetFontColorBottom(objScore, 255, 255, 255);
+	ObjText_SetFontBorderType(objScore, BORDER_FULL);
+	ObjText_SetFontBorderColor(objScore, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objScore, 1);
+	ObjText_SetFontType(objScore, typeface);
+	Obj_SetRenderPriority(objScore, 0.01);
+	ObjRender_SetX(objScore, 428);
+	ObjRender_SetY(objScore, 254);
+	let objNum = createNumberObject(498, 254);
+	loop {
+		ObjSpriteList2D_ClearVertexCount(objNum);
+		updateNumber(objNum, getPIV, 9, 1);
+		yield;
+	}
+}
+
+task TBossLife {
+	let path = GetCurrentScriptDirectory() ~ "img/Default_System.png";
+	let obj = ObjPrim_Create(OBJ_SPRITE_LIST_2D);
+	ObjPrim_SetTexture(obj, path);
+	Obj_SetRenderPriority(obj, 0.7);
+	let starPath = GetCurrentScriptDirectory ~ "../resource/star.png";
+	let stars = ObjPrim_Create(OBJ_SPRITE_LIST_2D);
+	ObjPrim_SetTexture(stars, starPath);
+	Obj_SetRenderPriority(stars, 0.7);
+	ObjSpriteList2D_SetSourceRect(stars, 0, 1, 15, 16);
+	let lastRemStep = -1;
+	let lifeRateRender = 0;
+	let objScene = ID_INVALID;
+	loop {
+		objScene = GetEnemyBossSceneObjectID();
+		ObjSpriteList2D_ClearVertexCount(obj);
+		ObjSpriteList2D_ClearVertexCount(stars);
+		if (objScene != ID_INVALID) {
+			RenderLife();
+		}
+		yield;
+	}
+	
+	function RenderLife() {
+		let countRemStep = ObjEnemyBossScene_GetInfo(objScene, INFO_REMAIN_STEP_COUNT);
+		ascent (i in 0 .. countRemStep) {
+			ObjSpriteList2D_SetDestRect(stars, 4 + i * 16 + 2, 2, 20 + i * 16, 18);
+			ObjSpriteList2D_AddVertex(stars);
+		}
+	}
+}
+
+task TBossTimer {
+	let objNum = createNumberObject(150, 42);
+	Obj_SetRenderPriority(objNum, 0.8);
+	let objScene = ID_INVALID;
+	loop {
+		objScene = GetEnemyBossSceneObjectID();
+		Obj_SetVisible(objNum, objScene != ID_INVALID);
+		RenderTimer;
+		yield;
+	}
+	function RenderTimer() {
+		let timer = ObjEnemyBossScene_GetInfo(objScene, INFO_TIMERF) / 60;
+		timer = min(timer, base^3 - 1 / base^2);
+		ObjSpriteList2D_ClearVertexCount(objNum);
+		updateNumber(objNum, truncate(timer), 3, 1);
+		ObjRender_SetX(objNum, 192);
+		updateNumber(objNum, truncate(timer * base^2 % base^2), 2, 11/14);
+		ObjRender_SetX(objNum, 150);
+	}
+}
+
+task TGainSpell(score) {
+	let bc = GetShotCount(TARGET_ENEMY);
+	let multiplier = 2 ^ (bc / 300);
+	score = roundScore(score);
+	let objText = ObjText_Create();
+	ObjText_SetText(objText, "Spell Card Bonus!");
+	ObjText_SetFontSize(objText, 32 * fontScale);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 255, 255, 255);
+	ObjText_SetFontColorBottom(objText, 128, 128, 255);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objText, 1);
+	ObjText_SetFontType(objText, typeface);
+	Obj_SetRenderPriority(objText, 0.6);
+	ObjRender_SetX(objText, 32);
+	ObjRender_SetY(objText, 98);
+	let strScore = "+" ~ IntToStringBase(score, base) ~ " X"
+		~ IntToStringBase(multiplier, base) ~ "." ~ IntToStringBaseLZ((multiplier * base ^ 2) % (base ^ 2), base, 2)
+		~ "[r]= " ~ IntToStringBase(roundScore(score * multiplier), base);
+	let objScore = ObjText_Create();
+	ObjText_SetText(objScore, strScore);
+	ObjText_SetFontSize(objScore, 28 * fontScale);
+	ObjText_SetFontBold(objScore, true);
+	ObjText_SetFontColorTop(objScore, 255, 255, 255);
+	ObjText_SetFontColorBottom(objScore, 255, 128, 128);
+	ObjText_SetFontBorderType(objScore, BORDER_FULL);
+	ObjText_SetFontBorderColor(objScore, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objScore, 1);
+	ObjText_SetFontType(objScore, typeface);
+	Obj_SetRenderPriority(objScore, 0.6);
+	ObjRender_SetX(objScore, 40);
+	ObjRender_SetY(objScore, 140);
+	AddScore(roundScore(score * multiplier));
+	addElemPoints(EARTH, truncate(score * multiplier / 1048576));
+	wait(240);
+	Obj_Delete(objText);
+	Obj_Delete(objScore);
+}
+
+task TCurrentFps() {
+	let objText = ObjText_Create();
+	ObjText_SetFontSize(objText, 14);
+	ObjText_SetFontType(objText, typeface);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 128, 128, 255);
+	ObjText_SetFontColorBottom(objText, 255, 255, 255);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objText, 1);
+	ObjText_SetHorizontalAlignment(objText, ALIGNMENT_RIGHT);
+	ObjText_SetMaxWidth(objText, GetScreenWidth() - 8);
+	Obj_SetRenderPriority(objText, 1.0);
+	ObjRender_SetX(objText, 0);
+	ObjRender_SetY(objText, GetScreenHeight() - 20);
+	loop {
+		let fps = GetCurrentFps();
+		let text = IntToStringBaseLZ(fps, base, 2) ~ "." ~ IntToStringBaseLZ((fps * base ^ 2) % (base ^ 2), base, 2);
+		ObjText_SetText(objText, text);
+		yield;
+	}
+}
+
+task TReplayFps() {
+	if (!IsReplay()) {return;}
+	let objText = ObjText_Create();
+	ObjText_SetFontSize(objText, 12);
+	ObjText_SetFontType(objText, typeface);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 128, 128, 255);
+	ObjText_SetFontColorBottom(objText, 255, 255, 255);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objText, 1);
+	Obj_SetRenderPriority(objText, 1.0);
+	let px = GetStgFrameLeft() + GetStgFrameWidth() - 18;
+	let py = GetStgFrameTop() + GetScreenHeight() - 14;
+	ObjRender_SetX(objText, px);
+	ObjRender_SetY(objText, py);
+	loop {
+		let fps = GetReplayFps();
+		let text = IntToStringBaseLZ(fps, base, 2) ~ "." ~ IntToStringBaseLZ((fps * base ^ 2) % (base ^ 2), base, 2);
+		ObjText_SetText(objText, text);
+		yield;
+	}
+}
+
+let colors = [
+	[255, 128, 128, 255],
+	[255, 255, 128, 128],
+	[128, 128, 255, 128]
+];
+
+task TElems {
+	let texts = [0, 0, 0, 0];
+	ascent (i in 0 .. 4) {
+		let t = ObjText_Create;
+		ObjText_SetFontSize(t, 8);
+		ObjText_SetFontColorTop(t, colors[0][i], colors[1][i], colors[2][i]);
+		ObjText_SetFontColorBottom(t, colors[0][i], colors[1][i], colors[2][i]);
+		Obj_SetRenderPriority(t, 1.0);
+		ObjText_SetHorizontalAlignment(t, ALIGNMENT_RIGHT);
+		ObjText_SetMaxWidth(t, 32);
+		ObjRender_SetX(t, -4);
+		ObjRender_SetY(t, 404 + 12 * i);
+		texts[i] = t;
+	}
+	loop {
+		ascent (i in 0 .. 4) {
+			let t = texts[i];
+			ObjText_SetText(t, IntToStringBase(getElemPoints(i), base));
+		}
+		yield;
+	}
+}
+
+task pollForGameOver {
+	yield;
+	loop {
+		if (GetPlayerLife == 0.123 || GetVirtualKeyState(VK_USER2) == KEY_PUSH) {
+			SetPlayerLife(0.123);
+			continueMenu;
+		}
+		yield;
+	}
+}
+
+#include "./transparent_background.dnh"
+
+function continueMenu {
+	if (gameMode == MODE_ALL && !IsReplay) {
+		WriteLog(getCharacter);
+		WriteLog(getDifficulty);
+		WriteLog(isHidden);
+		WriteLog(GetCommonData("Stage", 1));
+		WriteLog(GetScore);
+		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, 0 + isHidden, GetCommonData("Stage", 1), GetScore]);
+		while (!GetCommonData("HSSubmitDone", false)) {WriteLog("poop"); yield;}
+	}
+	SetCommonData("HSSubmitDone", false);
+	if (getContinue >= maxContinues || IsReplay || gameMode != MODE_ALL) {dedz(true); CloseStgScene; return;}
+	NotifyEventAll(EV_DEDZ, maxContinues - getContinue);
+	while (GetCommonData("OKToContinue", -1) == -1) {yield;}
+	let ok = GetCommonData("OKToContinue", 1);
+	if (ok) {
+		reset;
+		continue;
+		AddScore(getContinue - GetScore);
+	}
+	else {
+		dedz(true);
+		CloseStgScene;
+	}
+	SetCommonData("OKToContinue", -1);
+}

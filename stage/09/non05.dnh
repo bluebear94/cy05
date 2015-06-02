@@ -1,0 +1,70 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St5 Non4"]
+#Text["Fourth nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(40);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let n = 10 + 2 * d;
+	let delay = 60 - 4 * d;
+	function cl(x0, y0, x1, y1) {
+		CreateStraightLaserA1(x0, y0,
+			getAngleTwoPoints(x0, y0, x1, y1), getDistanceTwoPoints(x0, y0, x1, y1), 20, delay,
+			DS_BEAM_GREEN, delay);
+	}
+	while (!isDead) {
+		loop (n) {
+			let rx = rand(0, width);
+			let ry = rand(0, height);
+			alternative (truncate(rand(0, 6)))
+			case (0) {
+				cl(0, ry, rx, 0);
+			}
+			case (1) {
+				cl(width, ry, rx, 0);
+			}
+			case (2) {
+				cl(0, ry, rx, height);
+			}
+			case (3) {
+				cl(width, ry, rx, height);
+			}
+			case (4) {
+				cl(0, ry, width, rand(0, height));
+			}
+			case (5) {
+				cl(rx, 0, rand(0, width), height);
+			}
+		}
+		let a = rand(0, 360);
+		loop (n) {
+			CreateShotOA1(objBoss, 2, a, DS_RICE_S_WHITE, 20);
+			a += 360 / n;
+		}
+		wait(delay * 3);
+	}
+}

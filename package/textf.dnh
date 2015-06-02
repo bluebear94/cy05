@@ -1,0 +1,28 @@
+#include "../ww.dnh"
+#include "../language.dnh"
+
+function createTextPr(x, y, text, enabled, tc, bc, rp, size) {
+	let obj = ObjText_Create;
+	// I almost forgot AGAIN!!
+	ObjText_SetFontType(obj, hwFont);
+	ObjText_SetFontSize(obj, size);
+	if (useUruwi) {ObjText_SetTextWW(obj, text, GetCommonData("DefMaxWidth", 640), size, hwFont);}
+	else {ObjText_SetText(obj, text); ObjText_SetMaxWidth(obj, GetCommonData("DefMaxWidth", 640));}
+	//ObjText_SetFontBold(obj, true);
+	let d = 64 * (!enabled);
+	ObjText_SetFontColorTop(obj, tc[0] - d, tc[1] - d, tc[2] - d);
+	ObjText_SetFontColorBottom(obj, bc[0] - d, bc[1] - d, bc[2] - d);
+	ObjText_SetFontBorderType(obj, BORDER_SHADOW);
+	ObjText_SetFontBorderWidth(obj, 2);
+	ObjText_SetFontBorderColor(obj, tc[0] / 2, tc[1] / 2, tc[2] / 2);
+	Obj_SetRenderPriority(obj, rp);
+	ObjRender_SetPosition(obj, x, y, 0);
+	return obj; // Good grief!
+}
+function createText(x, y, text, enabled, tc, bc) {
+	return createTextPr(x, y, text, enabled, tc, bc, 0.3, 24);
+}
+function createTextS(x, y, text, enabled, tc, bc, size) {
+	return createTextPr(x, y, text, enabled, tc, bc, 0.3, size);
+}
+function setDefMaxWidth(mw) {SetCommonData("DefMaxWidth", mw);}

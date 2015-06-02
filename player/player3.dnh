@@ -1,0 +1,129 @@
+#TouhouDanmakufu[Player]
+#ScriptVersion[3]
+#ID["Rygen1"]
+#Title["Esel Rygen 1"]
+//#Image["./ExRumiaImage.png"]
+#include "./shotc.dnh"
+#include "script/default_system/Default_ShotConst.txt"
+#include "../prologue.dnh"
+#include "../system/system_mech.dnh"
+#include "./laser.dnh"
+
+let objPlayer = GetPlayerObjectID();
+let objSlowShot = ID_INVALID;
+let current = GetCurrentScriptDirectory();
+
+@Initialize {
+	SetPlayerSpeed(5, 2);
+	ObjPlayer_AddIntersectionCircleA1(objPlayer, 0, 0, 2, 20); //Sets the hitbox of the player
+	let path = current ~ "playersd.dnh";
+	LoadPlayerShotData(path); //Loads the player bullet graphics
+	LoadPlayerShotData(GetModuleDirectory ~ "script/default_system/Default_ShotData.txt");
+	// The Player key stores the player.
+	SetCommonData("Player", 3);
+	SetPlayerSpell(4);
+	TImage();//Runs the player graphic task
+	TShot();//Runs the shooting task
+	hitbox();
+	TMagicCircle();//Runs the invincibility time magic circle task
+}
+
+@MainLoop {
+	yield;
+}
+
+@Finalize {
+}
+
+task TImage {
+	let path = GetCurrentScriptDirectory ~ "../resource/playershots.png";
+	ObjPrim_SetTexture(objPlayer, path);
+	ObjSprite2D_SetSourceRect(objPlayer, 24, 464, 47, 497);
+	loop {
+		ObjSprite2D_SetDestCenter(objPlayer);
+		yield;
+	}
+}
+
+let prev = ID_INVALID;
+let sh = ID_INVALID;
+
+task laserTask(laser) {
+	ObjShot_SetDamage(laser, 1);
+	ObjShot_SetPenetration(laser, 1);
+	ObjMove_SetAngularVelocity(laser, rand(0, 0.5) + rand(0, 0.5));
+	ObjCrLaser_SetTipDecrement(laser, 0.2);
+	ObjRender_SetAlpha(laser, 80);
+	wait(20);
+	ObjShot_SetDamage(laser, 1.5);
+	ObjRender_SetAlpha(laser, 120);
+	ObjMove_SetAngularVelocity(laser, rand(0, 0.5) + rand(0, 0.5));
+	wait(20);
+	let x = ObjMove_GetX(laser);
+	let y = ObjMove_GetY(laser);
+	if (IsPermitPlayerShot) {
+		ascent (i in 0 .. 36) {
+			let pellet = CreatePlayerShotA1(x, y, rand(0, 4), rand(0, 360), 8, 1, DS_BALL_SS_RED);
+			ObjShot_SetDeleteFrame(pellet, 90);
+			ObjRender_SetAlpha(pellet, 10);
+		}
+	}
+	Obj_Delete(laser);
+}
+
+task TShot {
+	let counter = 0;
+	let tick = 0;
+	loop {
+		let x = GetPlayerX;
+		let y = GetPlayerY - 8;
+		let shot = GetVirtualKeyState(VK_SHOT);
+		if (shot == KEY_PUSH || shot == KEY_HOLD && tick == 0 &&
+			GetPlayerState == STATE_NORMAL && IsPermitPlayerShot) {
+			if (isFocused) {
+				let r = rand(12, 16);
+				let a = -rand(45, 135);
+				laserTask(CreateCurveLaserA1(x + r * cos(a), y + r * sin(a), 6.5, rand(240, 300), 100, 10, DS_BALL_S_A_RED, 0));
+			}
+			else {
+				ascent (i in 0 .. 7) {
+					ObjRender_SetAlpha(CreatePlayerShotA1(x, y, 10, 270 + 30 * sin(counter + 360 * i / 7), 20, 1, DS_ICE_RED + i), 60);
+				}
+			}
+		}
+		counter += 1;
+		if (counter >= 360) {counter -= 360;}
+		tick++;
+		if (tick == 6) {tick = 0;}
+		yield;
+	}
+}
+
+task starTask(shot) {
+	let t = 0;
+	let dm = rand(0.25, 0.5);
+	while (!Obj_IsDeleted(shot) && t < 40) {
+		ObjShot_SetDamage(shot, t * dm);
+		t++;
+		yield;
+	}
+}
+
+task TSpell {
+	let objManage = GetSpellManageObject;
+	SetPlayerInvincibilityFrame(60);
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let x = GetPlayerX;
+	let y = GetPlayerY;
+	loop (100) {
+		let star = CreatePlayerShotA1(x, y, rand(3.5, 4.5), rand(0, 360), rand(10, 20), 9999, STAR);
+		ObjRender_SetColorHSV(star, rand(0, 360), 125, 255);
+		ObjShot_SetEraseShot(star, true);
+		starTask(star);
+	}
+	wait(60);
+	Obj_Delete(objManage);
+}
+
+#include "./player_event.dnh"

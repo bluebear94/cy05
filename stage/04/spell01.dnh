@@ -1,0 +1,130 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St3 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 11;
+let level = 4;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(9000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(64);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+let ROLE_AIMED_SHOOTER = 0;
+let ROLE_RANDOM_SHOOTER = 1;
+let ROLE_CIRCLE_SHOOTER = 2;
+let ROLE_SPIRAL_SHOOTER = 3;
+let ROLE_HOMER = 4;
+let ROLE_LASER = 5;
+
+function cooldown(avgTime) {
+	wait(avgTime * rand(0.5, 1.5) * (1.1 - 0.1 * getDifficulty));
+}
+
+task shoot(shot, role) {
+	function there {
+		return !Obj_IsDeleted(shot);
+	}
+	cooldown(30);
+	alternative (role)
+	case (ROLE_AIMED_SHOOTER) {
+		let b = truncate(getDifficulty / 2);
+		while (there) {
+			let a = GetAngleToPlayer(shot);
+			ascent (i in -b .. b + 1) {
+				CreateShotOA1(shot, 2, a + 20 * i, DS_BALL_S_R_WHITE, 0);
+			}
+			cooldown(30);
+		}
+	}
+	case (ROLE_RANDOM_SHOOTER) {
+		let b = truncate(getDifficulty / 2);
+		while (there) {
+			ascent (i in -b .. b + 1) {
+				CreateShotOA1(shot, 2, rand(0, 360), DS_BALL_S_R_WHITE, 0);
+			}
+			cooldown(30);
+		}
+	}
+	case (ROLE_CIRCLE_SHOOTER) {
+		let ways = 8 + 4 * getDifficulty;
+		while (there) {
+			let a = rand(0, 360);
+			ascent (i in 0 .. ways) {
+				CreateShotOA1(shot, 1, a + (i * 360 / ways), DS_BALL_S_WHITE, 0);
+			}
+			cooldown(90);
+		}
+	}
+	case (ROLE_HOMER) {
+		cooldown(120);
+		ObjMove_SetAngle(shot, GetAngleToPlayer(shot));
+	}
+	case (ROLE_LASER) {
+		task follow(shot, laser) {
+			while (!Obj_IsDeleted(shot)) {
+				ObjMove_SetX(laser, ObjMove_GetX(shot));
+				ObjMove_SetY(laser, ObjMove_GetY(shot));
+				yield;
+			}
+			Obj_Delete(shot);
+		}
+		task blink(laser) {
+			let period = 90 - 9 * getDifficulty;
+			let on = true;
+			while (!Obj_IsDeleted(laser)) {
+				wait(period);
+				on = !on;
+				ObjShot_SetIntersectionEnable(laser, on);
+				ObjLaser_SetRenderWidth(laser, 5 + 15 * on);
+			}
+		}
+		let l = CreateStraightLaserA1(
+			ObjMove_GetX(shot), ObjMove_GetY(shot),
+			GetAngleToPlayer(shot) + rand(-20, 20), 1024, 20,
+			60000, DS_BALL_M_RED, 30
+		);
+		follow(shot, l);
+		wait(30);
+		blink(l);
+	}
+}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let period = 180 / (1 + 0.33 * getDifficulty);
+	if (getDifficulty >= 4) {TWorkOD;}
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let m1 = CreateShotA1(rand(0, 40), height, 2, -90, DS_BALL_S_WHITE, 0);
+		let m2 = CreateShotA1(width - rand(0, 40), 0, 2, 90, DS_BALL_S_WHITE, 0);
+		shoot(m1, truncate(rand(0, 6)));
+		shoot(m2, truncate(rand(0, 6)));
+		wait(period);
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. 20) {
+			CreateShotOA1(objBoss, 1 + 0.1 * i, a, DS_LIGHT_YELLOW, 0);
+		}
+		wait(80);
+	}
+}

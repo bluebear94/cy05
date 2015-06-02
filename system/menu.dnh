@@ -1,0 +1,86 @@
+// menu header
+#include "./transparent_background.dnh"
+#include "../language.dnh"
+function showMenu(title, titleColor, items) {
+	TBackground;
+	PauseStageScene(true);
+	function createText(text, x, y) {
+		let obj = ObjText_Create;
+		ObjText_SetText(obj, text);
+		ObjText_SetFontSize(obj, 20);
+		ObjText_SetFontType(obj, GetCommonData("DiaFont", "Consolas"));
+		ObjText_SetFontColorTop(obj, 128, 255, 255);
+		ObjText_SetFontColorBottom(obj, 128, 255, 255);
+		Obj_SetRenderPriority(obj, 0.1);
+		ObjRender_SetPosition(obj, x, y, 1);
+		return obj;
+	}
+	function createTitle(text, titleColor) {
+		let obj = ObjText_Create;
+		ObjText_SetText(obj, text);
+		ObjText_SetFontSize(obj, 32);
+		ObjText_SetFontType(obj, GetCommonData("DiaFont", "Consolas"));
+		ObjText_SetFontColorTop(obj, titleColor[0], titleColor[1], titleColor[2]);
+		ObjText_SetFontColorBottom(obj, titleColor[0], titleColor[1], titleColor[2]);
+		Obj_SetRenderPriority(obj, 0.1);
+		ObjRender_SetPosition(obj, 32, 64, 1);
+		return obj;
+	}
+	let selected = 0;
+	function menuItem(i, text, x, y) {
+		let objText = createText(text, x, y);
+		let objSelect = createText(text, x, y);
+		ObjRender_SetBlendType(objSelect, BLEND_ADD_RGB);
+		task fork {
+			while (!Obj_IsDeleted(objText)) {
+				Obj_SetVisible(objSelect, i == selected);
+				yield;
+			}
+		}
+		fork;
+		return [objText, objSelect];
+	}
+	let noItems = length(items);
+	let textObjs = [createTitle(title, titleColor)];
+	ascent (i in 0 .. noItems) {
+		textObjs = textObjs ~ menuItem(i, items[i], 48, 128 + 32 * i);
+	}
+	flushEsc;
+	let frames = 0;
+	loop {
+		if (GetVirtualKeyState(VK_OK) == KEY_PULL) {
+			break;
+		}
+		if (GetVirtualKeyState(VK_CANCEL) == KEY_PULL ||
+			GetVirtualKeyState(VK_PAUSE) == KEY_PULL) {
+			selected = -1;
+			break;
+		}
+		let up = GetVirtualKeyState(VK_UP);
+		let down = GetVirtualKeyState(VK_DOWN);
+		if (up == KEY_PUSH) {selected--;}
+		else if (down == KEY_PUSH) {selected++;}
+		else if (up == KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {selected--;}
+		}
+		else if (down== KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {selected++;}
+		}
+		else {frames = 0;}
+		if (selected < 0) {selected = noItems - 1;}
+		else if (selected >= noItems) {selected = 0;}
+		yield;
+	}
+	ascent (i in 0 .. 2 * noItems + 1) {
+		Obj_Delete(textObjs[i]);
+	}
+	TStopBG;
+	PauseStageScene(false);
+	return selected;
+}
+
+function flushEsc {
+	while (GetVirtualKeyState(VK_PAUSE) != KEY_FREE) {yield;}
+}

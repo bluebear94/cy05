@@ -1,0 +1,55 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St3 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 7;
+let level = 3;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(48);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let density = 2 + getDifficulty;
+	if (getDifficulty >= 4) {TWorkOD;}
+	function A {
+		if (getDifficulty < 2) {return 90;}
+		return rand(80, 100);
+	}
+	if (getDifficulty >= 4) {TWorkOD;}
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		loop (density) {
+			CreateShotA2(rand(0, width), -32, 3, A, -0.01, -2, DS_LIGHT_R_RED, 0);
+			CreateShotA2(rand(0, width), height + 32, 3, 180 + A, -0.01, -2, DS_LIGHT_R_BLUE, 0);
+		}
+		wait(60);
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. 20) {
+			CreateShotOA1(objBoss, 1 + 0.1 * i, a, DS_LIGHT_YELLOW, 0);
+		}
+		wait(80);
+	}
+}

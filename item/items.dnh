@@ -1,0 +1,50 @@
+#UserItemData
+
+item_image = "./../resource/items.png"
+
+ItemData {
+	id = 1
+	rect = (10, 10, 20, 20)
+	render = ALPHA
+}
+ItemData {
+	id = 2
+	rect = (0, 21, 19, 40)
+	render = ALPHA
+}
+ItemData {
+	id = 3
+	rect = (0, 41, 19, 60)
+	render = ALPHA
+}
+ItemData {
+	id = 4
+	rect = (0, 10, 10, 20)
+	render = ALPHA
+}
+ItemData {
+	id = 5
+	rect = (20, 21, 49, 40)
+	render = ADD_ARGB
+}
+ItemData {
+	id = 6
+	rect = (20, 41, 49, 60)
+	render = ADD_ARGB
+}
+ItemData {
+	id = 7
+	rect = (20, 0, 25, 5)
+}
+ItemData {
+	id = 8
+	rect = (20, 5, 25, 10)
+}
+ItemData {
+	id = 9
+	rect = (25, 0, 30, 5)
+}
+ItemData {
+	id = 10
+	rect = (25, 5, 30, 10)
+}

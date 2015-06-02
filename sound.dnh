@@ -1,0 +1,27 @@
+let EV_PLAY_BGM = EV_USER + 3;
+let EV_PLAY_SE = EV_USER + 13;
+
+task playBGM(id) {
+	NotifyEventAll(EV_PLAY_BGM, [id, 0, 0]);
+}
+
+task playBGMWithTitle(id) {
+	NotifyEventAll(EV_PLAY_BGM, [id, 0, 1]);
+}
+
+task restartBGM(id) {
+	NotifyEventAll(EV_PLAY_BGM, [id, 1, 0]);
+}
+
+task restartBGMWithTitle(id) {
+	NotifyEventAll(EV_PLAY_BGM, [id, 1, 1]);
+}
+
+task playSE(path) {
+	NotifyEventAll(EV_PLAY_SE, path);
+}
+
+let bgmNames = [
+	"title", "st01new", "st01B", "st02", "st02B", "st03", "st03B", "st04", "st04B", "st05", "st05B",
+	"st06", "st06B", "st07", "st07B", "st08", "st08B", "st09", "st09B"
+];

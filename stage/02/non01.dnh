@@ -1,0 +1,54 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St2 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 2;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(4000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(32);
+	}
+}
+
+@Finalize {}
+
+let speeds = [1, 2, 4, 7, 11, 16, 11, 7, 4, 2, 1];
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let period = 720 / (3 + getDifficulty);
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let angle = GetAngleToPlayer(objBoss);
+		loop (4) {
+			ascent (i in -5 .. 6) {
+				let speed = speeds[i + 5] * (0.3 + 0.08 * getDifficulty);
+				let x = ObjMove_GetX(objBoss);
+				let y = ObjMove_GetY(objBoss);
+				let sideAngle = angle - 90;
+				let shot = CreateShotA1(x + 30 * i * cos(sideAngle), y + 30 * i * sin(sideAngle), speed, angle, DS_KNIFE_KOUMA_RED, 30);
+				ObjMove_AddPatternA3(shot, 60, speed * 0.4, angle + rand(50, 90) * (2 * round(rand(0, 1)) - 1), 0.01, 0, speed * 0.8, DS_KNIFE_KOUMA_WHITE);
+			}
+			angle += 90;
+		}
+		wait(period);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		
+	}
+}

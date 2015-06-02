@@ -1,0 +1,18 @@
+./../resource/boss/st05.png
+0
+/
+4
+Defta cynero erfynsetron pelčyto.
+0
+Esmalyvsenlea.
+0
+/
+4
+[ruby rb="Alarysesmala Yronšyncra" rt="Yšyrehe Arcynsenar eas Alarys"]
+3
+San cer'cetemyrentas!
+1
+E asendar; eo alarys; dyra san orcres.
+0
+Ele esada asgera. Cysernata mytra ryse re.
+0

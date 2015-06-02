@@ -1,0 +1,8 @@
+./../resource/boss/st01.png
+0
+And why did you shoot me?
+1
+I like the snow!
+0
+But if the nymphs aren't happy, then I'll find the source.
+0

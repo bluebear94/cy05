@@ -1,0 +1,102 @@
+// Let's leave editing this to another day.
+
+let dirCurrent = GetCurrentScriptDirectory();
+let typeEnd = 0;
+let END_FAILED = 1;
+let END_SUCCESS = 2;
+
+
+@Initialize
+{
+	magicCircle();
+}
+
+@MainLoop
+{
+	yield;
+}
+
+@Event
+{
+	alternative(GetEventType())
+	case(EV_END_BOSS_STEP)
+	{
+		//次の敵動作へ
+		if(typeEnd == 0)
+		{
+			//スペルカード取得失敗
+			typeEnd = END_FAILED;
+		}
+	}
+	case(EV_GAIN_SPELL)
+	{
+		//スペルカード取得
+		typeEnd = END_SUCCESS;
+	}
+}
+
+let iR = 115;
+let oR = 120;
+
+task magicCircle {
+	let pathUseSpell = dirCurrent ~ "se/seUseSpellCard.wav";
+	LoadSound(pathUseSpell);
+	PlaySE(pathUseSpell);
+	function GetPlayerX {
+		let objPlayer = GetPlayerObjectID();
+		return ObjRender_GetX(objPlayer);
+	}
+	function GetPlayerY {
+		let objPlayer = GetPlayerObjectID();
+		return ObjRender_GetY(objPlayer);
+	}
+	let circle = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+	ObjPrim_SetPrimitiveType(circle, PRIMITIVE_TRIANGLESTRIP);
+	ObjPrim_SetVertexCount(circle, 10);
+	//Obj_SetRenderPriority(circle, 0.3);
+	let boss = GetEnemyBossObjectID[0];
+	ascent (i in 0 .. 5) {
+		ObjPrim_SetVertexColor(circle, i * 2, 240, 255, 255);
+		ObjPrim_SetVertexColor(circle, i * 2 + 1, 240, 255, 240);
+		ObjPrim_SetVertexAlpha(circle, i * 2, 140);
+		ObjPrim_SetVertexAlpha(circle, i * 2 + 1, 90);
+	}
+	function rotate(theta, bx, by, scale) {
+		ascent (i in 0 .. 5) {
+			let c = cos(theta);
+			let s = sin(theta);
+			ObjPrim_SetVertexPosition(circle, i * 2, bx + oR * scale * c, by + oR * scale * s, 0);
+			ObjPrim_SetVertexPosition(circle, i * 2 + 1, bx + iR * scale * c, by + iR * scale * s, 0);
+			theta += 90;
+		}
+	}
+	let angle = 0;
+	while (typeEnd == 0) {
+		let bx = ObjMove_GetX(boss);
+		let by = ObjMove_GetY(boss);
+		rotate(angle, bx, by, 1);
+		angle++;
+		yield;
+	}
+	if (typeEnd == END_FAILED) {
+		Obj_Delete(circle);
+		CloseScript(GetOwnScriptID());
+		return;
+	}
+	let pathGainSpell = dirCurrent ~ "se/seGetSpellCardBonus.wav";
+	LoadSound(pathGainSpell);
+	PlaySE(pathGainSpell);
+	let bx = ObjMove_GetX(boss);
+	let by = ObjMove_GetY(boss);
+	let scale = 1;
+	while (scale > 0.01 && (absolute(bx - GetPlayerX) > 15 || absolute(by - GetPlayerY) > 15)) {
+		bx = 0.99 * bx + 0.01 * GetPlayerX;
+		by = 0.99 * by + 0.01 * GetPlayerY;
+		rotate(angle, bx, by, scale);
+		angle++;
+		scale *= 0.995;
+		yield;
+	}
+	Obj_Delete(circle);
+	CloseScript(GetOwnScriptID());
+}

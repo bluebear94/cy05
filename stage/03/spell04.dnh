@@ -1,0 +1,103 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 10;
+let level = 3;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000 - 2000 * (getDifficulty >= 2));
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(72);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task blue(shot) {
+	let a = 0.05;
+	ObjMove_SetAcceleration(shot, -a);
+	function jump(sp) {
+		ObjMove_SetSpeed(shot, sp);
+		ObjMove_SetAngle(shot, GetAngleToPlayer(shot));
+		wait(sp / a);
+	}
+	jump(2);
+	if (Obj_IsDeleted(shot)) {return};
+	jump(4);
+	if (Obj_IsDeleted(shot)) {return};
+	jump(6);
+	if (Obj_IsDeleted(shot)) {return};
+	ObjMove_SetSpeed(shot, 1);
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let ways = 16 + 8 * d - (4 * d) * (d >= 2);
+	let maxY = height * (0.3 + 0.1 * d);
+	let layers = 2 + truncate(d / 2);
+	blueShots;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		ascent (j in 0 .. layers) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			ascent (i in 0 .. ways) {
+				let angle = 360 * i / ways;
+				let rice = CreateShotA2(
+					ObjMove_GetX(objBoss) + 30 * cos(angle),
+					ObjMove_GetY(objBoss) + 30 * sin(angle),
+					0, angle, 0.01, 2, DS_RICE_S_GREEN, 0
+				);
+				ObjMove_SetAngularVelocity(rice, 0.75);
+				ObjMove_AddPatternA2(
+					rice, 120,
+					NO_CHANGE, NO_CHANGE,
+					0.01, 0, 2
+				);
+				let rice2 = CreateShotA2(
+					ObjMove_GetX(objBoss) + 30 * cos(angle),
+					ObjMove_GetY(objBoss) + 30 * sin(angle),
+					0, angle, 0.01, 2, DS_RICE_S_GREEN, 0
+				);
+				ObjMove_SetAngularVelocity(rice2, -0.75);
+				ObjMove_AddPatternA2(
+					rice2, 120,
+					NO_CHANGE, NO_CHANGE,
+					0.01, 0, 2
+				);
+			}
+			wait(60);
+		}
+		if (d >= 2) {ObjMove_SetDestAtFrame(objBoss, rand(0, width), rand(0, maxY), 120);}
+		wait(120);
+	}
+}
+
+task blueShots {
+	let d = getDifficulty;
+	let period = 60 - 5 * d;
+	let amt = 30 + 10 * d;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let x = ObjMove_GetX(objBoss);
+		let y = ObjMove_GetY(objBoss);
+		loop (amt) {
+			let r = rand(0, 50);
+			let t = rand(0, 360);
+			blue(CreateShotA1(x + r * cos(t), y + r * sin(t), 1, t, DS_BALL_BS_BLUE, 30));
+		}
+		wait(period);
+	}
+}

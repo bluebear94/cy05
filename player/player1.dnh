@@ -1,0 +1,107 @@
+#TouhouDanmakufu[Player]
+#ScriptVersion[3]
+#ID["Rencron1"]
+#Title["Elssecisso Rencron 1"]
+//#Image["./ExRumiaImage.png"]
+#include"./shotc.dnh"
+#include"../prologue.dnh"
+#include"../system/system_mech.dnh"
+
+
+let objPlayer = GetPlayerObjectID();
+let objSlowShot = ID_INVALID;
+let current = GetCurrentScriptDirectory();
+
+@Initialize {
+	SetPlayerSpeed(7, 1.5);
+	ObjPlayer_AddIntersectionCircleA1(objPlayer, 0, 0, 1.5, 20); //Sets the hitbox of the player
+	let path = current ~ "playersd.dnh";
+	LoadPlayerShotData(path); //Loads the player bullet graphics
+	// The Player key stores the player.
+	SetCommonData("Player", 1);
+	TImage();//Runs the player graphic task
+	TShot();//Runs the shooting task
+	hitbox();
+	TMagicCircle();//Runs the invincibility time magic circle task
+}
+
+@MainLoop {
+	yield;
+}
+
+@Finalize {
+}
+
+task TImage {
+	let path = GetCurrentScriptDirectory ~ "../resource/playershots.png";
+	ObjPrim_SetTexture(objPlayer, path);
+	ObjSprite2D_SetSourceRect(objPlayer, 0, 464, 21, 495);
+	loop {
+		ObjSprite2D_SetDestCenter(objPlayer);
+		yield;
+	}
+}
+
+task TShot {
+	let tick = 0;
+	loop {
+		let x = GetPlayerX;
+		let y = GetPlayerY - 8;
+		let shot = GetVirtualKeyState(VK_SHOT);
+		if (shot == KEY_PUSH || shot == KEY_HOLD && tick == 0 &&
+			GetPlayerState == STATE_NORMAL && IsPermitPlayerShot) {
+			if (isFocused) {
+				CreatePlayerShotA1(x - 24, y, 10, 270, 13.5, 1, THROWING_NEEDLE);
+				CreatePlayerShotA1(x + 24, y, 10, 270, 13.5, 1, THROWING_NEEDLE);
+				CreatePlayerShotA1(x - 12, y, 10, 270, 6, 1, THROWING_NEEDLE);
+				CreatePlayerShotA1(x + 12, y, 10, 270, 6, 1, THROWING_NEEDLE);
+				CreatePlayerShotA1(x - 48, y + 8, 10, 270, 6, 1, THROWING_NEEDLE);
+				CreatePlayerShotA1(x + 48, y + 8, 10, 270, 6, 1, THROWING_NEEDLE);
+			}
+			else {
+				CreatePlayerShotA1(x, y, 10, 270, 17, 1, STEEL_ARROW);
+				CreatePlayerShotA1(x + 15, y, 10, 265, 13.5, 1, STEEL_ARROW);
+				CreatePlayerShotA1(x - 15, y, 10, 275, 13.5, 1, STEEL_ARROW);
+			}
+		}
+		tick++;
+		if (tick == 3) {tick = 0;}
+		yield;
+	}
+}
+
+task TSpell {
+	let objManage = GetSpellManageObject();
+	let x = GetPlayerX;
+	let y = GetPlayerY;
+	let sword = CreatePlayerShotA1(x, y, 0, 0, 1, 10000, FANTASTIC_SWORD);
+	ObjShot_SetEraseShot(sword, true);
+	SetPlayerInvincibilityFrame(420);
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let canShoot = IsPermitPlayerShot;
+	loop (300) {
+		let shots = GetShotIdInCircleA2(x, y, 144, TARGET_ALL);
+		let sl = length(shots);
+		ascent (j in 0 .. sl) {
+			let s = shots[j];
+			if (!ObjShot_IsSpellResist(s) && s != sword) {
+				ObjShot_ToItem(s);
+			}
+		}
+		let enemies = GetAllEnemyID;
+		let n = length(enemies);
+		ascent (i in 0 .. n) {
+			let enemy = enemies[i];
+			if (getDistanceTo(enemy, sword) < 144) {
+				let rate = ObjEnemy_GetInfo(enemy, INFO_DAMAGE_RATE_SPELL);
+				ObjEnemy_AddLife(enemy, -0.35 * rate);
+			}
+		}
+		yield;
+	}
+	Obj_Delete(sword);
+	Obj_Delete(objManage);
+}
+
+#include "./player_event.dnh"

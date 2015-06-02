@@ -1,0 +1,487 @@
+#TouhouDanmakufu[Stage]
+#ScriptVersion[3]
+#Title["St8"]
+#Text["Eighth (but not final) stage!"]
+#Background["./stg_back.dnh"]
+#Player["./../../player/player0.dnh", "./../../player/player2.dnh"]
+#System["./../../system/system.dnh"]
+
+#include "./../../prologue.dnh"
+#include "./../../system/healthbar.dnh"
+let stage = "08";
+let done = false;
+let dialogueData;
+let dialogueData2;
+let bgm = 15;
+#include "./../stage_header.dnh"
+
+let width = GetStgFrameWidth;
+let height = GetStgFrameHeight;
+
+task TStage {
+	if (getCharacter < 2) {
+		dialogueData = readDD("d8_1");
+		dialogueData2 = readDD("d8_2");
+	}
+	else {
+		dialogueData = readDD("d8_3");
+		dialogueData2 = readDD("d8_4");
+	}
+	let d = getDifficulty;
+	let rho = 8 + d;
+	ascent (i in 0 .. rho) {
+		let x = width * (i + 0.5) / rho;
+		spawnEnemy32(x, -30, x, 30, 90);
+		wait(15);
+	}
+	waitForClearScreen;
+	wait(60);
+	showStageTitle([164, 255, 164]);
+	ascent (i in 0 .. rho) {
+		let y = height * (i + 0.5) / (rho + 1);
+		spawnEnemy32(-30, y, 30, y, 0);
+		wait(15);
+	}
+	waitForClearScreen;
+	wait(60);
+	ascent (i in 0 .. rho) {
+		let x = width * (i + 0.5) / rho;
+		spawnEnemy32(x, height + 30, x, height - 10, -90);
+		wait(15);
+	}
+	waitForClearScreen;
+	wait(60);
+	ascent (i in 0 .. 4) {
+		let t = 140 - 15 * i;
+		let x = 30 + 5 * i;
+		spawnEnemy33(x, t, -3, true);
+		spawnEnemy33(width - x, t, 3, true);
+		wait(30);
+	}
+	waitForClearScreen;
+	wait(60);
+	ascent (i in 0 .. 8) {
+		let y = 100 - 5 * i;
+		let v = 1.1 + 0.05 * i;
+		let a = 30 + i * 15 / 4;
+		ascent (j in 0 .. 3) {
+			spawnEnemy34(0, y - 10 * j, v, a);
+			spawnEnemy34(width, y - 10 * j, v, 180 - a);
+		}
+		wait(40);
+	}
+	waitForClearScreen;
+	wait(60);
+	task side1 {
+		wait(60);
+		ascent (i in 0 .. rho - 4) {
+			let x = width * (i + 0.5) / (rho - 4);
+			let y = height * (i + 0.5) / (rho - 3);
+			spawnEnemy32a(-30, -30, x, y, 120);
+			spawnEnemy32a(width + 30, -30, width - x, y, 60);
+			wait(15);
+		}
+	}
+	task side2 {
+		function spawnDoubles(x) {
+			spawnEnemy36(x);
+			spawnEnemy36(width - x);
+		}
+		spawnDoubles(50);
+		wait(60);
+		spawnDoubles(130);
+		wait(60);
+		spawnDoubles(90);
+		wait(30);
+		spawnDoubles(150);
+	}
+	side1;
+	side2;
+	loop (3) {
+		spawnEnemy35(100, 1/3);
+		spawnEnemy35(width - 100, 1/3);
+		wait(240);
+	}
+	waitForClearScreen;
+	wait(120);
+	spawnEnemy37;
+	waitForClearScreen;
+	wait(60);
+	task side3 {
+		ascent (i in 0 .. 4) {
+			let t = 140 - 15 * i;
+			let x = 30 + 5 * i;
+			spawnEnemy33(x, t, -3, false);
+			spawnEnemy33(width - x, t, 3, false);
+			wait(90);
+		}
+	}
+	spawnEnemy36(100);
+	spawnEnemy36(width - 100);
+	spawnEnemy35(50, 1/3);
+	spawnEnemy35(width - 50, 1/3);
+	side3;
+	ascent (i in 0 .. rho - 5) {
+		let x = width * (i + 0.5) / (rho - 5);
+		spawnEnemy32a(x, -30, x, 30, 90);
+		wait(5);
+	}
+	ascent (i in 0 .. rho - 5) {
+		let y = height * (i + 0.5) / (rho - 4);
+		spawnEnemy32a(-30, y, 30, y, 0);
+		wait(5);
+	}
+	ascent (i in 0 .. rho - 5) {
+		let x = width * (i + 0.5) / (rho - 5);
+		spawnEnemy32a(x, height + 30, x, height - 30, -90);
+		wait(5);
+	}
+	ascent (i in 0 .. rho - 5) {
+		let y = height * (i + 0.5) / (rho - 4);
+		spawnEnemy32a(width + 30, y, width - 30, y, 180);
+		wait(5);
+	}
+	waitForClearScreen;
+	wait(60);
+	spawnEnemy35(100, 1/3);
+	spawnEnemy35(width - 100, 1/3);
+	wait(180);
+	spawnEnemy38(width / 2);
+	wait(30);
+	spawnEnemy38(width / 2 - 50);
+	spawnEnemy38(width / 2 + 50);
+	let y8 = 50;
+	let s8 = true;
+	loop (8) {
+		spawnEnemy32a([width + 30, -30][s8], y8 - 60, [width - 30, 30][s8], y8, 180 * !s8);
+		s8 = !s8;
+		y8 += 40;
+		wait(45);
+	}
+	waitForClearScreen;
+	wait(300);
+	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
+	// The Boss
+	TDialogue(dialogueData);
+	TBossPre;
+	TDialogue(dialogueData2);
+	TBossPost;
+}
+
+// 64, 0, 96, 32
+
+task spawnEnemy32(x1, y1, x2, y2, a) {spawnEnemy32S(x1, y1, x2, y2, a, 6);}
+task spawnEnemy32a(x1, y1, x2, y2, a) {spawnEnemy32S(x1, y1, x2, y2, a, 3);}
+
+task spawnEnemy32S(x1, y1, x2, y2, a, s) {
+	let enemy = enemyOf(x1, y1, 0, 90,
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		200, 100, 100, 12, 8,
+		[20, 5, 0, 0, 0, 0, 0, 5]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 30);
+	wait(15);
+	let a2 = ObjMove_GetAngle(enemy);
+	wait(15);
+	let c = 0;
+	let d = getDifficulty;
+	let p = [6, 5, 5, 4, 4, 3, 2][d];
+	let sp = s + 0.8 * d;
+	while (!Obj_IsDeleted(enemy) && c < 300) {
+		CreateShotOA1(enemy, sp, a, DS_RICE_S_WHITE, 0);
+		wait(p);
+		c += p;
+	}
+	ObjMove_SetSpeed(enemy, sp);
+	ObjMove_SetAngle(enemy, a2);
+}
+
+task spawnEnemy33(x, t, av, stream) {
+	let m = 0;
+	let period = [6, 5, 5, 4, 4, 3, 2][getDifficulty];
+	sub shoot {
+		if (m % period == 0) {
+			CreateShotOA1(enemy, rand(1, 2), rand(0, 360),
+				[
+					DS_KNIFE_YOUMU_WHITE, DS_BALL_S_SKY, DS_BALL_S_SKY, DS_BALL_M_BLUE,
+					DS_MISSILE_YELLOW, DS_SCALE_BLUE, DS_BUTTERFLY_PURPLE, DS_COIN_BLUE
+				][truncate(rand(0, 8))], 0);
+		}
+		m++;
+	}
+	let enemy = enemyOf(x, 0, 2, 90,
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		350, 100, 100, 12, 8,
+		[30, 5, 0, 0, 0, 0, 0, 7]);
+	let u = min(60, t);
+	wait(u);
+	loop (t - u) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		shoot;
+		yield;
+	}
+	ObjMove_SetAngularVelocity(enemy, av);
+	loop (90 / av) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		shoot;
+		yield;
+	}
+	ObjMove_SetAngularVelocity(enemy, 0);
+	if (stream) {
+		while (!Obj_IsDeleted(enemy)) {
+			CreateShotOA1(enemy, 3.8, GetAngleToPlayer(enemy), DS_RICE_S_WHITE, 0);
+			wait(period);
+		}
+	}
+	else {
+		while (!Obj_IsDeleted(enemy)) {
+			shoot;
+			yield;
+		}
+	}
+}
+
+task spawnEnemy34(x, y, v, a) {
+	sub shoot {
+		if (m % (2 * period) == 0) {
+			CreateShotOA1(enemy, rand(1, 2), rand(0, 360),
+				[
+					DS_KNIFE_YOUMU_WHITE, DS_BALL_S_SKY, DS_BALL_S_SKY, DS_BALL_M_BLUE,
+					DS_MISSILE_YELLOW, DS_SCALE_BLUE, DS_BUTTERFLY_PURPLE, DS_COIN_BLUE
+				][truncate(rand(0, 8))], 0);
+		}
+		m++;
+	}
+	let enemy = enemyOf(x, y, v, a,
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		150, 100, 100, 12, 8,
+		[25, 5, 0, 0, 0, 0, 0, 6]);
+	wait(50);
+	let m = 0;
+	let period = [6, 5, 5, 4, 4, 3, 2][getDifficulty];
+	while (!Obj_IsDeleted(enemy)) {
+		CreateShotOA1(enemy, 3.8, GetAngleToPlayer(enemy), DS_RICE_S_SKY, 0);
+		shoot;
+		wait(period);
+	}
+}
+
+task spawnEnemy35(x, av) {
+	let enemy = spawnEnemyWithLaserPoly(x, 0, 1, 80 + 20 * (x > 200),
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		450, 100, 100, 12, 8,
+		[35, 5, 0, 0, 0, 0, 0, 8],
+		115, 4, av, DS_BALL_S_A_GREEN, 120);
+	let d = getDifficulty;
+	let sp = truncate(0.5 + 0.5 * d);
+	let period = 150 - 10 * d;
+	task spiral {
+		let ways = 4 + 2 * d;
+		let inter = 360 / ways;
+		let a = rand(0, 360);
+		while (!Obj_IsDeleted(enemy)) {
+			let x = ObjMove_GetX(enemy);
+			let y = ObjMove_GetY(enemy);
+			loop (ways) {
+				CreateShotA1(x + 30 * cos(a), y + 30 * sin(a), 2, 180 + a, DS_BALL_S_YELLOW, 30);
+				a += inter;
+			}
+			a += 0.3927 * inter;
+			wait(30);
+		}
+	}
+	spiral;
+	while (!Obj_IsDeleted(enemy)) {
+		let a = GetAngleToPlayer(enemy);
+		ascent (i in -sp .. sp + 1) {
+			CreateShotA2(ObjMove_GetX(enemy), ObjMove_GetY(enemy), 4, a + 10 * i, -1/20, 1, DS_BALL_S_BLUE, 0);
+		}
+		wait(period);
+	}
+	ObjMove_SetSpeed(enemy, 3);
+	ObjMove_SetAngle(enemy, truncate(rand(0, 1)) * 180);
+}
+
+task spawnEnemy36(x) {
+	let enemy = spawnEnemyWithLaserPoly(x, 0, 3.5, 90,
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		30, 100, 100, 12, 8,
+		[25, 5, 0, 0, 0, 0, 0, 7],
+		35, 3, randomSign * pi, DS_BALL_S_A_RED, 120);
+	wait(30);
+	ObjMove_SetSpeed(enemy, 0);
+	let d = getDifficulty;
+	let p = 120 - 7 * d;
+	let maxav = 0.3 + 0.1 * d;
+	let sp = truncate(0.5 + 0.5 * d);
+	let inter = 0;
+	if (sp != 0) {inter = 45 / sp;}
+	let c = 0;
+	while (!Obj_IsDeleted(enemy) && c < 8) {
+		let av = rand(-maxav, maxav);
+		let a = GetAngleToPlayer(enemy) + rand(-45, 45);
+		descent (j in 0 .. 20) {
+			ascent (i in -sp .. sp + 1) {
+				CreateShotOA1(enemy, 2.5 - 0.025 * j, a + inter * i, DS_RICE_S_GREEN, 0);
+			}
+			a += av;
+			yield;
+		}
+		loop (4) {
+			CreateShotOA1(enemy, 3.5, a, DS_BALL_S_ORANGE, 0);
+			a += 90;
+		}
+		wait(p);
+		c++;
+	}
+}
+
+task spawnEnemy37 {
+	let d = getDifficulty;
+	let shotInterval = 100 / (1 + 0.25 * d);
+	let enemy = enemyOf(GetStgFrameWidth / 2, 0, 2, 90,
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		6000, 100, 100, 8, 8,
+		[200, 200, 0, 0, 0, 0, 0, 100]);
+	createHealthbar(enemy, 6000, 45, 50);
+	wait(60);
+	ObjMove_SetSpeed(enemy, 0);
+	let x = ObjMove_GetX(enemy);
+	let y = ObjMove_GetY(enemy);
+	let laser = CreateStraightLaserA1(x, y,
+		-90, 600, 20, 9999, DS_BEAM_RAINBOW, 30);
+	let direction = 1;
+	function setLaser(on) {
+		ObjLaser_SetRenderWidth(laser, 5 + 15 * on);
+		ObjShot_SetIntersectionEnable(laser, on);
+	}
+	function spawnOnLaser {
+		ascent (i in 0 .. 600 / shotInterval) {
+			let r = i * shotInterval;
+			let a = ObjStLaser_GetAngle(laser);
+			let shot = CreateShotA1(x + r * cos(a), y + r * sin(a), 0, a - 5 * direction, DS_BALL_S_WHITE, 0);
+			ObjMove_AddPatternA2(shot, 120, NO_CHANGE, NO_CHANGE, 0.02, 0.1 * direction, 2);
+		}
+	}
+	task rotate(dt, for) {
+		rotateS(dt, for);
+	}
+	function rotateS(dt, for) {
+		direction = [1, -1][dt < 0];
+		loop (for) {ObjStLaser_SetAngle(laser, dt / for + ObjStLaser_GetAngle(laser)); yield;}
+	}
+	wait(30);
+	function stuff {
+		setLaser(true);
+		rotate(180, 180);
+		loop (18) {
+			if (Obj_IsDeleted(enemy)) {return;}
+			spawnOnLaser;
+			wait(10);
+		}
+		setLaser(false);
+		rotateS(180, 36);
+		setLaser(true);
+		rotate(-180, 180);
+		loop (18) {
+			if (Obj_IsDeleted(enemy)) {return;}
+			spawnOnLaser;
+			wait(10);
+		}
+		setLaser(false);
+		rotateS(-225, 45);
+		loop (2) {
+			setLaser(true);
+			rotate(90, 120);
+			loop (12) {
+				if (Obj_IsDeleted(enemy)) {return;}
+				spawnOnLaser;
+				wait(10);
+			}
+			setLaser(false);
+			rotateS(90, 18);
+		}
+		rotateS(15, 60);
+		loop (6) {
+			setLaser(true);
+			rotate(30, 30);
+			loop (6) {
+				if (Obj_IsDeleted(enemy)) {return;}
+				spawnOnLaser;
+				wait(5);
+			}
+			setLaser(false);
+			rotateS(30, 18);
+		}
+		rotateS(-150, 150);
+		setLaser(true);
+		rotate(-180, 180);
+		loop (18) {
+			if (Obj_IsDeleted(enemy)) {return;}
+			spawnOnLaser;
+			wait(10);
+		}
+		setLaser(false);
+		rotateS(-180, 36);
+		setLaser(true);
+		rotate(180, 180);
+		loop (18) {
+			if (Obj_IsDeleted(enemy)) {return;}
+			spawnOnLaser;
+			wait(10);
+		}
+		setLaser(false);
+		rotateS(225, 45);
+		loop (2) {
+			setLaser(true);
+			rotate(-90, 120);
+			loop (12) {
+				if (Obj_IsDeleted(enemy)) {return;}
+				spawnOnLaser;
+				wait(10);
+			}
+			setLaser(false);
+			rotateS(-90, 18);
+		}
+		rotateS(-15, 60);
+		loop (6) {
+			setLaser(true);
+			rotate(-30, 30);
+			loop (6) {
+				if (Obj_IsDeleted(enemy)) {return;}
+				spawnOnLaser;
+				wait(5);
+			}
+			setLaser(false);
+			rotateS(-30, 18);
+		}
+		rotateS(150, 150);
+	}
+	while (!Obj_IsDeleted(enemy)) {
+		stuff;
+	}
+	Obj_Delete(laser);
+	createItemU1(WHOLE_BOMB, GetStgFrameWidth / 2, 90, 0);
+}
+
+task spawnEnemy38(x) {
+	let enemy = spawnEnemyWithLaserPoly(x, 0, 3.5, 90,
+		"./../resource/enemy.png", 64, 0, 96, 32,
+		30, 100, 100, 12, 8,
+		[25, 5, 0, 0, 0, 0, 0, 7],
+		35, 3, randomSign * pi, DS_BALL_S_A_RED, 120);
+	wait(40);
+	let d = getDifficulty;
+	let p = 60 - 3 * d;
+	let ways = 8 + 2 * d;
+	ObjMove_SetSpeed(enemy, 0);
+	loop (16) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		let a = rand(0, 360);
+		loop (ways) {
+			CreateShotA1(ObjMove_GetX(enemy), ObjMove_GetY(enemy), 2, a, DS_BALL_S_RED, 0);
+			a += 360 / ways;
+		}
+		wait(p);
+	}
+	ObjMove_SetSpeed(enemy, 5);
+}

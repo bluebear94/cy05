@@ -1,0 +1,20 @@
+./../resource/boss/st08.png
+0
+/
+4
+Merva sartesa gašyda esvella-
+2
+&osb; ENDYR CARDESETAS. &csb;
+1
+/
+4
+&osb; Pelčyd nas enmerte dedno senleata[r]nyralan grelehe. &csb;
+1
+[ruby rb="Vija" rt="Nalda eas Erveyllyr"]
+3
+&osb; Endyr es garahata leatera. &csb;
+1
+- Ela cynsso deread cynmerta grelehe.
+0
+&osb; NYRALYSSYD TOSAE RYTE. &csb;
+1

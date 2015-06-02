@@ -1,0 +1,48 @@
+let adb = false;
+
+@Event {
+	alternative (GetEventType())
+	case (EV_REQUEST_SPELL) {
+		// Requests spellcard
+		let spell = GetPlayerSpell; // Remaining number of spells
+		if (spell >= 1) {
+			if (GetPlayerState == STATE_HIT && !adb) {
+				addElemPointsR(AIR, getElemPoints(AIR) * 1.05);
+			}
+			SetScriptResult(true); // Can use spell card
+			SetPlayerSpell(spell - 1); // Reduces spell card count by 1
+			TSpell; // Runs spell card task
+			addElemPoints(AIR, 2048);
+			resetSurvivalTime;
+			adb = false;
+		}
+		else {
+			SetScriptResult(false); // Cannot use spell card
+		}
+	}
+	case (EV_HIT) {
+		if (getCharacter == 1 && rand(0, 6) < max(3, GetPlayerSpell) && GetPlayerSpell >= 1) {
+			adb = true;
+			CallSpell;
+		} else {
+			TExplosion();
+			playSE("freeze07");
+			youDedz;
+		}
+	}
+	case (EV_PLAYER_SHOOTDOWN) {
+		// Prevent STATE_END from being reached
+		if (GetPlayerLife < 0) {
+			SetPlayerLife(0.123);
+		}
+		if (GetPlayerSpell >= 1) {playSE("eco01");}
+    }
+	case (EV_PLAYER_REBIRTH) {
+		// Revive
+		addPIV(524288);
+		setPIV(roundScore(max(0, getPIV * (1 - 0.1 * GetPlayerSpell))));
+		SetPlayerSpell((3 + (getCharacter >= 2)) * (GetPlayerSpell == 0));
+		SetPlayerInvincibilityFrame(180);
+		resetSurvivalTime;
+	}
+}

@@ -1,0 +1,89 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 31;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	ObjMove_SetDestAtFrame(objBoss, width / 2, height / 2, 60);
+	let d = getDifficulty;
+	let graphPeriod = 5 - 0.5 * d;
+	let graphInterval = 10 - 1.3 * d;
+	let ways = 8 + 2 * d;
+	//if (getDifficulty >= 4) {TWorkOD;}
+	let phi = GetAngleToPlayer(objBoss);
+	let theta = phi;
+	let orb = CreateShotA1(width / 2, height / 2, 2, theta, DS_BALL_L_ORANGE, 0);
+	ObjShot_SetSpellResist(orb, true);
+	let r = 80 + 10 * d;
+	let av = 1 + 0.5 * d;
+	wait(r / 2);
+	let c = 0;
+	let x = 0;
+	let s = 90;
+	let gs = 0.9 - 0.15 * d;
+	let gss = 1 + 0.1 * d;
+	while (!isDead) {
+		theta += av;
+		let rp = r * (1 + 0.2 * sin(3.1729 * (theta - phi)));
+		ObjMove_SetPosition(orb,
+			ObjMove_GetX(objBoss) + rp * cos(theta),
+			ObjMove_GetY(objBoss) + rp * sin(theta));
+		if (c % 30 == 0) {
+			let a = rand(0, 360);
+			loop (ways) {
+				CreateShotOA1(orb, 1, a, DS_STAR_S_RED, 0);
+				a += 360 / ways;
+			}
+		}
+		if (c % graphPeriod == 0) {
+			let shot = CreateShotA1(x, GetAngleToPlayer(orb) * height / 360,
+				0, s, DS_MISSILE_WHITE, 30);
+			let delay = 90;
+			if (d == 6) {
+				delay = (width - x) * graphPeriod / graphInterval;
+			}
+			ObjMove_AddPatternA3(shot, delay, (1 + gs) * gss, NO_CHANGE, 0, 0, 0,
+				[DS_MISSILE_BLUE, DS_MISSILE_RED][s == 90]);
+			s *= -1;
+			x += graphInterval;
+			if (x > width) {x -= width;}
+		}
+		c++;
+		yield;
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. 20) {
+			CreateShotOA1(objBoss, 1 + 0.1 * i, a, DS_LIGHT_YELLOW, 0);
+		}
+		wait(80);
+	}
+}

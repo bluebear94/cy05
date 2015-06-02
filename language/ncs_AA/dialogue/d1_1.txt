@@ -1,0 +1,16 @@
+./../resource/boss/st01.png
+0
+/
+4
+Elelsse arcenda. Mersedantan sen nysos cynmerto vecnyta.
+0
+/
+4
+Sela vecna vella!
+1
+Sela... sela.
+0
+[ruby rb="Mernen" rt="Endora Cryssosnersson"]
+3
+Aja, arcyn enas arnan gernyso!
+1

@@ -1,0 +1,83 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 25;
+let level = 7;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+let refs = 0;
+
+task disperse(s) {
+	while (refs != 0 && !Obj_IsDeleted(s)) {yield;}
+	if (rand(0, 1) < 0.5) {ObjShot_ToItem(s);}
+	ObjMove_SetSpeed(s, rand(0.2, 0.6));
+	ObjMove_SetAngle(s, rand(0, 360));
+}
+
+task quake(s) {
+	refs++;
+	let iters = 0;
+	while (!Obj_IsDeleted(s)) {
+		disperse(CreateShotOA1(s, 0, 0, DS_BALL_SS_GREEN, 0));
+		if (rand(0, 1) < 0.05) {
+			let s2 = CreateShotOA1(s, 2, ObjMove_GetAngle(s) + rand(-45, 45), DS_KNIFE_YOUMU_GREEN, 0);
+			quake(s2);
+		}
+		if (iters < 6 && rand(0, 1) < 0.20) {
+			ObjMove_SetAngle(s, ObjMove_GetAngle(s) + rand(-25, 25));
+			iters++;
+		}
+		wait(6);
+	}
+	refs--;
+}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let spokes = 4 + getDifficulty;
+	let period = 120 / spokes;
+	//if (getDifficulty >= 4) {TWorkOD;}
+	while (!isDead) {
+		shake(120);
+		let a = GetAngleToPlayer(objBoss) + rand(-45, 45);
+		loop (spokes) {
+			let s2 = CreateShotOA1(objBoss, 2, a, DS_KNIFE_YOUMU_GREEN, 0);
+			quake(s2);
+			a += 360 / spokes;
+		}
+		while (refs != 0 && !isDead) {yield;}
+		yield;
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. 20) {
+			CreateShotOA1(objBoss, 1 + 0.1 * i, a, DS_LIGHT_YELLOW, 0);
+		}
+		wait(80);
+	}
+}

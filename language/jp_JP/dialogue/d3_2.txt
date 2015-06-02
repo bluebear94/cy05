@@ -1,0 +1,6 @@
+./../resource/boss/st03.png
+0
+Hey, I see a light over there.
+0
+Oh no, the library?
+1

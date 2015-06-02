@@ -1,0 +1,164 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 35;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(72);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let c = 0;
+	let period = 400 + 10 * d;
+	let shotsFired = 3 + truncate(d / 2);
+	let shotRing = 20 + 2 * d;
+	//TWorkOD;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		if (c % period == 0) {
+			createEnemy;
+			let a = GetAngleToPlayer(objBoss);
+			ascent (i in -5 .. 6) {
+				CreateShotOA1(objBoss, 3 - 0.2 * absolute(i), a + 1.5 * i, DS_MISSILE_GREEN, 0);
+			}
+		}
+		else if (c % 60 < shotsFired * 3 && c % 3 == 0) {
+			let a = rand(0, 360);
+			loop (shotRing) {
+				CreateShotOA1(objBoss, 4, a, DS_MISSILE_SKY, 0);
+				a += 360 / shotRing;
+			}
+		}
+		c++;
+		yield;
+	}
+}
+
+task laserTask(l, p) {
+	ObjCrLaser_SetTipDecrement(l, 0);
+	while (!Obj_IsDeleted(l) && !Obj_IsDeleted(p)) {
+		if (rand(0, 1) < 0.02) {
+			ObjMove_SetAngle(l, ObjMove_GetAngle(l) + randomSign * 90);
+		}
+		yield;
+	}
+	ObjShot_ToItem(l);
+}
+
+task createEnemy {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let p = 0.013 + 0.002 * d;
+	let health = 600 + 100 * d;
+	let speed = 1 + 0.25 * d;
+	let x = rand(0, width);
+	let y = rand(0, height) * (0.4 + 0.1 * d);
+	CreateShotA1(x, y, 2, rand(0, 360), DS_BALL_S_GREEN, 60);
+	wait(60);
+	let enemy = enemyOf(x, y, 0, 0,
+		"../../resource/enemy.png", 64, 0, 96, 32,
+		health, 100, 0, 12, 12,
+		[5, 0, 0, 0, 0, 0, 0, 5]);
+	let a = GetAngleToPlayer(enemy);
+	while (!Obj_IsDeleted(enemy) && !isDead) {
+		if (rand(0, 1) < p) {
+			let laser = CreateCurveLaserA1(
+				ObjMove_GetX(enemy), ObjMove_GetY(enemy),
+				speed, a + 90 * truncate(rand(0, 4)),
+				90, 10, DS_BALL_S_GREEN, 0);
+			laserTask(laser, enemy);
+		}
+		yield;
+	}
+	loop (1000 * p) {
+		CreateShotA1(x, y, rand(0, speed), rand(0, 360), DS_BALL_S_R_BLUE, 0);
+	}
+	Obj_Delete(enemy);
+}
+
+function enemyOf(x, y, speed, angle,
+	graphics, x1, y1, x2, y2,
+	health, shotRate, bombRate, shotRadius, playerRadius,
+	drops) {
+	bombRate = acctR1(bombRate);
+	drops = drops ~ [0, 0, 0, 0, 0, 0, 0, 0];
+	let enemy = ObjEnemy_Create(OBJ_ENEMY);
+	ObjMove_SetPosition(enemy, x, y);
+	ObjMove_SetSpeed(enemy, speed);
+	ObjMove_SetAngle(enemy, angle);
+	ObjEnemy_SetLife(enemy, health);
+	ObjEnemy_SetDamageRate(enemy, shotRate, bombRate);
+	// Fuck setting graphics.
+	ObjPrim_SetTexture(enemy, GetCurrentScriptDirectory ~ graphics);
+	ObjSprite2D_SetSourceRect(enemy, x1, y1, x2, y2);
+	ObjEnemy_Regist(enemy);
+	adjustEnemy(enemy, shotRadius, playerRadius, drops);
+	return enemy;
+}
+// Why don't you just add fucking dot notation so we don't forget to put in the object ID.
+task adjustEnemy(enemy, shotRadius, playerRadius, drops) {
+	let x = 0;
+	let y = 0;
+	while (ObjEnemy_GetInfo(enemy, INFO_LIFE) > 0 && !Obj_IsDeleted(enemy)) {
+		x = ObjMove_GetX(enemy);
+		y = ObjMove_GetY(enemy);
+		ObjEnemy_SetIntersectionCircleToShot(enemy, x, y, shotRadius);
+		ObjEnemy_SetIntersectionCircleToPlayer(enemy, x, y, playerRadius);
+		ObjSprite2D_SetDestCenter(enemy);
+		if (canDeleteEnemy(enemy)) {Obj_Delete(enemy); return;}
+		yield;
+	}
+	let blue = drops[0];
+	let green = drops[1];
+	let lives = drops[2];
+	let bombs = drops[3];
+	loop (blue) {
+		createItemU1(POINT_ITEM, x + rand(-20, 20), y + rand(-20, 20), 0);
+	}
+	loop (green) {
+		createItemU1(GREEN_ITEM, x + rand(-20, 20), y + rand(-20, 20), 0);
+	}
+	loop (lives) {
+		createItemU1(LIFE_FRAGMENT, x + rand(-20, 20), y + rand(-20, 20), 0);
+	}
+	loop (bombs) {
+		createItemU1(BOMB_FRAGMENT, x + rand(-20, 20), y + rand(-20, 20), 0);
+	}
+	ascent (i in 0 .. 3) {
+		loop (drops[4 + i]) {
+			createItemU1(FIRE_FRAGMENT + i, x + rand(-20, 20), y + rand(-20, 20), 0);
+		}
+	}
+	Obj_Delete(enemy);
+}
+
+function canDeleteEnemy(enemy) {
+	let x = ObjMove_GetX(enemy);
+	let y = ObjMove_GetY(enemy);
+	return (x < -100) || (x > GetStgFrameWidth + 100) ||
+		(y < -100) || (y > GetStgFrameWidth + 100);
+}

@@ -1,0 +1,4 @@
+./../resource/boss/st08.png
+0
+Damn, better run!
+0

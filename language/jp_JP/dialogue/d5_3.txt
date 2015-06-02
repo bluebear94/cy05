@@ -1,0 +1,18 @@
+./../resource/boss/st05.png
+0
+/
+4
+Most of the items around here have never[r]even set foot in my store.
+0
+I'm going to try some of these potions.
+0
+/
+4
+[ruby rb="Alarysesmala Yronšyncra" rt="Cat of Stirring Embers"]
+3
+Don't steal my items!
+1
+I'm a fox; you're a cat; you know what[r]happens.
+0
+This room is too hot. Make the fight quick.
+0

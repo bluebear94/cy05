@@ -1,0 +1,64 @@
+// The default TBackground task, slightly modified for our use.
+
+task TBackground {
+	SetCommonData("KillBG", false);
+	task TVertex(var i, var left, var top, var right, var bottom) {
+		ObjPrim_SetVertexPosition(obj, i + 0, left, top, 0);
+		ObjPrim_SetVertexPosition(obj, i + 1, left, bottom, 0);
+		ObjPrim_SetVertexPosition(obj, i + 2, right, top, 0);
+		ObjPrim_SetVertexPosition(obj, i + 3, right, top, 0);
+		ObjPrim_SetVertexPosition(obj, i + 4, left, bottom, 0);
+		ObjPrim_SetVertexPosition(obj, i + 5, right, bottom, 0);
+		ObjPrim_SetVertexUVT(obj, i + 0, left, top);
+		ObjPrim_SetVertexUVT(obj, i + 1, left, bottom);
+		ObjPrim_SetVertexUVT(obj, i + 2, right, top);
+		ObjPrim_SetVertexUVT(obj, i + 3, right, top);
+		ObjPrim_SetVertexUVT(obj, i + 4, left, bottom);
+		ObjPrim_SetVertexUVT(obj, i + 5, right, bottom);
+		if (left >= 32 && right <= 416 && top >=16 && bottom <= 464) {
+			let alpha = 255;
+			while (alpha >= 128) {
+				ObjPrim_SetVertexAlpha(obj, i + 0, alpha);
+				ObjPrim_SetVertexAlpha(obj, i + 1, alpha/2);
+				ObjPrim_SetVertexAlpha(obj, i + 2, alpha/2);
+				ObjPrim_SetVertexAlpha(obj, i + 3, alpha/2);
+				ObjPrim_SetVertexAlpha(obj, i + 4, alpha/2);
+				ObjPrim_SetVertexAlpha(obj, i + 5, alpha);
+				alpha -= 255 / frame;
+				yield;
+			}
+		}
+	}
+	let frame = 30;
+	let countH = 20;
+	let countV = 30;
+	let width = 640 / countH;
+	let height = 480 / countV;
+	let target = GetTransitionRenderTargetName();
+	let obj = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+	ObjPrim_SetPrimitiveType(obj, PRIMITIVE_TRIANGLELIST);
+	ObjPrim_SetVertexCount(obj, countH * countV * 6);
+	Obj_SetRenderPriorityI(obj, 0);
+	ObjPrim_SetTexture(obj, target);
+	ascent (ix in 0.. countH) {
+		ascent (iy in 0.. countV) {
+			let i = (ix + iy * countH) * 6;
+			let left = ix * width;
+			let right = left + width;
+			let top = iy * height;
+			let bottom = top + height;
+			TVertex(i, left, top, right, bottom);
+		}
+	}
+	while (!isBGStopped) {yield;}
+	Obj_Delete(obj);
+}
+
+function isBGStopped {
+	return GetCommonData("KillBG", false);
+}
+
+task TStopBG {
+	//WriteLog("BG killed");
+	SetCommonData("KillBG", true);
+}

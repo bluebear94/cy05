@@ -1,0 +1,79 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 29;
+let level = 7;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(72);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let tm = 1.25 / (1 + 0.25 * d);
+	let ldm = 0.85 + 0.15 * d ^ 0.75;
+	let w = 12 + 6 * d;
+	let v = 360 / w;
+	let a = rand(0, 360);
+	function landsOnBottom(x0, t) {
+		let dx = height * cos(t);
+		let xf = x0 + dx;
+		return xf > 0 && xf < width;
+	}
+	function getLB {
+		let x0 = rand(0, width);
+		let t = rand(60, 120);
+		while (!landsOnBottom(x0, t)) {
+			x0 = rand(0, width);
+			t = rand(60, 120);
+		}
+		return [x0, t];
+	}
+	task star(s) {
+		while (ObjMove_GetY(s) < height) {yield;}
+		let t = rand(60, 120);
+		let x0 = ObjMove_GetX(s);
+		while (!landsOnBottom(x0, t)) {t = rand(60, 120);}
+		CreateStraightLaserA1(x0, height, -t, 600, 20,
+			90 * tm * ldm, ObjShot_GetImageID(s) - DS_STAR_M_RED + DS_BALL_S_A_RED, 60 * tm);
+	}
+	//TWorkOD;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		shake(120);
+		loop (13) {
+			let lb = getLB;
+			let s = CreateShotA1(lb[0], 0, rand(2, 3), lb[1], DS_STAR_M_RED + truncate(rand(0, 8)), 0);
+			star(s);
+		}
+		let b = rand(-v/2, v/2);
+		loop (w) {
+			CreateShotOA1(objBoss, 1.5, a, DS_BILL_BLUE, 0);
+			CreateShotOA1(objBoss, 2.5, a + b, DS_BILL_BLUE, 30 * tm);
+			a += v;
+		}
+		a += 0.15 * v;
+		wait(240 * tm);
+	}
+}

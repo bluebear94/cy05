@@ -1,0 +1,71 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St5 Non2"]
+#Text["Second nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 5;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(40);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let ways = 4 + d;
+	let speed = (0.8 - 0.04 * d) * 2 / ways;
+	let density = min(3 + d, 5);
+	let angle = 0;
+	//TWorkOD;
+	//let period = 180 - 15 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		ascent (i in 0 .. ways) {
+			ascent (j in 0 .. density) {
+				CreateShotA1(x - 100, y, 2, angle + 360 * (i + j / (2 * density)) / ways, DS_LIGHT_RED, 0);
+				CreateShotA1(x + 100, y, 2, 180 - (angle + 360 * (i + j / (2 * density)) / ways), DS_LIGHT_YELLOW, 0);
+				if (d >= 2) {
+					CreateShotA1(x, y - 100, 2, 90 + angle + 360 * (i + j / (2 * density)) / ways, DS_LIGHT_ORANGE, 0);
+				}
+			}
+		}
+		angle += 10;
+		wait(30);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. 2 * getDifficulty - 1) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {break;}
+			ascent (j in 0 .. 6) {
+				let shot = CreateShotA1(x + 30 * cos(a), y + 30 * sin(a), rand(0.5, 1.5), a, DS_BALL_S_GREEN, 0);
+				ObjMove_AddPatternA4(shot,
+					10, 2, rand(-5, 5), 0, 0, 2, GetPlayerObjectID, DS_BALL_S_GREEN);
+				a += 60;
+			}
+			wait(10);
+		}
+		wait(30);
+	}
+}

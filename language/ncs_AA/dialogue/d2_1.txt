@@ -1,0 +1,18 @@
+./../resource/boss/st02.png
+0
+Aja, martetas!
+1
+V-, šan venor vella?
+0
+Csseryn ar vyncyd nysos, eo cvetatas.
+1
+[ruby rb="Cssysencyras Sesae" rt="On Maraha Csserys-Nava"]
+3
+Endyr eon sesae!
+1
+Sesayd aryn cenegra.
+0
+E nas arillyr cymtero ci.
+1
+Envyn cissenenes so, acssyma tosae!
+0

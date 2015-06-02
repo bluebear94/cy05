@@ -1,0 +1,9 @@
+task TRender {
+	let imgMernen = GetCurrentScriptDirectory ~ "../../resource/boss/st08.png";
+	ObjPrim_SetTexture(objBoss, imgMernen);
+	while (!Obj_IsDeleted(objBoss)) {
+		ObjSprite2D_SetSourceRect(objBoss, 0, 1, 127, 128); 
+		ObjSprite2D_SetDestCenter(objBoss); 
+		yield;
+	}
+}

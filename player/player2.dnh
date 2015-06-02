@@ -1,0 +1,126 @@
+#TouhouDanmakufu[Player]
+#ScriptVersion[3]
+#ID["Rygen0"]
+#Title["Esel Rygen 0"]
+//#Image["./ExRumiaImage.png"]
+#include "./shotc.dnh"
+#include "../prologue.dnh"
+#include "../system/system_mech.dnh"
+#include "./laser.dnh"
+
+let objPlayer = GetPlayerObjectID();
+let objSlowShot = ID_INVALID;
+let current = GetCurrentScriptDirectory();
+
+@Initialize {
+	SetPlayerSpeed(5, 2);
+	ObjPlayer_AddIntersectionCircleA1(objPlayer, 0, 0, 2, 20); // Sets the hitbox of the player
+	let path = current ~ "playersd.dnh";
+	LoadPlayerShotData(path); // Loads the player bullet graphics
+	// The Player key stores the player.
+	SetCommonData("Player", 2);
+	SetPlayerSpell(4);
+	TImage(); // Runs the player graphic task
+	TShot(); // Runs the shooting task
+	hitbox();
+	TMagicCircle(); // Runs the invincibility time magic circle task
+}
+
+@MainLoop {
+	yield;
+}
+
+@Finalize {
+}
+
+task TImage {
+	let path = GetCurrentScriptDirectory ~ "../resource/playershots.png";
+	ObjPrim_SetTexture(objPlayer, path);
+	ObjSprite2D_SetSourceRect(objPlayer, 24, 464, 47, 497);
+	loop {
+		ObjSprite2D_SetDestCenter(objPlayer);
+		yield;
+	}
+}
+
+let prev = ID_INVALID;
+let sh = ID_INVALID;
+
+task TShot {
+	let tick = 0;
+	let wasFocused = false;
+	let lasers = [];
+	loop {
+		let x = GetPlayerX;
+		let y = GetPlayerY - 4;
+		let shot = GetVirtualKeyState(VK_SHOT);
+		if (shot == KEY_PUSH || shot == KEY_HOLD && tick == 0 &&
+			GetPlayerState == STATE_NORMAL && IsPermitPlayerShot) {
+			if (isFocused) {
+				if (!wasFocused) {
+					lasers = [
+						createPlayerLaser(objPlayer, 2, 600, 270, 2, [192, 255, 192], 5),
+						createPlayerLaser(objPlayer, 2, 600, 265, 1.8, [255, 255, 192], 5),
+						createPlayerLaser(objPlayer, 2, 600, 275, 1.8, [192, 202, 255], 5),
+						createPlayerLaser(objPlayer, 2, 600, 260, 1.6, [255, 202, 192], 5),
+						createPlayerLaser(objPlayer, 2, 600, 280, 1.6, [192, 192, 255], 5),
+						createPlayerLaser(objPlayer, 2, 600, 255, 1.4, [255, 192, 192], 5),
+						createPlayerLaser(objPlayer, 2, 600, 285, 1.4, [255, 192, 255], 5),
+					];
+					wasFocused = true;
+				}
+			}
+			else {
+				if (wasFocused) {
+					let len = length(lasers);
+					ascent (i in 0 .. len) {
+						Obj_Delete(lasers[i]);
+					}
+					wasFocused = false;
+				}
+				ascent (i in -5 .. 5) {
+					CreatePlayerShotA1(x, y - 2, 10, 270 + 2 * i, 4, 1, SOLAR_PROMINENCE);
+				}
+			}
+		}
+		else if (GetPlayerState != STATE_NORMAL || (shot != KEY_PUSH && shot != KEY_HOLD)) {
+			let len = length(lasers);
+			ascent (i in 0 .. len) {
+				Obj_Delete(lasers[i]);
+			}
+			wasFocused = false;
+		}
+		if (!IsPermitPlayerShot) {
+			let len = length(lasers);
+			ascent (i in 0 .. len) {
+				Obj_Delete(lasers[i]);
+			}
+		}
+		tick++;
+		if (tick == 3) {tick = 0;}
+		yield;
+	}
+}
+
+task TSpell {
+	let objManage = GetSpellManageObject();
+	SetPlayerInvincibilityFrame(290);
+	SetPlayerSpeed(0, 0);
+	shake(200);
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let laser = createPlayerLaser(objPlayer, 100, 600, 270, 18, [255, 255, 255], 20);
+	ObjShot_SetEraseShot(laser, true);
+	ObjShot_SetSpellFactor(laser, true);
+	let canShoot = IsPermitPlayerShot;
+	SetForbidPlayerShot(true);
+	loop (200) {
+		yield;
+	}
+	SetPlayerSpeed(5, 2);
+	SetForbidPlayerShot(!canShoot);
+	Obj_Delete(laser);
+	Obj_Delete(objManage);
+}
+
+#include "./player_event.dnh"

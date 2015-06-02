@@ -1,0 +1,6 @@
+./../resource/boss/st02.png
+0
+Pant, pant...
+1
+Don't even try.
+0

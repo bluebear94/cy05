@@ -1,0 +1,106 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 13;
+let level = 4;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(100000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+	case (EV_REQUEST_IS_DURABLE_SPELL) {
+		SetScriptResult(true);
+	}
+}
+
+@Finalize {}
+
+let angle = 90;
+
+function isNear(a1, a2, e) {
+	let diff = (a1 - a2) % 360;
+	return (diff <= e) || (diff >= 360 - e);
+}
+
+// 60 way on Normal
+// speed: 0.9 on Normal
+// or one shot every 20 ticks on Normal
+// (180 indices)
+// every 10 ticks: 360 indices
+function isBlack(a, i, freq) {
+	let d = getDifficulty;
+	let w = 6 + 3 * d;
+	if (i < 120) {return isNear(a, angle, w);}
+	else if (i < 165) {
+		if (i % (freq * 2) != 0) {return false;}
+		ascent (j in 0 .. 4) {
+			if (isNear(a + 90 * j, angle, w / 2)) {return true;}
+		}
+		return false;
+	}
+	else if (i < 195) {
+		return rand(0, 1) < 0.05 / freq;
+	}
+	else if (i < 315) {return isNear(a, angle, w) || isNear(a, angle + 180, w);}
+	else {return !isNear(a, angle + 60, w * 2);}
+}
+
+function tick(i, freq) {
+	if (i < 60) {angle += 6;}
+	else if (i < 120) {angle -= 6;}
+	else if (i < 165) {angle += 17 / freq;}
+	else if (i < 195) {}
+	else if (i < 255) {angle += 12 / freq;}
+	else if (i < 315) {angle -= 12 / freq;}
+	else {
+		let j = i - 315;
+		if ((j % 10) < 5) {angle += 6;}
+		else {angle -= 6;}
+	}
+}
+
+task TWork {
+	ObjEnemy_SetDamageRate(objBoss, 0, 0);
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	ObjMove_SetDestAtFrame(objBoss, cx, cy, 90);
+	let d = getDifficulty;
+	let ways = 40 + d * 10;
+	let interval = 360 / ways;
+	let len = 180 + truncate(d / 2) * 90;
+	let period = 3600 / len;
+	let freq = len / 180;
+	let speed = period * 2 / 20;
+	let density = (0.1 + 0.05 * getDifficulty) * 60 / ways;
+	ascent (j in 0 .. len) {
+		if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {break;}
+		tick(j, freq);
+		ascent (i in 0 .. ways) {
+			let a = interval * i;
+			if (isBlack(a, j, freq)) {
+				ObjShot_SetSpellResist(CreateShotA1(cx, cy, speed, a, DS_BALL_L_RED, 0), true);
+			}
+			else if (rand(0, 1) < density) {
+				CreateShotA1(cx, cy, speed, a, DS_BALL_SS_WHITE, 0);
+			}
+		}
+		wait(period);
+	}
+	ObjEnemy_SetDamageRate(objBoss, 100, 80);
+}

@@ -1,0 +1,84 @@
+// background
+
+#include "./../prologue.dnh"
+
+let counter = 0;
+let bSpell = false;
+let current = GetCurrentScriptDirectory();
+let w = GetStgFrameWidth;
+let h = GetStgFrameHeight;
+let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+let circle = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+let iR = 195;
+let oR = 200;
+let angle = 0;
+let cx = w / 2;
+let cy = h / 2;
+
+@Initialize {
+	let path = current ~ backgroundImage[getBGIndex];
+	ObjPrim_SetTexture(obj, path);
+	ObjRender_SetBlendType(obj, BLEND_ALPHA);
+	ObjSprite2D_SetSourceRect(obj, 0, 0, w, h);
+	ObjSprite2D_SetDestRect(obj, 0, 0, w, h);
+	Obj_SetRenderPriority(obj, 0.22);
+	changeBackground;
+	ObjPrim_SetPrimitiveType(circle, PRIMITIVE_TRIANGLESTRIP);
+	ObjPrim_SetVertexCount(circle, 10);
+	Obj_SetRenderPriority(circle, 0.2);
+	ascent (i in 0 .. 5) {
+		ObjPrim_SetVertexColor(circle, i * 2, 255, 255, 240);
+		ObjPrim_SetVertexColor(circle, i * 2 + 1, 255, 240, 255);
+		ObjPrim_SetVertexAlpha(circle, i * 2, 140);
+		ObjPrim_SetVertexAlpha(circle, i * 2 + 1, 90);
+	}
+}
+
+@MainLoop {
+	let objScene = GetEnemyBossSceneObjectID();
+	bSpell = objScene != ID_INVALID && ObjEnemyBossScene_GetInfo(objScene, INFO_IS_SPELL);
+	counter++;
+	yield;
+}
+
+function rotate(theta, bx, by, scale) {
+	ascent (i in 0 .. 5) {
+		let c = cos(theta);
+		let s = sin(theta);
+		ObjPrim_SetVertexPosition(circle, i * 2, bx + oR * scale * c, by + oR * scale * s, 0);
+		ObjPrim_SetVertexPosition(circle, i * 2 + 1, bx + iR * scale * c, by + iR * scale * s, 0);
+		theta += 90;
+	}
+}
+
+task changeBackground {
+	let prev = getBGIndex;
+	loop {
+		if (getBGIndex != prev) {
+			let path = current ~ backgroundImage[getBGIndex];
+			let newObj = ObjPrim_Create(OBJ_SPRITE_2D);
+			ObjPrim_SetTexture(newObj, path);
+			ObjRender_SetBlendType(newObj, BLEND_ALPHA);
+			ObjSprite2D_SetSourceRect(newObj, 0, 0, w, h);
+			ObjSprite2D_SetDestRect(newObj, 0, 0, w, h);
+			Obj_SetRenderPriority(newObj, 0.21);
+			ascent (i in 0 .. 120) {
+				ObjRender_SetAlpha(obj, 255 - (i / 120 * 255));
+				yield;
+			}
+			obj = newObj;
+			Obj_SetRenderPriority(newObj, 0.22);
+		}
+		prev = getBGIndex;
+		angle++;
+		rotate(angle, cx, cy, 1);
+		Obj_SetVisible(obj, !bSpell);
+		Obj_SetVisible(circle, bSpell);
+		yield;
+	}
+}
+
+@Finalize {
+	Obj_Delete(obj);
+	Obj_Delete(circle);
+}

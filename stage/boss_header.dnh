@@ -1,0 +1,38 @@
+#include "./../system/healthbar.dnh"
+
+@Initialize {
+	TPlural;
+}
+
+@MainLoop {
+	yield;
+}
+
+@Finalize {}
+
+task TPlural {
+	if (bgm == 18) {SetCommonData("ShakeDisabled", true);}
+	playBGMWithTitle(bgm);
+	let obj = ObjEnemyBossScene_Create;
+	addSpells(obj);
+	ObjEnemyBossScene_LoadInThread(obj);
+	ObjEnemyBossScene_Regist(obj);
+	createBossHealthbar(obj, 70, 75);
+	let text = textOf(name);
+	ObjText_SetFontColorTop(text, 192, 255, 128);
+	ObjText_SetFontColorBottom(text, 192, 255, 128);
+	ObjText_SetFontSize(text, 14);
+	ObjRender_SetX(text, 10);
+	ObjRender_SetY(text, 20);
+	
+	while (!Obj_IsDeleted(obj)) {
+		yield;
+	}
+	Obj_Delete(text);
+	//loop (300) {yield;}
+	wait(60);
+	dragToDefaults(30);
+	wait(60);
+	SetCommonData("ShakeDisabled", false);
+	CloseScript(GetOwnScriptID);
+}

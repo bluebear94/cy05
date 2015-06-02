@@ -1,0 +1,59 @@
+Game Paused
+Return to Game
+Return to Title
+Start Over
+Manual
+Game Over
+Save Replay
+HiScore
+Score
+Player
+Spell
+Graze
+PIV
+pieces
+Easy
+Normal
+Hard
+Very Hard
+Intense
+Extra
+Overdrive
+Start
+Extra
+Practice
+SpellPr
+Replay
+Data
+Option
+Quit
+You died![r]Continue?[r](Z) Yeah![r](X) No!
+Music (0 .. 100)
+Sound
+Effect Cut
+???
+Language
+Default
+Back to Title
+No
+Yes
+Protector of the Forest[r]Elssecisso Rencron[r]Speed: 7/1.5
+Light Magician[r]Esel Rygen[r]Speed: 5/2
+Elssecisso Rencron A
+Elssecisso Rencron B
+Esel Rygen A
+Esel Rygen B
+Shot Type A[r]Unfocused: Bloodthirsty[r]Steel Arrows[r]Focused: Spiked Seed[r]Formation[r]Spell: Leaf-Ejecting Wind
+Shot Type B[r]Unfocused: Steel Arrows[r]Focused: Throwing[r]Needles[r]Spell: Fantastic Great[r]Sword
+Shot Type A[r]Unfocused: Solar[r]Prominence[r]Focused: Shining Mirror[r]Spell: Mystic Beam
+Shot Type B[r]Unfocused: Unknown[r]Prism[r]Focused: Wave-Particle[r]Artillery[r]Spell: Spectrum Quake
+Hidden Mode
+Scores
+Music Room
+Rencron
+Rygen
+A
+B
+
+ remaining
+Now Loading...

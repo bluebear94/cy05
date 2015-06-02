@@ -1,0 +1,15 @@
+task TRender {
+	let imgMernen = GetCurrentScriptDirectory ~ "../../resource/boss/st05.png";
+	ObjPrim_SetTexture(objBoss, imgMernen);
+	while (!Obj_IsDeleted(objBoss)) {
+		let angle = ObjMove_GetAngle(objBoss);
+		let speed = ObjMove_GetSpeed(objBoss);
+		if(speed == 0) {
+			ObjSprite2D_SetSourceRect(objBoss, 0, 1, 63, 96);
+		}
+		else if(cos(angle) > 0){ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 96);}
+		else if(cos(angle) < 0){ObjSprite2D_SetSourceRect(objBoss, 128, 1, 191, 96);}
+		ObjSprite2D_SetDestCenter(objBoss);
+		yield;
+	}
+}

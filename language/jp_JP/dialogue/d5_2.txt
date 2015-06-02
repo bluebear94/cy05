@@ -1,0 +1,6 @@
+./../resource/boss/st05.png
+0
+Agh! It's too hot here.
+0
+I could take a swim. Is that a water breathing[r]potion?
+0

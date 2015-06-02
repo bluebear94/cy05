@@ -1,0 +1,20 @@
+./../resource/boss/st08.png
+0
+/
+4
+I thought this was a castle of magic.
+0
+&osb; HALT IMMEDIATELY. &csb;
+1
+/
+4
+&osb; Any further attempt at entry will[r]result in death. &csb;
+1
+[ruby rb="Vija" rt="Keeper of the Boundary"]
+3
+&osb; Immediate retreat is advised. &csb;
+1
+Forget about retreating! I'm going on!
+0
+&osb; PREPARE FOR DEATH. &csb;
+1

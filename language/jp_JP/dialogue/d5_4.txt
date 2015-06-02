@@ -1,0 +1,6 @@
+./../resource/boss/st05.png
+0
+I'm freezing...
+1
+Strange. It's perfectly comfortable for me.
+0

@@ -1,0 +1,24 @@
+./../resource/boss/st03.png
+0
+/
+4
+What...
+0
+my magic light is failing?!!
+0
+/
+4
+Leave this castle now.
+1
+Eh heh, no.
+0
+Are you deaf?
+1
+[ruby rb="Vanar #13007" rt="One who Leads into Darkness"]
+3
+No, but I have a duty to stay.
+0
+But my master tells you to leave.
+1
+Eh heh, no again.
+0

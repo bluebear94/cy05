@@ -1,0 +1,158 @@
+// high scores
+
+#include "../language.dnh"
+#include "../system/name_entry.dnh"
+#include "../sound.dnh"
+
+let op;
+let data;
+let txt;
+
+let SUBMIT_HIGH_SCORE = 0;
+let VIEW_HIGH_SCORE = 1;
+let scin = 268435456;
+let scarr = [];
+let scnames = [];
+let chara;
+let difficulty;
+let mode;
+let score;
+let stage;
+
+#include "../itsb.dnh"
+
+@Initialize {
+	arrows;
+}
+
+@Event {
+	
+}
+
+@MainLoop {
+	yield;
+}
+
+task arrows {
+	descent (i in 0 .. 16) {
+		scarr = scarr ~ [[scin * (i + 1), 1]];
+		scnames = scnames ~ ["Cen.Cyr"];
+	}
+	op = GetScriptArgument(0);
+	data = GetScriptArgument(1);
+	chara = data[0];
+	difficulty = data[1];
+	mode = data[2];
+	if (op == SUBMIT_HIGH_SCORE) {
+		stage = data[3];
+		score = data[4];
+		if (hasHighScore(score, chara, difficulty, mode)) {
+			yield;
+			let name = enterName("HighScoreGet!");
+			let hs = getHighScore(chara, difficulty, mode);
+			let hsn = getHighScoreNames(chara, difficulty, mode);
+			let i = 0;
+			loop {
+				if (score > hs[i][0]) {break;}
+				i++;
+			}
+			descent (j in i .. 15) {
+				hs[j + 1] = hs[j];
+				hsn[j + 1] = hsn[j];
+			}
+			hs[i] = [score, stage];
+			hsn[i] = name;
+			SetAreaCommonData("Cy05", "HS" ~ IntToString(chara) ~ IntToString(difficulty) ~ ["N", "H"][mode],hs);
+			SetAreaCommonData("Cy05", "HSn" ~ IntToString(chara) ~ IntToString(difficulty) ~ ["N", "H"][mode], hsn);
+			SaveCommonDataAreaA1("Cy05");
+		}
+	}
+	txt = ObjText_Create;
+	ObjText_SetFontType(txt, hsFont);
+	ObjText_SetFontSize(txt, 16);
+	ObjText_SetFontColorTop(txt, 128, 255, 255);
+	ObjText_SetFontColorBottom(txt, 128, 255, 255);
+	Obj_SetRenderPriority(txt, 0.1);
+	ObjRender_SetPosition(txt, 64, 64, 0);
+	update(chara, difficulty, mode);
+	flushZ;
+	loop {
+		if (isPushed(VK_OK) ||
+			isPushed(VK_CANCEL)) {
+			Obj_Delete(txt);
+			CloseScript(GetOwnScriptID);
+			return;
+		}
+		if (op == VIEW_HIGH_SCORE) {
+			if (isPushed(VK_UP)) {
+				difficulty--;
+				turnPage;
+				if (difficulty < 0) {difficulty = 5;}
+				update(chara, difficulty, mode);
+			}
+			else if (isPushed(VK_DOWN)) {
+				difficulty++;
+				turnPage;
+				if (difficulty > 5) {difficulty = 0;}
+				update(chara, difficulty, mode);
+			}
+			else if (isPushed(VK_LEFT)) {
+				chara--;
+				turnPage;
+				if (chara < 0) {chara = 3;}
+				update(chara, difficulty, mode);
+			}
+			else if (isPushed(VK_RIGHT)) {
+				chara++;
+				turnPage;
+				if (chara > 3) {chara = 0;}
+				update(chara, difficulty, mode);
+			}
+			else if (isPushed(VK_USER1)) {
+				mode = 1 - mode;
+				turnPage;
+				update(chara, difficulty, mode);
+			}
+		}
+		yield;
+	}
+}
+
+function isPushed(key) {
+	return GetVirtualKeyState(key) == KEY_PUSH;
+}
+
+function update(c, d, m) {
+	ObjText_SetText(txt, scoreEntry(c, d, m));
+}
+
+function scoreEntry(chara, diff, mode) {
+	let entries = getInterfaceStrings(SHOTTYPES + chara) ~ " " ~
+		getInterfaceStrings(I_DIFFICULTY + diff) ~
+		["", " " ~ getInterfaceStrings(HIDDEN_MODE)][mode] ~ "[r]";
+	let hs = getHighScore(chara, diff, mode);
+	let hsn = getHighScoreNames(chara, diff, mode);
+	let base = GetCommonData("Base", 16);
+	ascent (i in 0 .. 16) {
+		let raw = hs[i];
+		entries = entries ~
+			"0123456789ABCDEF"[i .. i + 1] ~ ". " ~ vtos("-8s", hsn[i]) ~ " " ~
+			vtos("14s", IntToStringBase(raw[0], base)) ~ " (" ~
+			"0123456789FXC"[raw[1] .. raw[1] + 1]  ~ ")[r]";
+	}
+	return entries;
+}
+
+function getHighScore(character, difficulty, mode) {
+	return GetAreaCommonData("Cy05", "HS" ~ IntToString(character) ~ IntToString(difficulty) ~ ["N", "H"][mode],
+		scarr);
+}
+
+function hasHighScore(score, character, difficulty, mode) {
+	return score > getHighScore(character, difficulty, mode)[15][0];
+}
+
+function getHighScoreNames(character, difficulty, mode) {
+	return GetAreaCommonData("Cy05", "HSn" ~ IntToString(character) ~ IntToString(difficulty) ~ ["N", "H"][mode],
+		scnames);
+}

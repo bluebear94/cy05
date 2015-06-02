@@ -1,0 +1,8 @@
+./../resource/boss/st01.png
+0
+But why did you shoot me?
+1
+My bad! How can I help?
+0
+Get rid of the snow.
+1

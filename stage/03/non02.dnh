@@ -1,0 +1,61 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St3 Non2"]
+#Text["Second nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 3;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(32);
+	}
+}
+
+@Finalize {}
+
+task chain(shot) {
+	let period = 10 - getDifficulty;
+	ObjShot_SetSpellResist(shot, true);
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0 && !Obj_IsDeleted(shot)) {
+		loop (5) {
+			let angle = ObjMove_GetAngle(shot) + rand(170, 190);
+			CreateShotOA1(shot, rand(0.5, 1.5), angle, DS_RICE_S_R_WHITE, 30);
+		}
+		wait(period);
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let period = 180 - 15 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let x = rand(0, width);
+		let y = rand(0, 120);
+		loop (3) {
+			let s = CreateShotA1(x, y, 2.5, rand(45, 135), DS_BALL_L_PURPLE, 0);
+			ObjMove_SetAngularVelocity(s, rand(-1, 1));
+			ObjMove_SetAcceleration(s, 0.01);
+			ObjMove_SetMaxSpeed(s, 9);
+			chain(s);
+		}
+		wait(period);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		
+	}
+}

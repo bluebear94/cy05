@@ -1,0 +1,28 @@
+// save replay
+
+let mode = GetScriptArgument(0);
+
+@Initialize {
+	LoadReplayList;
+	replayMenu;
+}
+
+@MainLoop {
+	yield;
+}
+
+@Finalize {}
+
+task replayMenu {
+	let slot = selectSlot;
+	if (slot != -1) {
+		let name = enterName(replayString(slot));
+		SetReplayInfo(REPLAY_COMMENT, mode);
+		SaveReplay(slot + 1, name);
+	}
+	SetScriptResult(RESULT_END);
+	CloseScript(GetOwnScriptID);
+	return;
+}
+
+#include "./name_entry.dnh"

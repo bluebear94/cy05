@@ -1,0 +1,171 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 37;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(30000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(200);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+function health {return ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_CURRENT_LIFE);}
+function time {return ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF) / 60;}
+
+let rate = 7.2436;
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let sqperiod = truncate(120 - 12 * d ^ 0.6);
+	let sqiav = 0.5 + 0.1 * d;
+	let pperiod = truncate(160 - 7 * d ^ 0.7);
+	let piav = 1.2 + 0.2 * d;
+	let hperiod = truncate(200 - 7 * d ^ 0.8);
+	let hiav = 1.5 + 0.3 * d;
+	laserWork;
+	bossBullets;
+	bossBullets2;
+	task eye {
+		let x = cx + randomSign * rand(cx * 0.8, cx);
+		let y = rand(0, height);
+		let shots = 3 + d;
+		loop (shots) {
+			if (isDead) {return;}
+			CreateLooseLaserA1(x, y, rand(1.5, 2.5), getAngleToXY(GetPlayerObjectID, x, y) + 180, 60, 20, DS_BALL_S_GREEN, 30);
+			wait(45);
+		}
+	}
+	let t = 0;
+	while (!isDead) {
+		if (t % sqperiod == 0) {
+			let poly = createLaserPolygon(rand(60, width - 60), rand(0, 50), 25, 4, sqiav, DS_BALL_S_BLUE, DS_BALL_S_BLUE, 60);
+			ObjMove_SetSpeed(poly, rand(1, 2));
+			ObjMove_SetAngle(poly, rand(70, 110));
+		}
+		if (t % pperiod == 0 && (
+			health < 20000 || time < 30)) {
+			let poly = createLaserPolygon(rand(60, width - 60), rand(0, 50), 35, 5, sqiav, DS_BALL_S_RED, DS_BALL_S_RED, 60);
+			ObjMove_SetSpeed(poly, rand(1.5, 2.5));
+			ObjMove_SetAngle(poly, rand(70, 110));
+		}
+		if (t % hperiod == 0 && (
+			health < 10000 || time < 30)) {
+			let poly = createLaserPolygon(rand(60, width - 60), rand(0, 50), 45, 6, sqiav, DS_BALL_S_PURPLE, DS_BALL_S_PURPLE, 60);
+			ObjMove_SetSpeed(poly, rand(2, 3));
+			ObjMove_SetAngle(poly, rand(70, 110));
+		}
+		if (t % 360 == 0) {
+			eye;
+		}
+		t++;
+		yield;
+	}
+}
+
+task bossBullets {
+	let d = getDifficulty;
+	let p = 120;
+	let bp = 60 - 6 * getDifficulty;
+	while (!isDead) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in -2 .. 3) {
+			CreateShotOA1(objBoss, 2.4, a + 45 * i,
+				[DS_BALL_M_RED, DS_BALL_L_RED][health < 10000 || time < 30], 0);
+		}
+		wait(p + bp);
+		p *= 0.99;
+	}
+}
+
+task bossBullets2 {
+	let d = getDifficulty;
+	let p = 240;
+	let w = 10 + 2 * d;
+	let w2 = 1 + truncate(d / 2);
+	while (!isDead) {
+		let a = rand(0, 360);
+		ascent (i in 0 .. w) {
+			ascent (j in 0 .. w2) {
+				CreateShotOA1(objBoss, 2 + 0.5 * j, a + 360 * i / w,
+					[DS_BALL_S_RED, DS_BALL_M_RED][health < 10000 || time < 30], 10 * i);
+			}
+		}
+		wait(p);
+	}
+}
+
+task laserWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let laserWidth = 40 + 15 * d;
+	let ll = CreateStraightLaserA1(50, 0, 90, 600, laserWidth, 99999, DS_BALL_M_YELLOW, 120);
+	let lr = CreateStraightLaserA1(width - 50, 0, 90, 600, laserWidth, 99999, DS_BALL_M_YELLOW, 120);
+	ObjMove_SetDestAtFrame(objBoss, cx, height - 50, 30);
+	loop (30) {
+		CreateShotOA1(objBoss, rand(2, 3), 90 + randomSign * rand(-30, 30), DS_BALL_S_RED, 0);
+		yield;
+	}
+	wait(30);
+	ObjMove_SetDestAtFrame(objBoss, cx, 50, 30);
+	loop (30) {
+		CreateShotOA1(objBoss, rand(2, 3), 90 + randomSign * rand(-30, 30), DS_BALL_S_RED, 0);
+		yield;
+	}
+	while (health > 10000) {yield;}
+	let t = 0;
+	ObjShot_SetGraphic(ll, DS_BALL_M_RED);
+	ObjShot_SetGraphic(lr, DS_BALL_M_RED);
+	while (!isDead) {
+		ObjStLaser_SetAngle(ll, 90 + 10 * sin(t));
+		ObjStLaser_SetAngle(lr, 90 - 10 * sin(t));
+		t += 1 + d / 3;
+		yield;
+	}
+}
+
+function createLaserPolygon(x, y, r, sides, iav, bulletID, laserID, delay) {
+	task laserTask(laser) {
+		let a = baseAngle;
+		ObjShot_SetAutoDelete(laser, false);
+		while (!Obj_IsDeleted(center)) {
+			a += iav;
+			ObjMove_SetPosition(laser, ObjMove_GetX(center) + r * cos(a), ObjMove_GetY(center) + r * sin(a));
+			ObjStLaser_SetAngle(laser, ObjStLaser_GetAngle(laser) + iav);
+			yield;
+		}
+		ObjShot_ToItem(laser);
+	}
+	let center = CreateShotA1(x, y, 0, 0, bulletID, delay);
+	let baseAngle = rand(0, 360);
+	loop (sides) {
+		let laser = CreateStraightLaserA1(x + r * cos(baseAngle), y + r * sin(baseAngle),
+			baseAngle + 90 + 180 / sides , 2 * r * sin(180 / sides), 20, 9999, laserID, delay);
+		laserTask(laser);
+		baseAngle += 360 / sides;
+	}
+	return center;
+}

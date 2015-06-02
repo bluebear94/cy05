@@ -1,0 +1,6 @@
+./../resource/boss/st04.png
+0
+Your indifference to the fragility of the roof[r]is obvious.
+1
+Now stop wasting my time and go somewhere else.
+1

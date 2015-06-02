@@ -1,0 +1,90 @@
+#include "./../language.dnh"
+#include "./../sound.dnh"
+#include "./textf.dnh"
+
+let NUM_ENTRIES = 11;
+let ENTRY_HEIGHT = min(NUM_ENTRIES, 14);
+
+@Initialize {
+	main;
+}
+
+@MainLoop {
+	yield;
+}
+
+task main {
+	let currEntry = 0;
+	let startingEntry = 0;
+	let nowPlaying = -1;
+	let entries = [];
+	ascent (i in 0 .. ENTRY_HEIGHT) {
+		let str = "~~~";
+		if (GetAreaCommonData("Cy05", "HeardBGM " ~ IntToString(i), false)) {
+			str = getMusicRoom(i)[0];
+		}
+		entries = entries ~
+			[createTextS(16, 16 + 12 * i, str, true, [40, 240, 50], [128, 255, 144], 12)];
+	}
+	let title = createTextS(16, 240, "", true, [128, 255, 255], [128, 255, 255], 12);
+	let desc = createTextS(16, 270, "", true, [128, 255, 255], [128, 255, 255], 12);
+	let body = createTextS(16, 290, "", true, [128, 255, 255], [128, 255, 255], 12);
+	ObjText_SetMaxWidth(body, 608);
+	ObjText_SetFontType(title, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontType(desc, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontType(body, GetCommonData("DiaFont", "Consolas"));
+	function update(i) {
+		if (nowPlaying == i || !GetAreaCommonData("Cy05", "HeardBGM " ~ IntToString(i), false))
+			{return;}
+		let entry = getMusicRoom(i);
+		ObjText_SetText(title, entry[0]);
+		ObjText_SetText(desc, entry[1]);
+		ObjText_SetTextWW(body, entry[2], 608, 12, GetCommonData("DiaFont", "Consolas"));
+		nowPlaying = i;
+		playBGM(i);
+	}
+	update(0);
+	let frames = 0;
+	loop {
+		if (GetVirtualKeyState(VK_CANCEL) == KEY_PUSH) {
+			Obj_Delete(title);
+			Obj_Delete(desc);
+			Obj_Delete(body);
+			ascent (i in 0 .. ENTRY_HEIGHT) {Obj_Delete(entries[i]);}
+			while (GetVirtualKeyState(VK_CANCEL) != KEY_FREE) {yield;}
+			CloseScript(GetOwnScriptID);
+		} else if (GetVirtualKeyState(VK_OK) == KEY_PUSH)  {
+			update(currEntry);
+		}
+		ObjRender_SetX(entries[currEntry - startingEntry], 16);
+		let up = GetVirtualKeyState(VK_UP);
+		let down = GetVirtualKeyState(VK_DOWN);
+		if (up == KEY_PUSH) {currEntry--;}
+		else if (down == KEY_PUSH) {currEntry++;}
+		else if (up == KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {currEntry--;}
+		}
+		else if (down== KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {currEntry++;}
+		}
+		else {frames = 0;}
+		if (currEntry < 0) {currEntry = NUM_ENTRIES - 1;}
+		else if (currEntry >= NUM_ENTRIES) {currEntry = 0;}
+		if (currEntry >= startingEntry + ENTRY_HEIGHT) {
+			startingEntry = currEntry - ENTRY_HEIGHT + 1;
+			ascent (j in 0 .. ENTRY_HEIGHT) {
+				ObjText_SetText(entries[j], getMusicRoom(startingEntry + j)[0]);
+			}
+		}
+		else if (currEntry < startingEntry) {
+			startingEntry = currEntry;
+			ascent (j in 0 .. ENTRY_HEIGHT) {
+				ObjText_SetText(entries[j], getMusicRoom(startingEntry + j)[0]);
+			}
+		}
+		ObjRender_SetX(entries[currEntry - startingEntry], 32);
+		yield;
+	}
+}

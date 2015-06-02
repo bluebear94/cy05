@@ -1,0 +1,18 @@
+./../resource/boss/st02.png
+0
+Hey, wait!
+1
+W-, who's there?
+0
+You made a mistake by arriving here.
+1
+I'll kill you!
+1
+[ruby rb="Cssysencyras Sesae" rt="Bloodthirsty Gatekeeper"]
+3
+That's against the rules.
+0
+I don't care about the rules.
+1
+Then if you lay a finger on me, I won't spare my sword!
+0

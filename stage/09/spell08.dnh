@@ -1,0 +1,291 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 45;
+let level = 9;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+let height = GetStgFrameHeight;
+let width = GetStgFrameWidth;
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(100);
+	}
+	case (EV_REQUEST_IS_DURABLE_SPELL) {
+		SetScriptResult(true);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	if (getDifficulty == 6) {overdrive;}
+	else {notOverdrive;}
+}
+
+task flip1 {
+	wait(2700);
+	ascent (t in 0 .. 2700) {
+		Set2DCameraAngleZ(30 * sin(0.5 * t));
+	}
+}
+
+task flip2 {
+	wait(1350);
+	dragV(-1, 60);
+	wait(2700);
+	dragV(1, 60);
+}
+
+task flip3 {
+	wait(675);
+	dragU(-1, 60);
+	wait(1350);
+	dragU(1, 60);
+	wait(1350);
+	dragU(-1, 60);
+	wait(1350);
+	dragU(1, 60);
+}
+
+task notOverdrive {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let p = 1 / 300 + d / 1200;
+	let speed = 1 + 0.1 * d;
+	let period = 400 / (1 + 0.15 * d);
+	flip1;
+	flip2;
+	flip3;
+	task ballTask(shot, av) {
+		let orig = ObjShot_GetImageID(shot);
+		while (!isDead) {
+			if (rand(0, 1) < p) {
+				loop (12) {
+					ObjShot_SetGraphic(shot, DS_BALL_M_A_RED);
+					wait(2);
+					ObjShot_SetGraphic(shot, orig);
+					wait(3);
+				}
+				ObjMove_SetAngle(shot, 180 + ObjMove_GetAngle(shot));
+				av *= -1;
+				ObjMove_SetAngularVelocity(shot, av);
+				wait(60);
+			}
+			yield;
+		}
+	}
+	ascent (i in 0 .. 21) {
+		loop (2) {
+			let pr = period * (1 + 0.05 * i) / rand(-1, 1);
+			let s = createCircleShot(width / 2, height / 2, 15 * i, pr, rand(0, 360),
+				DS_BALL_M_A_RED + truncate(rand(0, 8)), 120, 99999);
+			ballTask(s, 360 / pr);
+			ObjShot_SetSpellResist(s, true);
+			ObjShot_SetAutoDelete(s, false);
+		}
+	}
+	while (!isDead) {
+		if (rand(0, 0.01) < p) {
+			CreateShotOA1(objBoss, rand(0.5, 1.5), rand(0, 360), DS_BILL_RED + randIntH(0, 8), 0);
+		}
+		yield;
+	}
+}
+
+task laserBarrierA2(x0, x1, speed, angle, graph) {
+	let l0 = CreateStraightLaserA1(x0, 0, 180, 512, 20, 9999, graph, 0);
+	ObjMove_SetAngle(l0, angle);
+	ObjMove_SetSpeed(l0, speed);
+	let l1 = CreateStraightLaserA1(x1, 0, 0, 512, 20, 9999, graph, 0);
+	ObjMove_SetAngle(l1, angle);
+	ObjMove_SetSpeed(l1, speed);
+}
+
+task laserBarrierA1(x0, graph) {
+	laserBarrierA2(x0, x0 + 96, 1, 90, graph);
+}
+
+task laserBarrier(graph) {
+	laserBarrierA1(rand(0, GetStgFrameWidth - 96), graph);
+}
+
+task createModule { // 96 ticks between each
+	let KINDS = 4;
+	alternative (truncate(rand(0, KINDS)))
+	case (0) { // Spinning laser wheels
+		laserBarrier(DS_BEAM_RED);
+		wait(48);
+		let x = 64;
+		let a = 0;
+		let s = randomSign * 1.2;
+		loop (3) {
+			createStar(x, 0, 1, 90, a, 4, 48, 10, s, DS_BALL_S_RED, 0);
+			x += 128;
+			a += 45;
+			s *= -1;
+		}
+	}
+	case (1) { // Criss-crossing bullets
+		laserBarrier(DS_BEAM_GREEN);
+		wait(32);
+		let y = 0;
+		while (y < height + 32) {
+			CreateShotB1(0, y, 1, 1, DS_BALL_S_GREEN, 0);
+			CreateShotB1(width, y, -1, 1, DS_BALL_S_GREEN, 0);
+			CreateShotB1(0, y - 32, 1, 1, DS_BALL_S_GREEN, 0);
+			CreateShotB1(width, y - 32, -1, 1, DS_BALL_S_GREEN, 0);
+			wait(120);
+			y += 120;
+		}
+	}
+	case (2) { // Not criss-crossing bullets
+		laserBarrier(DS_BEAM_YELLOW);
+		wait(32);
+		let y = 0;
+		while (y < height + 32) {
+			CreateShotB1(0, y, 1, 1, DS_BALL_S_YELLOW, 0);
+			CreateShotB1(width, y - 32, -1, 1, DS_BALL_S_YELLOW, 0);
+			wait(72);
+			y += 72;
+		}
+	}
+	case (3) { // Bullet rings
+		laserBarrier(DS_BEAM_PURPLE);
+		wait(48);
+		task bulletTask(shot, cx, cy, a) {
+			let s = randomSign * 1.5;
+			while (!Obj_IsDeleted(shot)) {
+				ObjMove_SetPosition(shot, cx + 40 * cos(a), cy + 40 * sin(a));
+				cy++;
+				a += s;
+				yield;
+			}
+		}
+		let x = 64;
+		let a = 0;
+		let s = randomSign * 1.2;
+		loop (3) {
+			loop (6) {
+				let shot = CreateShotA1(x + 40 * cos(a), 40 * sin(a), 0, 0, DS_BALL_S_PURPLE, 0);
+				bulletTask(shot, x, 0, a);
+				a += 60;
+			}
+			x += 128;
+			a += 45;
+			s *= -1;
+		}
+	}
+}
+
+task overdrive {
+	let cx = width / 2;
+	let cy = height / 2;
+	ObjEnemy_SetDamageRate(objBoss, 0, 0);
+	ObjMove_SetDestAtFrame(objBoss, cx, -100, 120);
+	task laserTask(l) {
+		wait(210); // 120 + 90
+		loop (7) {
+			let s = randomSign;
+			loop (30) {
+				ObjStLaser_SetAngle(l, ObjStLaser_GetAngle(l) + s);
+				yield;
+			}
+			loop (30) {
+				ObjStLaser_SetAngle(l, ObjStLaser_GetAngle(l) + 2 * s);
+				yield;
+			}
+			wait(30);
+		}
+	}
+	// lasers will spawn after 2 seconds,
+	// and the first maze will last 12 seconds (rotating every 1.5; total 7 rotations)
+	// 384 x 448
+	// GCF of the dimensions is 64, so we can spawn a grid
+	// 7 lasers across, 8 down
+	ascent (j in 0 .. 8) {
+		ascent (i in 0 .. 7) {
+			laserTask(
+				CreateStraightLaserA1(64 * i, 64 * j, 90 * truncate(rand(0, 4)), 64, 20, 720, DS_BALL_S_RED + truncate(rand(0, 8)), 120)
+			);
+		}
+	}
+	let a = 90;
+	loop (28) {
+		loop (8) {
+			CreateShotA1(cx, cy, 2, a, DS_BALL_S_RED, 0);
+			a += 45;
+		}
+		a += 360 / 28;
+		wait(30);
+	}
+	// 14 seconds down
+	loop (20) {
+		createModule;
+		wait(96);
+	}
+	// 46 seconds down
+	wait(240);
+	loop (75) {
+		CreateLooseLaserA1(0, rand(0, height), rand(1.5, 2), 0, rand(100, 200), 10, DS_BALL_S_RED, 0);
+		wait(4);
+		CreateLooseLaserA1(width, rand(0, height), rand(1.5, 2), 180, rand(100, 200), 10, DS_BALL_S_GREEN, 0);
+		wait(4);
+		CreateLooseLaserA1(rand(0, width), 0, rand(1.5, 2), 90, rand(100, 200), 10, DS_BALL_S_YELLOW, 0);
+		wait(4);
+		CreateLooseLaserA1(rand(0, width), height, rand(1.5, 2), -90, rand(100, 200), 10, DS_BALL_S_BLUE, 0);
+		wait(4);
+	}
+	// 70 seconds down
+	ascent (j in 0 .. 7) {
+		ascent (i in 0 .. 6) {
+			let k = rand(0, 1);
+			if (k < 0.25) {
+				CreateStraightLaserA1(64 * i, 64 * j, 45, 64 * 2 ^ 0.5, 20, 1200, DS_BALL_S_RED + truncate(rand(0, 8)), 120);
+			} else if (k < 0.5) {
+				CreateStraightLaserA1(64 * i + 64, 64 * j, 135, 64 * 2 ^ 0.5, 20, 1200, DS_BALL_S_RED + truncate(rand(0, 8)), 120);
+			}
+		}
+	}
+	wait(120);
+	let x = cx;
+	let y = cy;
+	ascent (i in 0 .. 1200) {
+		if (rand(0, 1) < 0.2) {
+			let r = rand(0, 16) + rand(0, 16);
+			let t = rand(0, 360);
+			let s = CreateShotA1(x + r * cos(t), y + r * sin(t), 0, rand(0, 360), DS_RICE_S_WHITE, 60);
+			ObjShot_SetDeleteFrame(s, min(600, 1200 - i));
+		}
+		let dx = GetPlayerX - x;
+		let dy = GetPlayerY - y;
+		let distsq = dx ^ 2 + dy ^ 2;
+		if (distsq >= 20) {
+			let fact = 1.5 / distsq ^ 0.5;
+			x += dx * fact;
+			y += dy * fact;
+		}
+		yield;
+	}
+	// 92 seconds down
+	ObjEnemy_SetDamageRate(objBoss, 100, -10);
+}
+

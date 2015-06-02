@@ -1,0 +1,16 @@
+./../resource/boss/st05.png
+0
+/
+4
+If this isn't the right path, then I hope[r]there's someone who can stop the time.
+0
+Why ask for such a person when you have[r]robots and a cat like me?
+1
+/
+4
+[ruby rb="Alarysesmala Yronšyncra" rt="Cat of Stirring Embers"]
+3
+Plus, this room is perfectly warm and[r]comfortable.
+1
+It could be a little warmer...!
+1

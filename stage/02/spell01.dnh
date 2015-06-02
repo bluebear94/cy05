@@ -1,0 +1,73 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St2 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 4;
+let level = 2;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(5000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(48);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	if (getDifficulty >= 4) {TWorkOD;}
+	let period = [15, 9, 6, 5, 4, 3, 2][getDifficulty];
+	let speed = 1 + getDifficulty;
+	let count = 2 + truncate(getDifficulty * 2 / 3);
+	ascent (i in 0 .. count) {
+		let eagle = CreateShotA1(0, 20, 0, 0, DS_KNIFE_KOUMA_WHITE, i * 60);
+		ObjShot_SetSpellResist(eagle, true);
+		ricochet(eagle, i * 60);
+	}
+	task ricochet(eagle, delay) {
+		wait(delay);
+		ObjMove_SetSpeed(eagle, speed);
+		while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+			let x = ObjMove_GetX(eagle);
+			if (x > width) {
+				ObjMove_SetX(eagle, width);
+				ObjMove_SetAngle(eagle, 180);
+			}
+			else if (x < 0) {
+				ObjMove_SetX(eagle, 0);
+				ObjMove_SetAngle(eagle, 0);
+			}
+			CreateShotB2(x, ObjMove_GetY(eagle), rand(-3, 3), 0, 0, rand(0.01, 0.03), 5, 500, DS_BALL_M_RED, 0);
+			wait(period);
+		}
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		ascent (i in 0 .. 20) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			let shot = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, 18 * i, 0.01, 2, DS_NEEDLE_RED, 0);
+			ObjMove_SetAngularVelocity(shot, 0.1);
+			yield;
+		}
+		descent (i in 0 .. 20) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			let shot = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, 18 * i, 0.01, 2, DS_NEEDLE_BLUE, 0);
+			ObjMove_SetAngularVelocity(shot, -0.1);
+			yield;
+		}
+	}
+}

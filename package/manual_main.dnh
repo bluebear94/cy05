@@ -1,0 +1,8 @@
+function openManual {
+	RenderToTextureA1(GetTransitionRenderTargetName, 0, 100, true);
+	PauseStageScene(true);
+	let sc = LoadScript(GetCurrentScriptDirectory ~ "manual.dnh");
+	StartScript(sc);
+	while (!IsCloseScript(sc)) {yield;}
+	PauseStageScene(false);
+}

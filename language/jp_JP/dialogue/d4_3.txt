@@ -1,0 +1,24 @@
+./../resource/boss/st04.png
+0
+/
+4
+The snow accumulating on the roof gives[r]an eerie blue glow to this place.
+0
+/
+4
+Aren't you worried that the roof might collapse?
+1
+[ruby rb="Erynor Canden" rt="Violet Librarian of Vanar"]
+3
+You're a selfish being, aren't you?
+1
+What if all that debris landed on my head?
+1
+Shut up. Complaining won't strengthen the roof.
+0
+Who the fuck told you to say bullshit like that?
+1
+This isn't your castle, after all!
+1
+Maybe I should conquer it.
+0

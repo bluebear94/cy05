@@ -1,0 +1,20 @@
+./../resource/boss/st08.png
+0
+/
+4
+A large circular shadow appears...
+2
+&osb; HALT IMMEDIATELY. &csb;
+1
+/
+4
+&osb; Any further attempt at entry will[r]result in death. &csb;
+1
+[ruby rb="Vija" rt="Keeper of the Boundary"]
+3
+&osb; Immediate retreat is advised. &csb;
+1
+... It's no use negotiating with these[r]people.
+0
+&osb; PREPARE FOR DEATH. &csb;
+1

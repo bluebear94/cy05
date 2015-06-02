@@ -1,0 +1,12 @@
+./../resource/boss/st01.png
+0
+Today's cold. No one's made trouble in the last two months.
+0
+There's a problem indeed!
+1
+Indeed... indeed.
+0
+[ruby rb="Mernen" rt="Small Nymph"]
+3
+Hey, the snow is freezing my legs!
+1

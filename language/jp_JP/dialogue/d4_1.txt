@@ -1,0 +1,22 @@
+./../resource/boss/st04.png
+0
+/
+4
+If this snow doesn't stop falling...
+0
+It's going to blot out the sun.
+0
+/
+4
+The glass roof might also break from the weight!
+1
+You seem a bit excited. Do you study here?
+0
+Study? This is my residence!
+1
+[ruby rb="Erynor Canden" rt="Violet Librarian of Vanar"]
+3
+If the roof collapses I won't have to see you again!
+1
+Gotten orders from the master too, eh?
+0

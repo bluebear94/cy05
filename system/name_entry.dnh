@@ -1,0 +1,82 @@
+#include "./replay_slot.dnh"
+
+function enterName(str) {
+	let name = GetAreaCommonData("Cy05", "Name", "");
+	let title = createTextR(str, 80, 320);
+	let text = createTextR(name ~ "_", 80, 400);
+	ObjText_SetSyntacticAnalysis(text, false);
+	// Okay, we're going to let players actually type in names.
+	function checkAndEnter(k, chara, schar) {
+		if (GetKeyState(k) == KEY_PUSH) {
+			if (k == KEY_BACK && name != "") {
+				name = name[0 .. length(name) - 1];
+			}
+			else if (k != KEY_BACK && length(name) < 8 && chara != "") {
+				name = name ~
+					[chara, schar][GetKeyState(KEY_LSHIFT) == KEY_HOLD || GetKeyState(KEY_RSHIFT) == KEY_HOLD];
+			}
+			ObjText_SetText(text, name ~ "_");
+			return true;
+		}
+		return false;
+	}
+	flushZ;
+	loop {
+		checkAndEnter(KEY_A, "a", "A");
+		checkAndEnter(KEY_B, "b", "B");
+		checkAndEnter(KEY_C, "c", "C");
+		checkAndEnter(KEY_D, "d", "D");
+		checkAndEnter(KEY_E, "e", "E");
+		checkAndEnter(KEY_F, "f", "F");
+		checkAndEnter(KEY_G, "g", "G");
+		checkAndEnter(KEY_H, "h", "H");
+		checkAndEnter(KEY_I, "i", "I");
+		checkAndEnter(KEY_J, "j", "J");
+		checkAndEnter(KEY_K, "k", "K");
+		checkAndEnter(KEY_L, "l", "L");
+		checkAndEnter(KEY_M, "m", "M");
+		checkAndEnter(KEY_N, "n", "N");
+		checkAndEnter(KEY_O, "o", "O");
+		checkAndEnter(KEY_P, "p", "P");
+		checkAndEnter(KEY_Q, "q", "Q");
+		checkAndEnter(KEY_R, "r", "R");
+		checkAndEnter(KEY_S, "s", "S");
+		checkAndEnter(KEY_T, "t", "T");
+		checkAndEnter(KEY_U, "u", "U");
+		checkAndEnter(KEY_V, "v", "V");
+		checkAndEnter(KEY_W, "w", "W");
+		checkAndEnter(KEY_X, "x", "X");
+		checkAndEnter(KEY_Y, "y", "Y");
+		checkAndEnter(KEY_Z, "z", "Z");
+		checkAndEnter(KEY_0, "0", ")");
+		checkAndEnter(KEY_1, "1", "!");
+		checkAndEnter(KEY_2, "2", "@");
+		checkAndEnter(KEY_3, "3", "#");
+		checkAndEnter(KEY_4, "4", "$");
+		checkAndEnter(KEY_5, "5", "%");
+		checkAndEnter(KEY_6, "6", "^");
+		checkAndEnter(KEY_7, "7", "&");
+		checkAndEnter(KEY_8, "8", "*");
+		checkAndEnter(KEY_9, "9", "(");
+		checkAndEnter(KEY_MINUS, "-", "_");
+		checkAndEnter(KEY_EQUALS, "=", "+");
+		checkAndEnter(KEY_SLASH, "/", "?");
+		checkAndEnter(KEY_SPACE, " ", " ");
+		checkAndEnter(KEY_LBRACKET, "[", "{");
+		checkAndEnter(KEY_RBRACKET, "]", "}");
+		checkAndEnter(KEY_SEMICOLON, ";", ":"); // Don't forget your semicolons kids!
+		checkAndEnter(KEY_APOSTROPHE, "'", "\"");
+		checkAndEnter(KEY_GRAVE, "`", "~");
+		checkAndEnter(KEY_COMMA, ",", "<");
+		checkAndEnter(KEY_PERIOD, ".", ">");
+		//checkAndEnter(KEY_YEN, "\\", "|");
+		checkAndEnter(KEY_BACK, "", "");
+		if (checkAndEnter(KEY_RETURN, "", "")) {break;}
+		yield;
+	}
+	SetAreaCommonData("Cy05", "Name", name);
+	Obj_Delete(title);
+	Obj_Delete(text);
+	if (name == "") {return "Cen.Cyr."}
+	return name;
+}

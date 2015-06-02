@@ -1,0 +1,84 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(4000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task bounce(s) {
+	let width = GetStgFrameWidth;
+	while (!Obj_IsDeleted(s)) {
+		let x = ObjMove_GetX(s);
+		let y = ObjMove_GetY(s);
+		if (x < 0) {
+			ObjMove_SetAngle(s, 180 - ObjMove_GetAngle(s));
+			ObjShot_SetGraphic(s, DS_MISSILE_RED);
+			break;
+		}
+		if (x > width) {
+			ObjMove_SetAngle(s, 180 - ObjMove_GetAngle(s));
+			ObjShot_SetGraphic(s, DS_MISSILE_BLUE);
+			break;
+		}
+		if (y < 0) {
+			ObjMove_SetAngle(s, -ObjMove_GetAngle(s));
+			ObjShot_SetGraphic(s, DS_MISSILE_GREEN);
+			break;
+		}
+		yield;
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let p = 0.1 + 0.06 * d;
+	let sp = 2.2 + 0.3 * d;
+	let as = max(0, d ^ 2 - 3);
+	let a = 90;
+	ObjMove_SetSpeed(objBoss, 2);
+	ObjMove_SetAngle(objBoss, 0);
+	//TWorkOD;
+	//let period = 180 - 15 * getDifficulty;
+	while (!isDead) {
+		let x = ObjMove_GetX(objBoss);
+		if (x < 50) {ObjMove_SetAngle(objBoss, 0);}
+		else if (x > width - 50) {ObjMove_SetAngle(objBoss, 180);}
+		if (rand(0, 1) < p) {
+			let s = CreateShotA1(x + rand(-50, 50), y + rand(-50, 50), sp, a + rand(-as, as), DS_MISSILE_WHITE, 30);
+			bounce(s);
+		}
+		a += 1;
+		yield;
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

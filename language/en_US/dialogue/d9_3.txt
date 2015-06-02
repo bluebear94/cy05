@@ -1,0 +1,26 @@
+./../resource/boss/st09.png
+0
+/
+4
+I'm getting dizzy.
+0
+This room is being rotated in all directions.
+0
+I can't believe that rat made it that far.[r]... Vija is an idiot.
+1
+/
+4
+But don't worry. You won't pass here.
+1
+[ruby rb="Arcame Čyrden" rt="Manipulator of Direction"]
+3
+I'll do whatever it takes for Dernar!
+1
+Don't worry. I have my Mystic Beams!
+0
+I'll do whatever it takes for the nymphs!
+0
+I eat Mystic Beams for a snack!
+1
+No god will help you now.
+1

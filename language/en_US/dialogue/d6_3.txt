@@ -1,0 +1,18 @@
+./../resource/boss/st06.png
+0
+/
+4
+I just want to be able to fly.
+0
+Instead, I have to swim two navsan (~3.8km)[r]in the frigid waters.
+0
+That's the power of our magic!
+1
+/
+4
+[ruby rb="Cynreon Etelos" rt="Great Hidden Cessaedan"]
+3
+There isn't a path outside the water.
+1
+You swim or die!
+1

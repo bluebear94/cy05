@@ -1,0 +1,18 @@
+./../resource/boss/st06.png
+0
+/
+4
+Renyl voravretnea.
+0
+Dečyn, ar-arcenda nyrsen es navsan sen nysos tenyryvtarpea.
+0
+Entras vanosasa magras!
+1
+/
+4
+[ruby rb="Cynreon Etelos" rt="Ar-Nagarago Cessaedan"]
+3
+Nyrsen car metellor vella ci.
+1
+Tenyryge nyralyssas!
+1

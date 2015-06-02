@@ -1,0 +1,16 @@
+Ancanto
+Ner šyrcen tecto enva ner ena genesa sape ardan nagare. Rencron Rygence tarcan arcenderss eas centaran marao-
+Efretan
+* Cissan - Sranterata[r]* Z - Carcysernata[r]* X - Vanoso[r]* Shift - Genelerss[r]* Esc - Tearyd[r]* C - Marahatan nysos vorad[r]* V - Nyralyssyd
+Šylorssesa Ceorasa
+* Šyldrydyr - ceara šyldrydyr-venca.[r]&nbsp;&nbsp;&nbsp;&nbsp;(cesano) - Ces šyldrydyr nas cesano fe tarpeari. Aren šyldrydyr desaen nas dedeno cesanan sen tarpearen. Donan myryge srančyn sesayd nysos myrentes.[r]* Vanoso - ceara vanosotelsata-venca.[r]&nbsp;&nbsp;&nbsp;&nbsp;(cesano) - Aren vanoso nas cesano fe tarpeari. Donan myryge srančyn sesayd nysos myrentes.[r]* Saega Evyn eas Sade (SEeS) - saega evyn domyravpertene iss dedeno donan.[r]* Regan - regan nygo cisso-venca.[r]* Semiesa-Marayllyr - Semiadonan, šylorssan es von mecrato von.
+Semiadonan
+Semiadonan eas gjenčyr tar von: avona (dendryna), ardas (anaresa), nyrses (saega), senar (cenerssa).[r]* Avoneso donan vanoson telsad nysos domyrere. Dedeno avonadonan, darnalla cssysa vanosan nas tarpeheri regrys cesanoce.[r]* Ner ardeso donan vetenllyd nysos domyrere ner šyldrydyr nas tarpeheri cesanan regrys re asro.[r]* Ner nyrseso donan regan nysos domyrere ner regan nysos SEeS-domyrata dedeno re asro.[r]* Seneso donan saego evillyr trevyd nysos domyrere. Dedeno senardonan, dedeno semiadonan-domyrata daene trevyllatesa naldace.[r]Escysernyd semiadonan regrys re asra.
+Items
+* Point items (1) - primary source of score. Value increases higher up the screen.[r]* Green items (2) - Appear when bullets are canceled. Increases point item value.[r]* Life and spellcard fragments (3) - Collect enough to get more lives and spellcards![r]* Whole lives and spellcards (4) - Dropped from certain enemies.[r]* Elemental items (5) - Dropped on the fifth and later stages. Give elemental points. Value increases higher up the screen.
+Special mechanics
+* If the previous life had spellcards, the next will spawn without any.[r]* Rencron B has a 50% chance of activating the spellcard when hit. If the spellcard is activated this way, the number of elemental points will not decrease.[r]* Rygen B's spellcard will damage any enemy, even those that are normally immune to spellcards!
+Hidden mode
+Hidden mode can be accessed from the Options menu, and change some mechanics.[r]* The point item value cannot be increased.[r]* Green items and grazing will give points directly.[r]* Lives and bombs start at twelve fragments.[r]* The deathbomb window is fixed at five frames.[r]* The player's hitbox is not visible upon focusing.
+Spell Practice
+You can practice any spell that has been seen at least once.[r]In order to unlock the Overdrive version of a card, capture once or attempt 16 times its counterpart on each difficulty.

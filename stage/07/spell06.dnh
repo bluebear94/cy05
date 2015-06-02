@@ -1,0 +1,103 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 30;
+let level = 7;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(128);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let fallingStarCount = 20 + 8 * d;
+	let treeInterval = 20 - 2 * d;
+	let period = 300;
+	let deleteTime = 360 + 60 * d;
+	TWorkOD;
+	task tree(x, y, angle, age) {
+		while (!isDead) {
+			ObjShot_SetDeleteFrame(CreateShotA1(x, y, 0, angle, DS_ICE_GREEN, 30), deleteTime);
+			age += treeInterval;
+			angle += rand(-2, 2);
+			x += 2 * treeInterval * cos(angle);
+			y += 2 * treeInterval * sin(angle);
+			if (x < 0 || x > width || y < 0 || y > height ||
+				rand(0, 1) < min(0.1, 0.005 * age - 1)) {
+				break;
+			} else if (rand(0, 1) < max(0.01, 0.05 - 0.00025 * age)) {
+				tree(x, y, angle + rand(-45, 45), age);
+			}
+			wait(treeInterval);
+		}
+	}
+	task star(s) {
+		wait(60);
+		if (rand(0, 1) < 0.05) {
+			let a = false;
+			let orig = ObjShot_GetImageID(s);
+			while (!Obj_IsDeleted(s) && ObjMove_GetY(s) < height) {
+				ObjShot_SetGraphic(s, [orig, DS_STAR_S_RED][a]);
+				a = !a;
+				yield;
+			}
+			if (!isDead) {tree(ObjMove_GetX(s), height, rand(-80, -100), 0);}
+		}
+	}
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		loop (fallingStarCount) {
+			let s = CreateShotA1(rand(0, width), 0, rand(2, 3), rand(60, 120),
+				DS_STAR_S_RED + truncate(rand(0, 8)), 0);
+			star(s);
+		}
+		wait(period);
+		period = max(60, period - d);
+	}
+}
+
+task TWorkOD {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let period = 50 - 3 * d;
+	let av = 0.6 + 0.2 * d;
+	let ways = 4 + d;
+	let a = 0;
+	while (!isDead) {
+		loop (ways) {
+			let s1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1.5, a,
+				0.01, 3.5, DS_ICE_RED, 0);
+			ObjMove_SetAngularVelocity(s1, av);
+			let s2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1.5, a,
+				0.01, 3.5, DS_ICE_BLUE, 0);
+			ObjMove_SetAngularVelocity(s2, -av);
+			a += 360 / ways;
+		}
+		a -= 1;
+		wait(period);
+	}
+}

@@ -1,0 +1,4 @@
+./../resource/boss/st03.png
+0
+My magic light... it's reviving?
+0

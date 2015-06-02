@@ -1,0 +1,51 @@
+// because mkm was a dumbo at word wrapping
+// THAT'S IT, FUCK MANUAL WORD WRAPPING
+function ObjText_SetTextWW(text, string, maxWidth, fs, tp) {
+	let right = 0;
+	let lastSpace = -1;
+	let charWidth = fs * GetAreaCommonData("FontWidths", tp, 0.675);
+	let maxStrLen = maxWidth / charWidth;
+	WriteLog(charWidth);
+	WriteLog(maxStrLen);
+	let len = length(string);
+	let prog = "";
+	let saved = "";
+	let cw = 0;
+	let prevls = 0;
+	while (right < len) {
+		let c = string[right];
+		if (c == ' ') {lastSpace = right; saved = prog; prog = prog ~ " ";}
+		else if (c == '&') {
+			while (string[right] != ';') {prog = prog ~ [string[right]]; right++;}
+			prog = prog ~ ";";
+		}
+		else if (c == '[') {
+			let tagCons = "";
+			while (string[right] != ']') {
+				prog = prog ~ [string[right]];
+				tagCons = tagCons ~ [string[right]];
+				right++; cw++;
+			}
+			prog = prog ~ "]";
+			if (tagCons == "[r") {
+				lastSpace = right;
+				saved = prog;
+				cw = 0;
+			}
+		}
+		else {prog = prog ~ [c];}
+		ObjText_SetText(text, prog);
+		//WriteLog(prog);
+		if (cw > maxStrLen) {
+			if (prevls != lastSpace) {
+				prog = saved ~ "[r]";
+				right = lastSpace;
+				prevls = lastSpace;
+			}
+			cw = 0;
+		}
+		right++;
+		cw++;
+	}
+	ObjText_SetText(text, prog);
+}

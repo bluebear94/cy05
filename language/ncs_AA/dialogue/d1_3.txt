@@ -1,0 +1,16 @@
+./../resource/boss/st01.png
+0
+/
+4
+Enela arcyn setamyn carsa...
+0
+/
+4
+Eo, carnarvetas!
+1
+Enas cetenata.
+0
+[ruby rb="Mernen" rt="Endora Cryssosnersson"]
+3
+Enyn varmenehentas! Tesa cvyssalillyr carso!
+1

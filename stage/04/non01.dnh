@@ -1,0 +1,72 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St4 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 4;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(32);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let ways = 4 + 3 * d;
+	let speed = (0.7 - 0.06 * d) * 2 / ways;
+	TWorkOD;
+	//let period = 180 - 15 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		task spin(laser, rot) {
+			while (!Obj_IsDeleted(laser)) {
+				ObjStLaser_SetAngle(laser, ObjStLaser_GetAngle(laser) + rot);
+				yield;
+			}
+		}
+		ascent (i in 0 .. ways) {
+			let l1 = CreateStraightLaserA1(x, y, a, 512, 20, 120, DS_BALL_M_RED, 60);
+			let l2 = CreateStraightLaserA1(x, y, a, 512, 20, 120, DS_BALL_M_BLUE, 60);
+			spin(l1, speed);
+			spin(l2, -speed);
+			a += 360 / ways;
+		}
+		wait(120);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. 2 * getDifficulty) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {break;}
+			ascent (j in 0 .. 8) {
+				let shot = CreateShotA1(x + 30 * cos(a), y + 30 * sin(a), 0.5, a, DS_BALL_S_GREEN, 0);
+				ObjMove_AddPatternA4(shot, 10, 2, 0, 0, 0, 2, GetPlayerObjectID, DS_BALL_S_GREEN);
+				a += 45;
+			}
+			wait(10);
+		}
+		wait(30);
+	}
+}

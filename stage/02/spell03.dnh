@@ -1,0 +1,318 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 6;
+let level = 2;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		let h = 9500;
+		alternative (getDifficulty)
+		case (1) {
+			h = 4500;
+		}
+		case (3) {
+			h = 8000;
+		}
+		case (6) {
+			h = 30000;
+		}
+		SetScriptResult(h);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult([56, 128][getDifficulty == 6]);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	alternative (getDifficulty)
+	case (0) {
+		easy;
+	}
+	case (1) {
+		normal;
+	}
+	case (2) {
+		hard;
+	}
+	case (3) {
+		veryHard;
+	}
+	case (4) {
+		intense;
+	}
+	case (6) {
+		overdrive;
+	}
+}
+
+task wall(shot) {
+	let width = GetStgFrameWidth;
+	while (!Obj_IsDeleted(shot)) {
+		let x = ObjMove_GetX(shot);
+		let y = ObjMove_GetY(shot);
+		let canHitTop = true;
+		let angle = ObjMove_GetAngle(shot);
+		if (x < 0) {
+			ObjMove_SetAngle(shot, -angle);
+			return;
+		}
+		else if (x > width) {
+			ObjMove_SetAngle(shot, -angle);
+			return;
+		}
+		else if (y < 0 && canHitTop) {
+			ObjMove_SetAngle(shot, -angle);
+			wait(5);
+			canHitTop = false;
+		}
+		yield;
+	}
+}
+
+// ANBUREIKABURU WINDOU!!!
+task easy {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let x = rand(50, width - 50);
+		let y = rand(50, 100);
+		let angle = rand(0, 360);
+		let c = cos(angle);
+		let s = sin(angle);
+		ascent (i in -10 .. 11) {
+			let shot = CreateShotA1(x - 5 * s * i, y + 5 * c * i, 2, angle, DS_ICE_RED, 30);
+			wall(shot);
+		}
+		ascent (i in -10 .. 11) {
+			let shot = CreateShotA1(x + 5 * c * i, y + 5 * s * i, 2, angle - 90, DS_ICE_BLUE, 30);
+			wall(shot);
+		}
+		wait(20);
+	}
+}
+
+// ENDO OBU SAASUTO!!!
+task normal {
+	setDRR1(objBoss, 100, 0);
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let radius = 40;
+	ObjMove_SetDestAtFrame(objBoss, width / 2, height / 2, 90);
+	task modulate {
+		while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+			loop (80) {
+				radius++;
+				wait(6);
+			}
+			loop (80) {
+				radius--;
+				wait(6);
+			}
+		}
+	}
+	modulate;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let angle = rand(0, 360);
+		let magnitude = rand(0, radius);
+		let shot = CreateShotA1(
+			width / 2 + magnitude * cos(angle),
+			height / 2 + magnitude * sin(angle),
+			1, rand(0, 360), DS_BALL_S_SKY, 0
+		);
+		if (rand(0, 1) < 0.8) {
+			ObjMove_SetAngle(shot, GetAngleToPlayer(shot) + rand(-5, 5));
+		}
+		yield;
+	}
+	setDRR1(objBoss, 100, 100);
+}
+
+// CHEIN DEKYAPITEISHON!!!
+task hard {
+	// Pregenerate random numbers so chainsaw will sync
+	let randoms = [];
+	loop (50) {
+		randoms = randoms ~ [rand(45, 135)];
+	}
+	task move(shot) {
+		ObjShot_SetSpellResist(shot, true);
+		let i = 0;
+		let width = GetStgFrameWidth;
+		let height = GetStgFrameHeight;
+		while (!Obj_IsDeleted(shot)) {
+			let x = ObjMove_GetX(shot);
+			let y = ObjMove_GetY(shot);
+			let angle = ObjMove_GetAngle(shot);
+			if (x < 0) {
+				ObjMove_SetX(shot, 0);
+				ObjMove_SetAngle(shot, randoms[i] - 90);
+				i++;
+			}
+			else if (x > width) {
+				ObjMove_SetX(shot, width);
+				ObjMove_SetAngle(shot, randoms[i] + 90);
+				i++;
+			}
+			else if (y < 0) {
+				ObjMove_SetY(shot, 0);
+				ObjMove_SetAngle(shot, randoms[i]);
+				i++;
+			}
+			else if (y > height) {
+				ObjMove_SetY(shot, height);
+				ObjMove_SetAngle(shot, randoms[i] + 180);
+				i++;
+			}
+			if (rand(0, 1) < 0.0125) {
+				CreateShotOA1(shot, 0.5, angle + rand(160, 200), DS_BALL_SS_RED, 0.1);
+			}
+			yield;
+		}
+	}
+	ascent (i in 0 .. 12) {
+		let chain = CreateShotOA1(objBoss, 3, 90, DS_KNIFE_KOUMA_WHITE, 0);
+		move(chain);
+		wait(20);
+	}
+}
+
+let chickens = [];
+let reproducingChickenCount = 0;
+let eggCount = 0;
+
+let MAX_CHICKENS = 20;
+
+task actLikeAChicken(chicken) {
+	let cx = GetStgFrameWidth / 2;
+	let cy = GetStgFrameHeight / 2;
+	ObjShot_SetSpellResist(chicken, true);
+	chickens = chickens ~ [chicken];
+	if (length(chickens) < MAX_CHICKENS) {
+		reproducingChickenCount++;
+		while ((reproducingChickenCount == 1 && eggCount == 0) || rand(0, 1) < 0.6) {
+			let angle = rand(0, 360);
+			let radius = rand(cx / 2, cx);
+			let destX = cx + radius * cos(angle);
+			let destY = cy + radius * sin(angle);
+			ObjMove_SetAngle(chicken, getAngleToXY(chicken, destX, destY));
+			wait(getDistanceToXY(chicken, destX, destY) / 2);
+			// lay an egg
+			hatch(CreateShotOA1(chicken, 0, 0, DS_BALL_S_YELLOW, 30));
+		}
+		reproducingChickenCount--;
+	}
+	while (!Obj_IsDeleted(chicken)) {
+		let angle = GetAngleToPlayer(chicken);
+		ObjMove_SetAngle(chicken, angle);
+		let l = length(chickens);
+		// move away from other nearby chickens
+		ascent (i in 0 .. l) {
+			let other = chickens[i];
+			if (chicken != other && GetObjectDistance(chicken, other) < 16) {
+				let a = getAngleTo(chicken, other);
+				ObjMove_SetX(chicken, ObjMove_GetX(chicken) - 8 * cos(a));
+				ObjMove_SetY(chicken, ObjMove_GetY(chicken) - 8 * sin(a));
+			}
+		}
+		yield;
+	}
+}
+
+task hatch(egg) {
+	eggCount++;
+	ObjShot_SetSpellResist(egg, true);
+	wait(rand(200, 600));
+	ObjShot_SetGraphic(egg, DS_KNIFE_KOUMA_WHITE);
+	ObjMove_SetSpeed(egg, 2);
+	eggCount--;
+	actLikeAChicken(egg);
+}
+
+// NAIFU CHIKIN!
+task veryHard {
+	actLikeAChicken(CreateShotOA1(objBoss, 2, 90, DS_KNIFE_KOUMA_WHITE, 0));
+}
+
+// SHINGEKI NO KYOUGYUU!
+task intense {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let p = 32;
+	let q = 6;
+	let period = 300;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let cowX = rand(0, width);
+		let cowI = cowX * p / width;
+		ascent (i in 0 .. p) {
+			ascent (j in 0 .. q) {
+				let wall = CreateShotB1(i * width / p, 100 + 10 * j, 0, 0, DS_BALL_S_R_WHITE, 30);
+				ObjMove_AddPatternB3(
+					wall, 20 + 3 * absolute(i - cowI) + 3 * j + rand(0, 3), // obj, frame
+					rand(-3, 3), rand(0, -1.4), // xspeed, yspeed
+					0, 0.03, // acceleration
+					5, 5, // max. velocity
+					DS_BALL_S_WHITE
+				);
+			}
+		}
+		CreateShotA1(cowX, -32, 2, 90, DS_BALL_L_RED, 0);
+		wait(period);
+		period *= 0.9;
+	}
+}
+
+// SATSUSATSUSATSUSATSUSATSUSATSUSATSU
+task overdrive {
+	let period = 120;
+	let density = 4;
+	let m = 0;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let x = GetPlayerX;
+		let y = GetPlayerY;
+		let angle = rand(0, 360);
+		if (m == 4) {
+			let sign = 2 * round(rand(0, 1)) - 1;
+			ascent (i in 0 .. 3) {
+				if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+				ascent (j in 0 .. density) {
+					CreateShotA2(
+						x + period * cos(angle), y + period * sin(angle),
+						0, angle + 180, 0.02, 1,
+						DS_KNIFE_KOUMA_YELLOW, 10
+					);
+					angle += 360 / truncate(density);
+				}
+				angle += sign * 20;
+				wait(20);
+			}
+		} else {
+			ascent (j in 0 .. density) {
+				CreateShotA2(
+					x + period * cos(angle), y + period * sin(angle),
+					0, angle + 180, 0.02, 1,
+					DS_KNIFE_KOUMA_BLUE, 10
+				);
+				angle += 360 / truncate(density);
+			}
+		}
+		m++;
+		if (m == 5) {m = 0;}
+		period *= 0.99;
+		density += 0.1;
+		wait(period);
+	}
+}

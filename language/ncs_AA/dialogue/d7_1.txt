@@ -1,0 +1,30 @@
+./../resource/boss/st07.png
+0
+/
+4
+Samenamyn eši enlea nealygon eas en fenra-
+0
+Ardan nagare genan cyrcyn,
+0
+Enyr enpramyn anreo nesmejon cynsso[r]mersedesa anon ceptro.
+0
+Veness enean nealyta?
+0
+/
+4
+Ša ren eči eas erveadyr?
+1
+Veollerasane eornylla nava?
+1
+Erayn, gete vecasaren carvecnyd nas[r]senleatan eas acrešyte.
+1
+[ruby rb="Genreto Narendani" rt="Mersedesa Yllento eas Vrenrydyr"]
+3
+Ces, nealetas re derse ci.
+1
+Vyl, elssyn en nysos magran cetemyrad[r]nas cravalyte.
+1
+Magran cetemyrad elssyn en re dedeno[r]tarpehes!
+0
+Armadereyn myrenes nas ci!
+0

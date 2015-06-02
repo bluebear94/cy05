@@ -1,0 +1,4 @@
+./../resource/boss/st09.png
+0
+All these years spent in vain...
+1

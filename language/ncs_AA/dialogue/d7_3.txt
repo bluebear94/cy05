@@ -1,0 +1,32 @@
+./../resource/boss/st07.png
+0
+/
+4
+Ehe, eši en mesehe. Ces, elcan ardas.
+0
+Vyl, cynto retenamyn asgera arcendate.
+0
+Relayme nesmejon varmeneavserte.
+0
+Ša ten merseda?
+0
+/
+4
+Renyl cenmyra. Ele yllento car, genesa[r]elsse.
+1
+[ruby rb="Genreto Narendani" rt="Mersedesa Yllento eas Vrenrydyr"]
+3
+Ydyr vrenryvretnehenes so, crysson[r]erveadyn sesaetas re efreto.
+1
+Venor-- pertena ci!
+0
+Ša asčyr defto geto nyralysseta re[r]retneo?
+0
+Elssyn en nysos Armadereyn feltryd nas[r]cravalyte.
+1
+Eo emtentes!
+0
+Samenamyn, tesamyn e sesahatan[r]nyvpertena ci.
+1
+Ehe, šypro cysernatan enrallo.
+0

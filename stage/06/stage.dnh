@@ -1,0 +1,188 @@
+#TouhouDanmakufu[Stage]
+#ScriptVersion[3]
+#Title["St6"]
+#Text["Sixth (but not final) stage!"]
+#Background["./stg_back.dnh"]
+#Player["./../../player/player0.dnh", "./../../player/player2.dnh"]
+#System["./../../system/system.dnh"]
+
+#include "./../../prologue.dnh"
+#include "./../../system/healthbar.dnh"
+let stage = "06";
+let done = false;
+let dialogueData;
+let dialogueData2;
+let bgm = 11;
+#include "./../stage_header.dnh"
+
+let BEAT = 3600 / 120; // Stage 4 theme starts at 120 BPM
+
+// 0, 48, 16, 72
+
+let width = GetStgFrameWidth;
+let height = GetStgFrameHeight;
+
+task TStage {
+	if (getCharacter < 2) {
+		dialogueData = readDD("d6_1");
+		dialogueData2 = readDD("d6_2");
+	}
+	else {
+		dialogueData = readDD("d6_3");
+		dialogueData2 = readDD("d6_4");
+	}
+	spawnEnemy23(80, 100, 50);
+	spawnEnemy23(width - 80, 100, 50);
+	wait(120);
+	// Stage Title + side mobs
+	showStageTitle([128, 144, 255]);
+	spawnEnemy23(120, 120, 50);
+	spawnEnemy23(width - 120, 120, 50);
+	spawnEnemy24(width / 2, -10, width / 2, 100, width / 2, -200);
+	waitForClearScreen;
+	wait(120);
+	spawnEnemy24(-10, 100, 80, 100, -200, 100);
+	spawnEnemy24(width + 10, 100, width - 80, 100, width + 200, 100);
+	waitForClearScreen;
+	wait(120);
+	spawnEnemy24(-10, 100, 80, 100, -200, 100);
+	spawnEnemy24(width + 10, 100, width - 80, 100, width + 200, 100);
+	spawnEnemy24(-10, 60, 120, 60, -200, 60);
+	spawnEnemy24(width + 10, 60, width - 120, 60, width + 200, 60);
+	loop (20) {
+		spawnEnemy25;
+		wait(6);
+	}
+	waitForClearScreen;
+	wait(120);
+	// I'm doing symmetrical things too much.
+	// Wish there were fucking first-class functions so I could abstract the shit into a function.
+	spawnEnemy24(-10, 100, 80, 100, -200, 100);
+	spawnEnemy24(width + 10, 100, width - 80, 100, width + 200, 100);
+	spawnEnemy26(30, -10, 80, 150, 180, -170);
+	spawnEnemy26(width - 30, -10, width - 80, 150, width - 180, -170);
+	waitForClearScreen;
+	wait(120);
+	spawnEnemy24(-10, 100, 80, 100, -200, 100);
+	spawnEnemy24(width / 2, -10, width / 2, 80, width / 2, -200);
+	spawnEnemy24(width + 10, 100, width - 80, 100, width + 200, 100);
+	waitForClearScreen;
+	wait(120);
+	ascent (i in 0 .. 10) {
+		magicCircle01(width * (0.05 + 0.1 * i), 100);
+		wait(30);
+	}
+	wait(60);
+	descent (i in 0 .. 10) {
+		magicCircle01(width * (0.05 + 0.1 * i), height - 100);
+		wait(30);
+	}
+	wait(60);
+	ascent (i in 0 .. 5) {
+		magicCircle01(50, height * (0.05 + 0.1 * i));
+		magicCircle01(width - 50, height * (0.95 - 0.1 * i));
+		wait(30);
+	}
+	wait(120);
+	waitForClearScreen;
+	wait(300);
+	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
+	// The Boss
+	TDialogue(dialogueData);
+	TBossPre;
+	TDialogue(dialogueData2);
+	TBossPost;
+}
+
+task spawnEnemy23(x, y, frame) {
+	let enemy = enemyOf(x, 0, y / frame, 90,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		500, 100, 100, 12, 8,
+		[20, 5, 0, 0, 0, 5]);
+	wait(frame);
+	ObjMove_SetSpeed(enemy, 0);
+	let a = GetAngleToPlayer(enemy);
+	loop (60) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		let x = ObjMove_GetX(enemy);
+		let y = ObjMove_GetY(enemy);
+		let x1 = x + 15 * sin(a);
+		let x2 = x - 15 * sin(a);
+		let y1 = y - 15 * cos(a);
+		let y2 = y + 15 * cos(a);
+		CreateShotA1(x1, y1, 4, a, DS_SCALE_A_SKY, 10);
+		CreateShotA1(x2, y2, 4, a, DS_SCALE_A_SKY, 10);
+		CreateShotA1(x1, y1, 4, 180 + getAngleToXY(GetPlayerObjectID, x1, y1), DS_SCALE_A_BLUE, 10);
+		CreateShotA1(x2, y2, 4, 180 + getAngleToXY(GetPlayerObjectID, x2, y2), DS_SCALE_A_BLUE, 10);
+		wait(3);
+	}
+	ObjMove_SetAngle(enemy, truncate(rand(0, 2)) * 180);
+	ObjMove_SetSpeed(enemy, y / frame);
+}
+
+task spawnEnemy24(x1, y1, x2, y2, x3, y3) {
+	let enemy = enemyOf(x1, y1, 0, 90,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		500, 100, 100, 12, 8,
+		[20, 5, 0, 0, 0, 5]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 60);
+	wait(60);
+	loop (3) {
+		let a = GetAngleToPlayer(enemy);
+		loop (120) {
+			if (Obj_IsDeleted(enemy)) {return;}
+			let s1 = CreateShotOA1(enemy, 4, a, DS_SCALE_A_BLUE, 30);
+			snake(s1, 3, 1/30);
+			let s2 = CreateShotOA1(enemy, 4, a, DS_SCALE_A_GREEN, 30);
+			snake(s2, -3, 1/30);
+			yield;
+		}
+		wait(60);
+	}
+	ObjMove_SetDestAtFrame(enemy, x3, y3, 60);
+}
+
+task spawnEnemy25 {
+	let enemy = enemyOf(rand(0, GetStgFrameWidth), 0, rand(0.5, 2), 90,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		50, 100, 100, 12, 8,
+		[4, 1, 0, 0, 0, 1]);
+	let p = 0.05 * getDifficulty;
+	loop (90) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		if (rand(0, 1) < p) {
+			CreateShotOA1(enemy, rand(2, 4), GetAngleToPlayer(enemy), DS_BALL_S_SKY, 0);
+		}
+		yield;
+	}
+	ObjMove_SetAngle(enemy, truncate(rand(0, 2)) * 180);
+	ObjMove_SetSpeed(enemy, 2 * ObjMove_GetSpeed(enemy));
+}
+
+task spawnEnemy26(x1, y1, x2, y2, x3, y3) {
+	let enemy = enemyOf(x1, y1, 0, 90,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		500, 100, 100, 12, 8,
+		[20, 5, 0, 0, 0, 5]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 60);
+	wait(60);
+	let spread = 3 + 0.8 * getDifficulty;
+	loop (360) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		CreateShotOA1(enemy, 5.2, GetAngleToPlayer(enemy) + rand(-spread, spread), DS_ICE_SKY, 0);
+		yield;
+	}
+	wait(60);
+	ObjMove_SetDestAtFrame(enemy, x3, y3, 60);
+}
+
+task magicCircle01(x, y) {
+	let spokes = 8 + 4 * getDifficulty;
+	let time = 60 - 5 * getDifficulty;
+	let a = rand(0, 360);
+	ascent (i in 0 .. spokes) {
+		let s = CreateShotA1(x + 25 * cos(a), y + 25 * sin(a), 0, 0, DS_BALL_SS_RED + i % 8, 30);
+		ObjMove_AddPatternA4(s, time, 4, 0, 0, 0, 0, GetPlayerObjectID, DS_BALL_SS_RED + (i + 1) % 8);
+		a += 360 / spokes;
+	}
+}

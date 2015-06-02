@@ -1,0 +1,20 @@
+./../resource/boss/st09.png
+0
+/
+4
+This maze doesn't even make sense.
+0
+Where there was once a wall that wall no longer exists.
+0
+... hahahahaha.
+1
+/
+4
+Are you confused yet?
+1
+[ruby rb="Arcame Čyrden" rt="Manipulator of Direction"]
+3
+You've made it far, but you're not going to succeed.
+1
+Prepare to be flipped!
+1

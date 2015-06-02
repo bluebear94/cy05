@@ -1,0 +1,22 @@
+./../resource/boss/st04.png
+0
+/
+4
+Arcyn carcarsesa ci so
+0
+Elssen garaha.
+0
+/
+4
+Nagtoramyn neredesa čar reote!
+1
+Tesaro meceras. Šan ydyr melranas?
+0
+Šan melrane? Ydyr vrenre.
+1
+[ruby rb="Erynor Canden" rt="Vanar eas Eoremyca Remtonava"]
+3
+Ša ena čar ecarsesa so nepsa meneheres ci!
+1
+Šan tesa eo ersaden?
+0

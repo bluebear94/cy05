@@ -1,0 +1,65 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Test!"]
+#Text["Test for system"]
+#Player["./player/player0.dnh"]
+#System["./system/system.dnh"]
+#include"./prologue.dnh"
+
+let objBoss;
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(64);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(12345678);
+	}
+}
+
+@Initialize {
+	objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+	ObjEnemy_Regist(objBoss);
+	ObjMove_SetDestAtFrame(objBoss, GetStgFrameWidth / 2, 60, 60);
+	TEnd;
+}
+
+@MainLoop {
+	let ex = ObjMove_GetX(objBoss);
+	let ey = ObjMove_GetY(objBoss);
+	CreateShotA1(ex, ey,
+		5, rand(0, 360), DS_BALL_SS_RED, 0);
+	ObjEnemy_SetIntersectionCircleToShot(objBoss,
+		ex, ey, 24);
+	ObjEnemy_SetIntersectionCircleToPlayer(objBoss,
+		ex, ey, 24);
+	
+	yield;
+}
+
+@Finalize {}
+
+task TEnd {
+	while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+
+	let ex = ObjMove_GetX(objBoss);
+	let ey = ObjMove_GetY(objBoss);
+	TExplosionA(ex, ey, 10, 0.6);
+	DeleteShotAll(TYPE_ALL, TYPE_ITEM);//Removes all enemy bullets	
+
+	//When making plural scripts,
+	//Deleting the enemy allows the plural script to proceed on to the next script.
+	//Do not forget to delete the enemy.
+	Obj_Delete(objBoss);
+
+	loop(30){yield;}
+
+	//Please close the script at the end
+	CloseScript(GetOwnScriptID());
+}

@@ -1,0 +1,171 @@
+/*
+Circular Healthbar Library by Fluffy8x
+
+The code in this source file is in public domain.
+
+createHealthbar(enemy, maxLife, innerR, outerR) - Creates a healthbar for a non-boss.
+createBossHealthbar(bossScene, innerR, outerR) - Creates a healthbar for a boss scene.
+boss() - Gets the boss set for drawing the healthbar.
+setBoss(boss) - Sets the boss to use as the center for drawing a boss healthbar.
+delBoss() - Same as setBoss(ID_INVALID).
+
+*/
+
+let smoothness = 45;
+let points = 8 * smoothness;
+let hvcount = points + 1;
+let vcount = 2 * hvcount;
+
+function createHealthbar(obj, maxLife, innerR, outerR) {
+	let hb = createHealthbarXY(ObjMove_GetX(obj), ObjMove_GetY(obj), innerR, outerR);
+	task follow(hb, obj, origX, origY) {
+		while (!Obj_IsDeleted(obj)) {
+			ObjRender_SetPosition(hb, ObjMove_GetX(obj) - origX, ObjMove_GetY(obj) - origY, 0);
+			setHealthbarPercentage(hb, ObjEnemy_GetInfo(obj, INFO_LIFE) / maxLife);
+			yield;
+		}
+		Obj_Delete(hb);
+	}
+	follow(hb, obj, ObjMove_GetX(obj), ObjMove_GetY(obj));
+	return hb;
+}
+
+function createBossHealthbar(bs, innerR, outerR) {
+	while (boss == ID_INVALID) {yield;}
+	let hb = createHealthbarXY(ObjMove_GetX(boss), ObjMove_GetY(boss), innerR, outerR);
+	task follow(hb, bs, origX, origY) {
+		while (!Obj_IsDeleted(bs)) {
+			if (boss != ID_INVALID) {
+				ObjRender_SetPosition(hb, ObjMove_GetX(boss) - origX, ObjMove_GetY(boss) - origY, 0);
+			}
+			setHealthbarPercentage(hb,
+				ObjEnemyBossScene_GetInfo(bs, INFO_ACTIVE_STEP_TOTAL_LIFE) /
+				ObjEnemyBossScene_GetInfo(bs, INFO_ACTIVE_STEP_TOTAL_MAX_LIFE));
+			yield;
+		}
+		Obj_Delete(hb);
+	}
+	task updateNotches(bs, origX, origY, outerR) {
+		task followN(bs, notch, origX, origY) {
+			while (ObjEnemyBossScene_GetInfo(bs, INFO_ACTIVE_STEP_TOTAL_LIFE) > 0) {
+				ObjRender_SetPosition(notch, ObjMove_GetX(boss) - origX, ObjMove_GetY(boss) - origY, 0);
+				yield;
+			}
+			Obj_Delete(notch);
+		}
+		while (!Obj_IsDeleted(bs)) {
+			while (boss == ID_INVALID) {yield;}
+			let rates = [0] ~ ObjEnemyBossScene_GetInfo(bs, INFO_ACTIVE_STEP_LIFE_RATE_LIST);
+			let len = length(rates);
+			ascent (i in 0 .. len) {
+				let rate = rates[i];
+				let notch = createNotch(origX, origY, outerR, rate);
+				followN(bs, notch, origX, origY);
+			}
+			while (ObjEnemyBossScene_GetInfo(bs, INFO_ACTIVE_STEP_TOTAL_LIFE) > 0) {yield;}
+			while (!Obj_IsDeleted(bs) &&
+				ObjEnemyBossScene_GetInfo(bs, INFO_ACTIVE_STEP_TOTAL_LIFE) <= 0) {yield;}
+		}
+	}
+	follow(hb, bs, ObjMove_GetX(boss), ObjMove_GetY(boss));
+	updateNotches(bs, ObjMove_GetX(boss), ObjMove_GetY(boss), outerR);
+	return hb;
+}
+
+function createHealthbarXY(x, y, innerR, outerR) {
+	let hb = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+	ObjPrim_SetPrimitiveType(hb, PRIMITIVE_TRIANGLESTRIP);
+	ObjPrim_SetVertexCount(hb, vcount);
+	ascent (i in 0 .. smoothness) { // 0 .. 45 in this case
+		let angle = 45 * i / smoothness;
+		let c = cos(angle);  // +1
+		let s = sin(angle);  // +0
+		let oc = c * outerR;
+		let ic = c * innerR;
+		let os = s * outerR;
+		let is = s * innerR;
+		// lots of copy and paste for speed
+		ObjPrim_SetVertexPosition(hb, 2 * i, x - os, y - oc, 0);
+		ObjPrim_SetVertexPosition(hb, 2 * i + 1, x - is, y - ic, 0);
+		ObjPrim_SetVertexPosition(hb, 4 * smoothness - 2 * i, x - oc, y - os, 0);
+		ObjPrim_SetVertexPosition(hb, 4 * smoothness - 2 * i + 1, x - ic, y - is, 0);
+		ObjPrim_SetVertexPosition(hb, 4 * smoothness + 2 * i, x - oc, y + os, 0);
+		ObjPrim_SetVertexPosition(hb, 4 * smoothness + 2 * i + 1, x - ic, y + is, 0);
+		ObjPrim_SetVertexPosition(hb, 8 * smoothness - 2 * i, x - os, y + oc, 0);
+		ObjPrim_SetVertexPosition(hb, 8 * smoothness - 2 * i + 1, x - is, y + ic, 0);
+		ObjPrim_SetVertexPosition(hb, 8 * smoothness + 2 * i, x + os, y + oc, 0);
+		ObjPrim_SetVertexPosition(hb, 8 * smoothness + 2 * i + 1, x + is, y + ic, 0);
+		ObjPrim_SetVertexPosition(hb, 12 * smoothness - 2 * i, x + oc, y + os, 0);
+		ObjPrim_SetVertexPosition(hb, 12 * smoothness - 2 * i + 1, x + ic, y + is, 0);
+		ObjPrim_SetVertexPosition(hb, 12 * smoothness + 2 * i, x + oc, y - os, 0);
+		ObjPrim_SetVertexPosition(hb, 12 * smoothness + 2 * i + 1, x + ic, y - is, 0);
+		ObjPrim_SetVertexPosition(hb, 16 * smoothness - 2 * i, x + os, y - oc, 0);
+		ObjPrim_SetVertexPosition(hb, 16 * smoothness - 2 * i + 1, x + is, y - ic, 0);
+	}
+	let a = 0.5 ^ 0.5;
+	let oa = outerR * a;
+	let ia = innerR * a;
+	ObjPrim_SetVertexPosition(hb, 2 * smoothness, x - oa, y - oa, 0);
+	ObjPrim_SetVertexPosition(hb, 2 * smoothness + 1, x - ia, y - ia, 0);
+	ObjPrim_SetVertexPosition(hb, 6 * smoothness, x - oa, y + oa, 0);
+	ObjPrim_SetVertexPosition(hb, 6 * smoothness + 1, x - ia, y + ia, 0);
+	ObjPrim_SetVertexPosition(hb, 10 * smoothness, x + oa, y + oa, 0);
+	ObjPrim_SetVertexPosition(hb, 10 * smoothness + 1, x + ia, y + ia, 0);
+	ObjPrim_SetVertexPosition(hb, 14 * smoothness, x + oa, y - oa, 0);
+	ObjPrim_SetVertexPosition(hb, 14 * smoothness + 1, x + ia, y - ia, 0);
+	ObjPrim_SetVertexPosition(hb, vcount - 2, x, y - outerR, 0);
+	ObjPrim_SetVertexPosition(hb, vcount - 1, x, y - innerR, 0);
+	ascent (i in 0 .. hvcount) {
+		ObjPrim_SetVertexColor(hb, 2 * i, 224, 224, 224);
+		ObjPrim_SetVertexColor(hb, 2 * i + 1, 200, 200, 200);
+	}
+	ObjRender_SetPosition(hb, 0, 0, 0);
+	Obj_SetValue(hb, "h", points);
+	return hb;
+}
+
+function setHealthbarPercentage(hb, pct) {
+	let oldPts = Obj_GetValueD(hb, "h", points);
+	let newPts = truncate(pct * points);
+	if (newPts < oldPts) {
+		ascent (i in newPts .. oldPts) {
+			ObjPrim_SetVertexColor(hb, 2 * i, 224, 128, 128);
+			ObjPrim_SetVertexColor(hb, 2 * i + 1, 200, 128, 128);
+		}
+	}
+	else if (newPts > oldPts) {
+		ascent (i in oldPts .. newPts) {
+			ObjPrim_SetVertexColor(hb, 2 * i, 224, 224, 224);
+			ObjPrim_SetVertexColor(hb, 2 * i + 1, 200, 200, 200);
+		}
+	}
+	Obj_SetValue(hb, "h", newPts);
+}
+
+function createNotch(x, y, outerR, pct) {
+	let angle = 90 - 360 * pct;
+	let notch = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+	ObjPrim_SetPrimitiveType(notch, PRIMITIVE_TRIANGLELIST);
+	ObjPrim_SetVertexCount(notch, 3);
+	ObjPrim_SetVertexPosition(notch, 0, x + cos(angle) * outerR, y - sin(angle) * outerR, 0);
+	outerR *= 1.2;
+	ObjPrim_SetVertexPosition(notch, 1, x + cos(angle - 3) * outerR, y - sin(angle - 3) * outerR, 0);
+	ObjPrim_SetVertexPosition(notch, 2, x + cos(angle + 3) * outerR, y - sin(angle + 3) * outerR, 0);
+	ObjPrim_SetVertexColor(notch, 0, 200, 255, 200);
+	ObjPrim_SetVertexColor(notch, 1, 100, 255, 100);
+	ObjPrim_SetVertexColor(notch, 2, 100, 255, 100);
+	ObjRender_SetPosition(notch, 0, 0, 0);
+	return notch;
+}
+
+function boss {
+	return GetCommonData("TheBoss", ID_INVALID);
+}
+
+task setBoss(b) {
+	SetCommonData("TheBoss", b);
+}
+
+task delBoss {
+	setBoss(ID_INVALID);
+}

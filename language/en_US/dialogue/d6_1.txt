@@ -1,0 +1,18 @@
+./../resource/boss/st06.png
+0
+/
+4
+Great, someone had to build a long canal[r]right here.
+0
+And not put any boats here.
+0
+You forgot about flying, didn't you?
+1
+/
+4
+[ruby rb="Cynreon Etelos" rt="Great Hidden Cessaedan"]
+3
+Oh wait, flying isn't allowed here.
+1
+Makes you wish you brought a boat?
+1

@@ -1,0 +1,40 @@
+function createPlayerLaser(id, width, len, angle, dmg, color, penetration){
+	let laser = ObjShot_Create(OBJ_STRAIGHT_LASER);
+	ObjMove_SetPosition(laser, ObjMove_GetX(id), ObjMove_GetY(id));
+	ObjStLaser_SetSource(laser, false);
+	ObjStLaser_SetAngle(laser, angle);
+	ObjLaser_SetRenderWidth(laser, width);
+	ObjLaser_SetLength(laser, len);
+	ObjShot_SetAutoDelete(laser, false);
+	ObjShot_SetGraphic(laser, DS_BEAM_RED);
+	ObjRender_SetColor(laser, color[0], color[1], color[2]);
+	ObjShot_SetDamage(laser, dmg);
+	ObjShot_SetPenetration(laser, penetration);
+	ObjShot_Regist(laser);
+	let xoff = len * cos(angle);
+	let yoff = len * sin(angle);
+	laserMain(id, laser, xoff, yoff, len, width, color, angle);
+	return laser;
+}
+task laserMain(id, laser, xoff, yoff, len, width, color, angle) {
+	let lg = ObjPrim_Create(OBJ_SPRITE_2D);
+	let path = GetCurrentScriptDirectory ~ "../resource/laser.png";
+	ObjPrim_SetTexture(lg, path);
+	ObjSprite2D_SetSourceRect(lg, 0, 0, 600, 16);
+	ObjRender_SetScaleXYZ(lg, width / 16, 1, 0);
+	ObjRender_SetAngleXYZ(lg, 0, 0, angle - 90);
+	Obj_SetRenderPriority(lg, 0.31);
+	ObjRender_SetBlendType(lg, BLEND_ADD_ARGB );
+	ObjRender_SetColor(lg, color[0], color[1], color[2]);
+	while (!Obj_IsDeleted(laser)) {
+		let x = ObjMove_GetX(id);
+		let y = ObjMove_GetY(id);
+		ObjMove_SetPosition(laser, x, y);
+		ObjShot_SetIntersectionLine(laser, x, y, x + xoff, x + yoff, width);
+		ObjRender_SetPosition(lg, x + 0.05 * xoff, y + 0.05 * yoff, 0);
+		ObjSprite2D_SetDestRect(lg, -16, 0, 16, len);
+		ObjRender_SetAlpha(lg, 96);
+		yield;
+	}
+	Obj_Delete(lg);
+}

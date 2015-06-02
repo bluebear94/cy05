@@ -1,0 +1,74 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp2"]
+#Text["Second spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 8;
+let level = 3;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(48);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task residue(shot) {
+	wait(240);
+	if (!Obj_IsDeleted(shot)) {
+		loop (12) {
+			ObjShot_SetDeleteFrame(
+				CreateShotOA1(shot, rand(1, 6), rand(0, 360), DS_BALL_SS_WHITE, 0),
+				10
+			);
+		}
+		Obj_Delete(shot);
+	}
+}
+
+task butterfly(shot) {
+	ObjShot_SetSpellResist(shot, true);
+	ObjShot_SetAutoDelete(shot, false);
+	homeToPlayerS(shot, 1.2);
+	let a = rand(0, 360);
+	let b = 0;
+	while (!Obj_IsDeleted(shot)) {
+		a += b;
+		b += rand(-0.1, 0.1);
+		let r = CreateShotOA1(shot, 0.1, b, DS_RICE_S_R_WHITE, 0);
+		residue(r);
+		yield;
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let period = 600 - 60 * d;
+	loop {
+		if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+		let b = CreateShotOA1(objBoss, 2.5, rand(90, 270), DS_BUTTERFLY_R_WHITE, 30);
+		butterfly(b);
+		wait(period);
+	}
+}
+
+task TWorkOD {
+	ascent (i in 0 .. 7) {
+		createCircleShot(ObjMove_GetX(objBoss), ObjMove_GetY(boss),
+			50 * i, [-300, 300][i % 2], rand(0, 360), DS_BUTTERFLY_GREEN, 360, 4800);
+	}
+}

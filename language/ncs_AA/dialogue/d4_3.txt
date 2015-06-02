@@ -1,0 +1,24 @@
+./../resource/boss/st04.png
+0
+/
+4
+Čan yl clenga enela arcyn, eši nas[r]samena saegerss ermehe.
+0
+/
+4
+Čan ecarsesa re eon fencyra ci?
+1
+[ruby rb="Erynor Canden" rt="Vanar eas Eoremyca Remtonava"]
+3
+Šan nar ferafere nava.
+1
+Ša gendar šyno lemen yl carsa?
+1
+Tacacro! Šyryd čan vesro ryse re asra ci.
+0
+Nerassan ar, šan venor marayvefremyta?
+1
+Evas cyren ci!
+1
+Nagtoramyn on myra.
+0

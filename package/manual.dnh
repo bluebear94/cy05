@@ -1,0 +1,59 @@
+#include "./../language.dnh"
+#include "./../sound.dnh"
+#include "./textf.dnh"
+
+let NUM_PAGES = 8;
+let l = GetStgFrameLeft + 96;
+let h = GetStgFrameTop;
+
+@Initialize {
+	main;
+}
+
+@MainLoop {
+	yield;
+}
+
+task main {
+	let currPage = 0;
+	let title = createTextS(16 - l, -h, "", true, [40, 240, 50], [128, 255, 144], 40);
+	ObjText_SetFontBold(title, true);
+	let body = createTextS(16 - l, 64 - h, "", true, [128, 255, 255], [128, 255, 255], 12);
+	ObjText_SetMaxWidth(body, 288);
+	ObjText_SetFontType(body, GetCommonData("DiaFont", "Consolas"));
+	let img = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjSprite2D_SetSourceRect(img, 0, 0, 320, 480);
+	ObjSprite2D_SetDestRect(img, 320 - l, -h, 640 - l, 480 - h);
+	function update(i) {
+		turnPage;
+		let entry = getManual(i);
+		ObjText_SetText(title, entry[0]);
+		ObjText_SetTextWW(body, entry[1], 288, 12, GetCommonData("DiaFont", "Consolas"));
+		ObjPrim_SetTexture(img, GetCurrentScriptDirectory ~ "images/manual/" ~ IntToString(i) ~ ".png");
+		ObjSprite2D_SetSourceRect(img, 0, 0, 320, 480);
+		ObjSprite2D_SetDestRect(img, 320 - l, -h, 640 - l, 480 - h);
+	}
+	update(0);
+	loop {
+		if (GetVirtualKeyState(VK_LEFT) == KEY_PUSH) {
+			currPage--;
+			if (currPage < 0) {currPage = NUM_PAGES - 1;}
+			update(currPage);
+		}
+		else if (GetVirtualKeyState(VK_RIGHT) == KEY_PUSH) {
+			currPage++;
+			if (currPage >= NUM_PAGES) {currPage = 0;}
+			update(currPage);
+		}
+		else if (GetVirtualKeyState(VK_CANCEL) == KEY_PUSH) {
+			Obj_Delete(title);
+			Obj_Delete(body);
+			Obj_Delete(img);
+			while (GetVirtualKeyState(VK_CANCEL) != KEY_FREE) {yield;}
+			CloseScript(GetOwnScriptID);
+		}
+		yield;
+	}
+}
+
+function turnPage {playSE("paper00");}

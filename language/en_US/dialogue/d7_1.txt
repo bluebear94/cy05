@@ -1,0 +1,30 @@
+./../resource/boss/st07.png
+0
+/
+4
+This place strangely reminds me of the[r]distant past...
+0
+Trees almost reaching the night sky with[r]stars spinning around,
+0
+without any snow covering the ground.
+0
+How much time has passed?
+0
+/
+4
+You're the protector of the place, aren't[r]you?
+1
+The one who stands at the wall?
+1
+Anyway, I've also heard about your attempt to[r]resolve another incident.
+1
+[ruby rb="Genreto Narendani" rt="Resident of the Night Garden"]
+3
+First of all, I will not allow you to pass.
+1
+Second, I've been plotting for three years to[r]steal your power.
+1
+You'll take more than three years to steal[r]my power!
+0
+The Armadereyn isn't yours to take!
+0

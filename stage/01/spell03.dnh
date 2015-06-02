@@ -1,0 +1,84 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 3;
+let level = 1;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(32);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	if (d > 4) {d = 1;}
+	let period = 130 - 15 * d;
+	if (getDifficulty < 3 || getDifficulty >= 5) {TWorkOD;}
+	if (getDifficulty < 3) {return;}
+	task volley(shot) {
+		let x = ObjMove_GetX(shot);
+		while (!Obj_IsDeleted(shot)) {
+			let y = ObjMove_GetY(shot);
+			let angle = GetAngleToPlayer(shot);
+			if (rand(0, 2) < 1) {
+				let px = GetPlayerX;
+				if (x < px) {angle = rand(-90, 90);}
+				else {angle = rand(90, 270);}
+			}
+			CreateShotOA1(shot, 2, angle, SILVER_ARROW, 0);
+			CreateShotOA1(shot, 1.5, angle - 90, SILVER_ARROW, 0);
+			CreateShotOA1(shot, 1.5, angle + 90, SILVER_ARROW, 0);
+			loop (period / 5) {yield;}
+		}
+	}
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let dir = truncate(rand(0, 2));
+		volley(CreateShotA1(rand(0, width), height * dir, 3, 90 + 180 * dir, DS_LIGHT_GREEN, 0));
+		loop (period) {yield;}
+	}
+}
+
+task TWorkOD {
+	let d = getDifficulty;
+	if (d > 4) {d = -1;}
+	let w = 10 * d + 50;
+	let dt = 360 / w;
+	let l = 2 + truncate((d + 1) / 2);
+	let du = dt / l;
+	let t = 0;
+	let counter = 0;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		ascent (i in 0 .. w) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			ascent (j in 0 .. l) {
+				CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1.8 + 0.2 * j, t + i * dt + j * du, -0.02, 0.3 + 0.2 * j, [DS_ICE_ORANGE, DS_RICE_S_R_RED][getDifficulty > 4], 0);
+				if (counter >= 0.02) {
+					counter -= 0.02;
+					yield;
+				}
+				CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1.8 + 0.2 * j, t - i * dt - j * du, -0.02, 0.3 + 0.2 * j, [DS_ICE_YELLOW, DS_RICE_S_R_BLUE][getDifficulty > 4], 0);
+				counter += 1 / w;
+			}
+		}
+		t += dt / 6 + rand(-1, 1);
+	}
+}

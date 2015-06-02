@@ -1,0 +1,6 @@
+./../resource/boss/st03.png
+0
+A eči es lyre menea!
+0
+A ces, iss remto?
+1

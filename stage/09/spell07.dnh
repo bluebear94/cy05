@@ -1,0 +1,99 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 44;
+let level = 9;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(90);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+let flip = false;
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	ObjMove_SetDestAtFrame(objBoss, cx, cy, 60);
+	wait(60);
+	TWork2;
+	TWork3;
+	let d = getDifficulty;
+	let fp = 239 - 10 * d;
+	while (!isDead) {
+		wait(fp);
+		flip = true;
+		yield;
+		flip = false;
+	}
+}
+
+task TWork2 {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let fTime = 30 - 3 * d;
+	let sp = 10 - truncate(d / 2);
+	task blueTask(shot) {
+		while (!Obj_IsDeleted(shot) && !flip) {yield;}
+		let y = ObjMove_GetY(shot);
+		ObjMove_SetSpeed(shot, 0);
+		ObjShot_SetGraphic(shot, DS_RICE_S_WHITE);
+		let dy = 2 * (cy - y);
+		loop (fTime) {
+			ObjMove_SetY(shot, ObjMove_GetY(shot) + dy / fTime);
+			if (getDistanceToPlayer(shot) < 30) {Obj_Delete(shot);}
+			yield;
+		}
+		ObjMove_SetSpeed(shot, rand(0.5, 0.7));
+		ObjMove_SetAngle(shot, rand(0, 360));
+		ObjShot_SetGraphic(shot, DS_RICE_S_BLUE);
+	}
+	let t = 0;
+	while (!isDead) {
+		let a = -150 + 15 * sin(t / 6.7) + 15 * cos(t);
+		loop (5) {
+			blueTask(CreateShotOA1(objBoss, 1.5, a, DS_RICE_S_BLUE, 0));
+			a += 30;
+		}
+		wait(sp);
+		t += 4.216 * sp;
+	}
+}
+
+task TWork3 {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let interval = 25 / (1 + 1.15 * d);
+	while (!isDead) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in -5 .. 6) {
+			CreateShotOA1(objBoss, 1.25, a + interval * i, DS_RICE_S_R_RED, 0);
+		}
+		wait(20);
+	}
+}

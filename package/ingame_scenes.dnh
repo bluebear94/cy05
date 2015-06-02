@@ -1,0 +1,91 @@
+let MODE_ALL = 0;
+let MODE_STAGE = 10;
+let MODE_SPELL = 100;
+
+function TEndScene(mode, rpSlot, settings) {
+	task goBack {
+		if (mode < MODE_SPELL) {unfreeze;}
+		else {SetCommonData("inSP", false);}
+	}
+	if (IsReplay) {
+		return false;
+	}
+	FinalizeStageScene;
+	flushZ;
+	let dir = GetCurrentScriptDirectory;
+	let pathScript = dir ~ "../system/end_scene.dnh";
+	let idScript = LoadScript(pathScript);
+	StartScript(idScript);
+	while (!IsCloseScript(idScript)) {
+		yield;
+	}
+	let res = GetScriptResult(idScript);
+	alternative (res)
+	case (RESULT_SAVE_REPLAY) {
+		let modeStr = "All";
+		WriteLog(ToString(mode));
+		if (mode > MODE_ALL) {
+			if (mode >= MODE_SPELL) {
+				modeStr = "Spell " ~ IntToString(mode - MODE_SPELL);
+			}
+			else {
+				modeStr = "Stage " ~ IntToString(mode - MODE_STAGE);
+			}
+		}
+		TReplaySaveScene(mode, modeStr);
+		goBack;
+	}
+	case (RESULT_END) {
+		//if (mode < MODE_SPELL) {titleScene(false);}
+		goBack;
+	}
+	case (RESULT_RETRY) {
+		if (mode == MODE_ALL) {
+			playD(rpSlot, settings, 110);
+		}
+		else if (mode < MODE_SPELL) {
+			playD(rpSlot, settings, 101 * (mode - MODE_STAGE));
+		}
+		else {
+			let spell = mode - MODE_SPELL;
+			let i = 0;
+			while (i < NUM_STAGES) {
+				if (spell <= cumSpellCounts[i]) {break;}
+				i++;
+			}
+			playS(rpSlot, settings, i + 1, spell);
+		}
+		return true;
+	}
+	playBGM(0);
+	return false;
+}
+
+function RunPauseScene {
+	let dir = GetCurrentScriptDirectory;
+	let pathScript = dir ~ "../system/pause.dnh";
+	let idScript = LoadScript(pathScript);
+	StartScript(idScript);
+	while(!IsCloseScript(idScript)) {
+		yield;
+	}
+	PauseStageScene(false);
+	let res = GetScriptResult(idScript);
+	return res;
+}
+
+
+function TReplaySaveScene(mode, modeStr) {
+	let dir = GetCurrentScriptDirectory;
+	let pathScript = dir ~ "../system/system_replay_save.dnh";
+	let idScript = LoadScript(pathScript);
+	SetScriptArgument(idScript, 0, ["ENHVIXO"[GetAreaCommonData("Replay", "Difficulty", 1)]] ~ modeStr);
+	StartScript(idScript);
+	while (!IsCloseScript(idScript)) {
+		yield;
+	}
+	if (mode < MODE_SPELL) {
+		titleScene(false);
+		unfreeze;
+	}
+}

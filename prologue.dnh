@@ -1,0 +1,648 @@
+#System["./system/system.dnh"]
+#include "script/default_system/Default_ShotConst.txt"
+#include "script/default_system/Default_Effect.txt"
+#include "./itsb.dnh"
+#include "./sound.dnh"
+#include "./ww.dnh"
+#include "./language.dnh"
+
+//#TouhouDanmakufu[3]
+// Prologue library.
+
+function base {
+	return GetCommonData("Base", 16);
+}
+function diaFont {
+	return GetCommonData("DiaFont", "Consolas");
+}
+let typeface = diaFont;
+
+// Waits the specified number of ticks.
+function wait(ticks) {
+	loop (ticks) {
+		yield;
+	}
+	return 0;
+}
+
+function getCharacter {
+	return GetCommonData("Player", 0);
+}
+
+// Returns 100 if playing as Rygen1, and bombDamage otherwise.
+function acctR1(bombDamage) {
+	if (getCharacter == 3) {
+		return 100;
+	}
+	return bombDamage;
+}
+
+function setDRR1(enm, shot, bomb) {
+	ObjEnemy_SetDamageRate(enm, shot, acctR1(bomb));
+}
+
+// TODO: explosion effect
+task TExplosion {
+	return;
+}
+// TODO: magic circle effect
+task TMagicCircle {
+	return;
+}
+
+// Returns true if focused.
+function isFocused() {
+	let focus = GetVirtualKeyState(VK_SLOWMOVE);
+	return focus == KEY_PUSH || focus == KEY_HOLD;
+}
+
+// Returns the ID of the nearest enemy, or ID_INVALID if there are none.
+function nearestEnemy(obj) {
+	let enemies = GetAllEnemyID;
+	let len = length(enemies);
+	let nearest = ID_INVALID;
+	let distance = 99999;
+	ascent (i in 0..len) {
+		let enemy = enemies[i];
+		let d = GetObjectDistance(obj, enemy);
+		if (d < distance) {
+			distance = d;
+			nearest = enemy;
+		}
+	}
+	return nearest;
+}
+
+// Gets the angle from obj1 to obj2.
+function getAngleTo(obj1, obj2) {
+	let x1 = ObjMove_GetX(obj1);
+	let x2 = ObjMove_GetX(obj2);
+	let y1 = ObjMove_GetY(obj1);
+	let y2 = ObjMove_GetY(obj2);
+	return (atan2(y2 - y1, x2 - x1) + 360) % 360;
+}
+
+function getAngleToXY(obj1, x2, y2) {
+	let x1 = ObjMove_GetX(obj1);
+	let y1 = ObjMove_GetY(obj1);
+	return (atan2(y2 - y1, x2 - x1) + 360) % 360;
+}
+
+function getAngleTwoPoints(x1, y1, x2, y2) {
+	return (atan2(y2 - y1, x2 - x1) + 360) % 360;
+}
+
+function getDistanceTo(obj1, obj2) {
+	let x1 = ObjMove_GetX(obj1);
+	let x2 = ObjMove_GetX(obj2);
+	let y1 = ObjMove_GetY(obj1);
+	let y2 = ObjMove_GetY(obj2);
+	return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5;
+}
+
+function getDistanceToXY(obj1, x2, y2) {
+	let x1 = ObjMove_GetX(obj1);
+	let y1 = ObjMove_GetY(obj1);
+	return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5;
+}
+
+function getDistanceTwoPoints(x1, y1, x2, y2) {
+	return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5;
+}
+
+function getDistanceToPlayer(obj) {
+	return getDistanceTo(obj, GetPlayerObjectID);
+}
+
+// Causes the shot to home.
+task home(shot) {
+	while (!Obj_IsDeleted(shot)) {
+		let enemy = nearestEnemy(shot);
+		if (enemy != ID_INVALID) {
+			let angle = getAngleTo(shot, enemy);
+			let old = ObjMove_GetAngle(shot);
+			let diff = (angle - old + 360) % 360;
+			if (diff < 180) {ObjMove_SetAngle(shot, old + 2);}
+			if (diff > 180) {ObjMove_SetAngle(shot, old - 2);}
+		}
+		yield;
+	}
+}
+
+task homeToPlayer(shot) {
+	while (!Obj_IsDeleted(shot)) {
+		let angle = GetAngleToPlayer(shot);
+		let old = ObjMove_GetAngle(shot);
+		let diff = (angle - old + 360) % 360;
+		if (diff < 180) {ObjMove_SetAngle(shot, old + 2);}
+		if (diff > 180) {ObjMove_SetAngle(shot, old - 2);}
+		yield;
+	}
+}
+
+task homeToPlayerS(shot, speed) {
+	while (!Obj_IsDeleted(shot)) {
+		let angle = GetAngleToPlayer(shot);
+		let old = ObjMove_GetAngle(shot);
+		let diff = (angle - old + 360) % 360;
+		if (diff < 180) {ObjMove_SetAngle(shot, old + speed);}
+		if (diff > 180) {ObjMove_SetAngle(shot, old - speed);}
+		yield;
+	}
+}
+
+task homeToPlayerD(shot, delay, interval) {
+	while (!Obj_IsDeleted(shot)) {
+		let angle = GetAngleToPlayer(shot);
+		let old = ObjMove_GetAngle(shot);
+		task nudge(amt) {
+			wait(delay);
+			ObjMove_SetAngle(shot, old + amt);
+		}
+		let diff = (angle - old + 360) % 360;
+		if (diff < 180) {nudge(2 * interval);}
+		if (diff > 180) {nudge(-2 * interval);}
+		wait(interval);
+	}
+}
+
+// Returns a default text object given a string.
+function textOf(str) {
+	let text = ObjText_Create;
+	ObjText_SetFontType(text, typeface);
+	ObjText_SetText(text, str);
+	return text;
+}
+
+function textOfWW(str, mw, size, aw) {
+	let text = ObjText_Create;
+	ObjText_SetFontType(text, typeface);
+	ObjText_SetFontSize(text, size);
+	if (useUruwi) {ObjText_SetTextWW(text, str, aw, size, typeface);}
+	else {ObjText_SetText(text, str);}
+	ObjText_SetMaxWidth(text, mw);
+	return text;
+}
+
+// Shakes the screen for a specified number of ticks.
+task shake(ticks) {
+	if (GetCommonData("ShakeDisabled", false)) {return;}
+	loop (ticks) {
+		Set2DCameraFocusX(GetStgFrameWidth / 2 + rand(-8, 8));
+		Set2DCameraFocusY(GetStgFrameHeight / 2 + rand(-8, 8));
+		yield;
+	}
+	Reset2DCamera;
+}
+
+function getPIV() {
+	let basePIV = 524288 * (1 + getDifficulty);
+	return [GetCommonData("PIV", basePIV), basePIV][isHidden];
+}
+
+task setPIV(new) {
+	SetCommonData("PIV", new);
+}
+
+task addPIV(amt) {
+	setPIV(getPIV + amt);
+}
+
+function getLifeFrag() {
+	return GetCommonData("LifeFrag", 0);
+}
+
+task setLifeFrag(amt) {
+	SetCommonData("LifeFrag", amt);
+}
+
+function getBombFrag() {
+	return GetCommonData("BombFrag", 0);
+}
+
+task setBombFrag(amt) {
+	SetCommonData("BombFrag", amt);
+}
+
+function getLifeFragR() {
+	return max(4, GetCommonData("LifeFragR", [8, 12][isHidden]) - truncate(getElemPoints(EARTH) / 65536));
+}
+
+function getLifeFragRR() {
+	return GetCommonData("LifeFragR", [8, 12][isHidden]);
+}
+
+task setLifeFragR(amt) {
+	SetCommonData("LifeFragR", amt);
+}
+
+function getBombFragR() {
+	return max(4, 8 + 4 * isHidden - truncate(getElemPoints(AIR) / 65536));
+}
+
+function getHighScore {
+	let hs = GetAreaCommonData("Cy05",
+		"HS" ~ IntToString(getCharacter) ~ IntToString(getDifficulty) ~ ["N", "H"][isHidden], [[0]])[0][0];
+	return max(GetScore, hs);
+}
+
+task hitbox {
+	let path = GetCurrentScriptDirectory ~ "resource/hurtbox.png";
+	let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(obj, path);
+	ObjSprite2D_SetSourceRect(obj, 0, 0, 20, 20);
+	loop {
+		let x = GetPlayerX;
+		let y = GetPlayerY;
+		ObjSprite2D_SetDestRect(obj, x-10, y-10, x+10, y+10);
+		Obj_SetVisible(obj, isFocused && !isHidden);
+		yield;
+	}
+}
+
+let AIR = 0;
+let EARTH = 1;
+let WATER = 2;
+let FIRE = 3;
+
+function getElemPoints(elem) {
+	return GetCommonData("Elem", [4096, 4096, 4096, 4096])[elem];
+}
+
+task setElemPoints(elem, amt) {
+	let points = GetCommonData("Elem", [4096, 4096, 4096, 4096]);
+	points[elem] = amt;
+	SetCommonData("Elem", points);
+}
+
+task youDedz() {
+	let points = GetCommonData("Elem", [4096, 4096, 4096, 4096]);
+	ascent (i in 0 .. 3) {
+		points[i] = (points[i] - 4096) / 2 + 4096;
+	}
+	SetCommonData("Elem", points);
+}
+
+task addElemPoints(elem, amt) {
+	let points = GetCommonData("Elem", [4096, 4096, 4096, 4096]);
+	points[elem] = points[elem] + truncate(amt * (1 + log(getElemPoints(FIRE) / 4096)));
+	SetCommonData("Elem", points);
+}
+
+task addElemPointsR(elem, amt) {
+	let points = GetCommonData("Elem", [4096, 4096, 4096, 4096]);
+	points[elem] = points[elem] + truncate(amt);
+	SetCommonData("Elem", points);
+}
+
+function roundScore(score) {
+	return 16 * truncate(score / 16);
+}
+
+function addScore(amt) {
+	AddScore(roundScore(amt));
+}
+
+function getDifficulty() {
+	return GetAreaCommonData("Replay", "Difficulty", 1);
+}
+
+task setDifficulty(d) {
+	SetAreaCommonData("Replay", "Difficulty", d);
+}
+
+function getSurvivalTime() {
+	return GetCommonData("Survival", 0);
+}
+
+task addSurvivalTime() {
+	SetCommonData("Survival", getSurvivalTime + 1);
+}
+
+task resetSurvivalTime() {
+	SetCommonData("Survival", 0);
+}
+
+function getHistory(spellID) {
+	return GetAreaCommonData("Cy05", "H-" ~ IntToString(spellID) ~ "/" ~ IntToString(getDifficulty), [0, 0]);
+}
+
+task setHistory(spellID, history) {
+	SetAreaCommonData("Cy05", "H-" ~ IntToString(spellID) ~ "/" ~ IntToString(getDifficulty), history);
+}
+
+task saveHistoryPre(spellID) {
+	let old = getHistory(spellID);
+	setHistory(spellID, [old[0], old[1] + 1]);
+}
+
+task saveHistoryPost(spellID, success) {
+	let old = getHistory(spellID);
+	setHistory(spellID, [old[0] + success, old[1]]);
+}
+
+let EV_END_OF_STAGE = EV_USER + 1;
+let EV_RENDER_SCORE = EV_USER + 2;
+let EV_PAUSE = EV_USER + 4;
+let EV_DEDZ = EV_USER + 5;
+let EV_SUBMIT = EV_USER + 6;
+let EV_SUBMIT_COMPLETE = EV_USER + 7;
+
+task endStage {
+	NotifyEventAll(EV_END_OF_STAGE, 0);
+}
+
+let D_PLAYER = "0";
+let D_BOSS = "1";
+let D_NARRATOR = "2";
+let D_INTRO = "3";
+
+function inDialogue() {
+	return GetCommonData("Dialogue", false);
+}
+
+task toggleDialogue() {
+	SetCommonData("Dialogue", !inDialogue);
+}
+
+function createItemU1(type, x, y, thisArgumentShouldNotEvenBeUsed) {
+	let i = CreateItemU1(type, x, y, 0);
+	ObjItem_SetRenderScoreEnable(i, false);
+	return i;
+}
+
+function DigitToArrayBase(num, base, count) {
+	let res = [];
+	loop (count) {
+		let digit = num % base;
+		res = [digit] ~ res;
+		num = truncate(num / base);
+	}
+	return res;
+}
+
+function DigitToArrayBaseWC(num, base) {
+	let res = [];
+	while (num >= 1) {
+		let digit = num % base;
+		res = [digit] ~ res;
+		num = truncate(num / base);
+	}
+	return res;
+}
+
+task showExtend() {
+	let objText = ObjText_Create();
+	ObjText_SetText(objText, "Extend!");
+	ObjText_SetFontSize(objText, 32);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 255, 255, 255);
+	ObjText_SetFontColorBottom(objText, 255, 128, 128);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objText, 1);
+	ObjText_SetFontType(objText, typeface);
+	Obj_SetRenderPriority(objText, 0.6);
+	ObjText_SetHorizontalAlignment(objText, ALIGNMENT_CENTER);
+	ObjText_SetMaxWidth(objText, 384);
+	ObjRender_SetX(objText, 0);
+	ObjRender_SetY(objText, 68);
+	playSE("power14");
+	loop (120) {
+		yield;
+	}
+	Obj_Delete(objText);
+}
+function getBGIndex {
+	return GetCommonData("Background", 0);
+}
+
+task setBGIndex(i) {
+	SetCommonData("Background", i);
+}
+
+task resetBGIndex {
+	setBGIndex(0);
+}
+
+task advanceBGIndex {
+	setBGIndex(getBGIndex + 1);
+}
+
+function waitForClearScreen {
+	while (length(GetAllEnemyID) > 0 || GetPlayerInvincibilityFrame != 0) {yield;}
+}
+
+function getContinue {
+	return GetCommonData("Continue", 0);
+}
+
+task continue {
+	SetCommonData("Continue", getContinue + 1);
+}
+
+task resetContinue {
+	SetCommonData("Continue", 0);
+}
+
+function maxContinues {
+	if (getDifficulty >= 5) {return 0;}
+	return 3 + getDifficulty;
+}
+
+function isHidden {
+	return GetAreaCommonData("Replay", "Hidden", false);
+}
+
+task setHidden(h) {
+	SetAreaCommonData("Replay", "Hidden", h);
+}
+
+function isDedz {
+	return GetCommonData("Dedz", false);
+}
+
+task dedz(d) {
+	SetCommonData("Dedz", d);
+}
+
+task pause(p) {
+	NotifyEventAll(EV_PAUSE, p);
+}
+
+function getGraphicsCut {
+	return GetAreaCommonData("Cy05", "EffCut", 1);
+}
+
+let MODE_ALL = 0;
+let MODE_STAGE = 10;
+let MODE_SPELL = 100;
+
+function gameMode {
+	return GetCommonData("GameMode", MODE_ALL);
+}
+
+function createCircleShot(xc, yc, r, period, initAngle, graphic, delay, duration) {
+	let initX = xc + r * cos(initAngle);
+	let initY = yc + r * sin(initAngle);
+	let circumference = 2 * pi * r;
+	let speed = circumference / period;
+	let shot = CreateShotA1(initX, initY, speed, initAngle + 90, graphic, delay);
+	if (speed < 0) {
+		ObjMove_SetSpeed(shot, -speed);
+		ObjMove_SetAngle(shot, 180 + ObjMove_GetAngle(shot));
+	}
+	circle(shot);
+	task circle(shot) {
+		wait(delay);
+		ObjMove_SetAngularVelocity(shot, 360 / period);
+		ObjShot_SetAutoDelete(shot, false);
+		loop (duration) {
+			if (Obj_IsDeleted(shot)) {break;}
+			yield;
+		}
+		ObjMove_SetAngularVelocity(shot, 0);
+	}
+	return shot;
+}
+
+task circleAround(obj, r, duration, speed) {
+	circleAroundB(obj, r, duration, speed);
+}
+
+task circleAroundAngle(obj, r, angle, speed) {
+	circleAroundAngleB(obj, r, angle, speed);
+}
+
+function circleAroundB(obj, r, duration, speed) {
+	let circumference = 2 * pi * r;
+	if (speed < 0) {
+		speed *= -1;
+		ObjMove_SetAngle(obj, -ObjMove_GetAngle(obj));
+	}
+	let period = circumference / speed;
+	ObjMove_SetSpeed(obj, speed);
+	ObjMove_SetAngularVelocity(obj, 360 / period);
+	wait(duration);
+	ObjMove_SetAngularVelocity(obj, 0);
+}
+
+function circleAroundAngleB(obj, r, angle, speed) {
+	let circumference = 2 * pi * r;
+	if (speed < 0) {
+		speed *= -1;
+		ObjMove_SetAngle(obj, -ObjMove_GetAngle(obj));
+	}
+	let period = circumference / speed;
+	let duration = angle / 360 * period;
+	ObjMove_SetSpeed(obj, speed);
+	ObjMove_SetAngularVelocity(obj, 360 / period);
+	wait(duration);
+	ObjMove_SetAngularVelocity(obj, 0);
+}
+
+function randomSign {
+	return 1 - 2 * round(rand(0, 1));
+}
+
+// Code thanks to Sparen (with some formatting changes)
+task DelayLaser(x, y, ang, l, w, dt, graph, delay) { 
+	let objlaser = CreateStraightLaserA1(x, y, ang, l, w, dt, graph, delay);
+	ObjStLaser_SetSource(objlaser, false);
+	loop (delay - 1) {//So that the graphic never enlarges. 
+	  // Default kill to prevent (0, 0) spawning
+	  //if (ObjEnemy_GetInfo(GetEnemyBossObjectID, INFO_LIFE) <= 0) {Obj_Delete(objlaser); return;}
+	  yield;
+	}
+	Obj_Delete(objlaser);
+}
+
+/* MATH ALERT */
+
+task snake(shot, amplitude, frequency) {
+	let t = 0;
+	let a = amplitude;
+	let b = 360 * frequency;
+	let br = 2 * pi * frequency; // THE ONE TIME WHEN I WANT RADIANS
+	let angle = ObjMove_GetAngle(shot);
+	let x = 0;
+	while (!Obj_IsDeleted(shot)) {
+		let slope = a * br * cos(b * x);
+		let theta = atan(slope);
+		ObjMove_SetAngle(shot, angle + theta);
+		x += cos(theta);
+		t++;
+		yield;
+	}
+}
+
+function abs(x) {return absolute(x);}
+
+function randIntH(l, h) {return floor(rand(l, h));}
+
+task dragX(x, t) {
+	let x0 = Get2DCameraX;
+	let dx = x - x0;
+	loop (t) {
+		Set2DCameraFocusX(Get2DCameraX + dx / t);
+		yield;
+	}
+}
+
+task dragY(y, t) {
+	let y0 = Get2DCameraY;
+	let dy = y - y0;
+	loop (t) {
+		Set2DCameraFocusY(Get2DCameraY + dy / t);
+		yield;
+	}
+}
+
+task dragA(a, t) {
+	let a0 = Get2DCameraAngleZ;
+	let da = (a - a0) % 360;
+	if (da > 180) {da -= 360;}
+	loop (t) {
+		Set2DCameraAngleZ(Get2DCameraAngleZ + da / t);
+		yield;
+	}
+}
+
+task dragU(u, t) {
+	let u0 = Get2DCameraRatioX;
+	let du = u - u0;
+	loop (t) {
+		Set2DCameraRatioX(Get2DCameraRatioX + du / t);
+		yield;
+	}
+}
+
+task dragV(v, t) {
+	let v0 = Get2DCameraRatioY;
+	let dv = v - v0;
+	loop (t) {
+		Set2DCameraRatioY(Get2DCameraRatioY + dv / t);
+		yield;
+	}
+}
+
+task dragToDefaults(t) {
+	dragX(GetStgFrameWidth / 2, t);
+	dragY(GetStgFrameHeight / 2, t);
+	dragA(0, t);
+	dragU(1, t);
+	dragV(1, t);
+}
+
+function qbezier(p0, p1, p2, t) {
+	return
+		(1 - t) ^ 2 * p0 +
+		2 * (1 - t) * t * p1 +
+		t ^ 2 * p2;
+}
+
+function signum(x) {
+	if (x > 0) {return 1;}
+	if (x < 0) {return -1;}
+	return 0;
+}

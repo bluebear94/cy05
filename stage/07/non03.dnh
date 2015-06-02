@@ -1,0 +1,65 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 7;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(4000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let sbPeriod = 20 / (1 + 0.15 * d);
+	let sbSpeed = 1.5 + 0.2 * d;
+	let arrowCount = 8 + d;
+	//TWorkOD;
+	//let period = 180 - 15 * getDifficulty;
+	task arrow(s, sign) {
+		ObjMove_SetAngularVelocity(s, 0.2 * sign);
+		while (!Obj_IsDeleted(s)) {
+			let a = ObjMove_GetAngle(s);
+			CreateShotOA1(s, sbSpeed, a - 90, DS_RICE_S_GREEN, 10);
+			wait(sbPeriod);
+		}
+	}
+	let sign = 1;
+	while (!isDead) {
+		let a = rand(0, 360);
+		loop (arrowCount) {
+			arrow(CreateShotOA1(objBoss, 2.5, a, DS_KNIFE_YOUMU_GREEN, 0), sign);
+			a += 360 / arrowCount;
+		}
+		wait(sbPeriod * 6);
+		sign *= -1;
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

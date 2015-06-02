@@ -1,0 +1,22 @@
+#TouhouDanmakufu[Plural]
+#ScriptVersion[3]
+#Title["Mernen"]
+#Text["Stage 1 boss"]
+#Player["./../../player/player0.dnh", "./../../player/player2.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../language.dnh"
+
+let name = getBossNames(0);
+let bgm = 2;
+#include "./../boss_header.dnh"
+
+
+task addSpells(obj) {
+	let dir = GetCurrentScriptDirectory;
+	ObjEnemyBossScene_Add(obj, 0, dir ~ "non01.dnh");
+	ObjEnemyBossScene_Add(obj, 0, dir ~ "spell01.dnh");
+	ObjEnemyBossScene_Add(obj, 1, dir ~ "non02.dnh");
+	ObjEnemyBossScene_Add(obj, 1, dir ~ "spell02.dnh");
+	ObjEnemyBossScene_Add(obj, 2, dir ~ "spell03.dnh");
+}

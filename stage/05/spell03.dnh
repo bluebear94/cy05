@@ -1,0 +1,67 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 17;
+let level = 5;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(9000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(72);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task explode(shot) {
+	wait(150);
+	let volleys = 6 + 2 * getDifficulty;
+	if (!Obj_IsDeleted(shot)) {
+		let a = rand(0, 360);
+		ascent (i in 0 .. volleys) {
+			CreateShotOA1(shot, 0.75, a + 360 * i / volleys, DS_BALL_SS_YELLOW, 10);
+		}
+		Obj_Delete(shot);
+	}
+}
+
+task familiar(shot) {
+	ObjShot_SetSpellResist(shot, true);
+	while (!Obj_IsDeleted(shot)) {
+		let bomb = CreateShotOA1(shot, 0, 0, DS_LIGHT_RED, 30);
+		explode(bomb);
+		wait(30);
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let branches = 4 + d;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in 0 .. branches) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			let shot = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, a + 360 * i / branches, 0.05, 3, DS_STAR_M_ORANGE, 0);
+			familiar(shot);
+			wait(20);
+		}
+		wait(120);
+	}
+}

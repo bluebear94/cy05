@@ -1,0 +1,16 @@
+./../resource/boss/st05.png
+0
+/
+4
+Ventoro metellor ci ryse so Nerassan ar yčyn[r]docardešyvpertenene nava vellesa.
+0
+Gostosnavo en ress alarysce veson so šan[r]asčyr emtesa nava retnehes?
+1
+/
+4
+[ruby rb="Alarysesmala Yronšyncra" rt="Yšyrehe Arcynsenar eas Alarys"]
+3
+Ša ele esada šynamyn agnara areface.
+1
+Nagtoramyn yšyramyn dedenamyn agnara--!
+1

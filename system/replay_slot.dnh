@@ -1,0 +1,139 @@
+#include "../language.dnh"
+
+let selected = 0;
+let exited = false;
+
+function selectSlot {
+	return selectSlotS(0);
+}
+
+function selectSlotS(idx) {
+	let currentPage = truncate(idx / 10);
+	selected = idx % 10;
+	exited = false;
+	//let noSlots = REPLAY_INDEX_DIGIT_MAX - REPLAY_INDEX_DIGIT_MIN + 1;
+	let noSlots = 100;
+	let slotsPerPage = 10;
+	let totalPages = max(1, truncate((noSlots - 1) / slotsPerPage)) + 1;
+	let slotsOnLastPage = noSlots - slotsPerPage * (totalPages - 1);
+	let replayTextItems = [];
+	ascent (i in 0 .. slotsPerPage) {
+		let items = menuItem(i, replayString(i + currentPage * 10), 64, 64 + 30 * i);
+		replayTextItems = replayTextItems ~ items;
+	}
+	flushZ;
+	let frames = 0;
+	while (!exited) {
+		if (GetVirtualKeyState(VK_OK) == KEY_PULL) {
+			break;
+		}
+		if (GetVirtualKeyState(VK_CANCEL) == KEY_PULL ||
+			GetVirtualKeyState(VK_PAUSE) == KEY_PULL) {
+			selected = -1;
+			currentPage = 0;
+			break;
+		}
+		let up = GetVirtualKeyState(VK_UP);
+		let down = GetVirtualKeyState(VK_DOWN);
+		let left = GetVirtualKeyState(VK_LEFT);
+		let right = GetVirtualKeyState(VK_RIGHT);
+		if (up == KEY_PUSH) {selected--;}
+		else if (down == KEY_PUSH) {selected++;}
+		else if (up == KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {selected--;}
+		}
+		else if (down == KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {selected++;}
+		}
+		if (selected < 0) {selected = slotsPerPage - 1;}
+		else if (selected >= slotsPerPage) {selected = 0;}
+		let prevPage = currentPage;
+		if (left == KEY_PUSH) {currentPage--; turnPage;}
+		else if (right == KEY_PUSH) {currentPage++; turnPage;}
+		else if (left == KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {currentPage--; turnPage;}
+		}
+		else if (right == KEY_HOLD) {
+			frames++;
+			if (frames == 30 || (frames > 30 && (frames % 10 == 0))) {currentPage++; turnPage;}
+		}
+		else if (up == KEY_FREE && down == KEY_FREE) {frames = 0;}
+		if (currentPage < 0) {currentPage = totalPages - 1;}
+		else if (currentPage >= totalPages) {currentPage = 0;}
+		if (prevPage != currentPage) {
+			ascent (i in 0 .. slotsPerPage) {
+				let str = replayString(currentPage * 10 + i);
+				ObjText_SetText(replayTextItems[2 * i], str);
+				ObjText_SetText(replayTextItems[2 * i + 1], str);
+			}
+		}
+		yield;
+	}
+	ascent (i in 0 ..  2 * slotsPerPage) {
+		Obj_Delete(replayTextItems[i]);
+	}
+	return selected + 10 * currentPage;
+}
+
+function createTextR(text, x, y) {
+	let obj = ObjText_Create;
+	ObjText_SetText(obj, text);
+	ObjText_SetFontSize(obj, 16);
+	ObjText_SetFontType(obj, hsFont);
+	ObjText_SetFontColorTop(obj, 128, 255, 255);
+	ObjText_SetFontColorBottom(obj, 128, 255, 255);
+	Obj_SetRenderPriority(obj, 0.9);
+	ObjRender_SetPosition(obj, x, y, 1);
+	return obj;
+}
+
+function menuItem(i, text, x, y) {
+	let objText = createTextR(text, x, y);
+	let objSelect = createTextR(text, x, y);
+	ObjRender_SetBlendType(objSelect, BLEND_ADD_RGB);
+	task fork {
+		while (!Obj_IsDeleted(objText)) {
+			Obj_SetVisible(objSelect, i == selected);
+			yield;
+		}
+	}
+	fork;
+	return [objText, objSelect];
+}
+
+function replayString(slot) {
+	let base = GetCommonData("Base", 16);
+	let text = vtos("02s", IntToStringBase(slot, base)) ~ " ";
+	slot++;
+	if (IsValidReplayIndex(slot)) {
+		let scoreStringR = "              " ~
+			IntToStringBase(min(GetReplayInfo(slot, REPLAY_TOTAL_SCORE), base ^ 14 - 1), base);
+		let char = GetReplayInfo(slot, REPLAY_PLAYER_NAME);
+		let charL = getInterfaceStrings(RP_CHAR + (char[0 .. 2] == "Ry"));
+		let charR = getInterfaceStrings(RP_SHOT01 + (char[length(char) - 1] == '1'));
+		let char2 = charL ~ charR;
+		let com = GetReplayInfo(slot, REPLAY_COMMENT);
+		return text ~
+			vtos("-8s", GetReplayInfo(slot, REPLAY_USER_NAME)) ~ " " ~
+			GetReplayInfo(slot, REPLAY_DATE_TIME) ~ " " ~
+			(scoreStringR)[(length(scoreStringR) - 14) .. length(scoreStringR)] ~ " " ~
+			vtos("-8s", char2) ~ " " ~
+			com[0..1] ~ " " ~ com[1..length(com)];
+	}
+	else {
+		return text ~ "Civoro";
+	}
+}
+
+#include "../language.dnh"
+#include "../sound.dnh"
+
+#include "../itsb.dnh"
+
+function flushZ {
+	while (GetVirtualKeyState(VK_OK) != KEY_FREE) {yield;}
+}
+function turnPage {playSE("paper00");}

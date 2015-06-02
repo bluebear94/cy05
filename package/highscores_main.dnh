@@ -1,0 +1,14 @@
+let SUBMIT_HIGH_SCORE = 0;
+let VIEW_HIGH_SCORE = 1;
+
+task hsOf(op, data) {
+	RenderToTextureA1(GetTransitionRenderTargetName, 0, 100, true);
+	PauseStageScene(true);
+	let sc = LoadScript(GetCurrentScriptDirectory ~ "highscores.dnh");
+	SetScriptArgument(sc, 0, op);
+	SetScriptArgument(sc, 1, data);
+	StartScript(sc);
+	while (!IsCloseScript(sc)) {yield;}
+	SetCommonData("HSSubmitDone", true);
+	PauseStageScene(false);
+}

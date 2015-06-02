@@ -1,0 +1,8 @@
+./../resource/boss/st01.png
+0
+Šan asčyr en carcysernytas?
+1
+Enela arcyn en mesehe anasčyr.
+0
+Ša os cryssosnerssen domesehene so ores centara marae.
+0

@@ -1,0 +1,24 @@
+./../resource/boss/st03.png
+0
+/
+4
+It's completely dark; I can't see anything.
+0
+I'll take forever looking for that person.
+0
+Stairs and halls and rooms...
+0
+/
+4
+Leave the castle now.
+1
+Or...
+0
+Or else... screw it, just leave.
+1
+[ruby rb="Vanar #13007" rt="One who Leads into Darkness"]
+3
+My master says so.
+1
+Your master, who started this blizzard?
+0

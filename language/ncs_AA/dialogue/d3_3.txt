@@ -1,0 +1,24 @@
+./../resource/boss/st03.png
+0
+/
+4
+Enas vanosesa lyre esreote...
+0
+venor?!!
+0
+/
+4
+Endyr ele cyren yndaretas!
+1
+Ehe, ces.
+0
+Eo acrešyvpertenes ci?
+1
+[ruby rb="32cf Vanar" rt="Acrynalerss esar Jaladyr"]
+3
+Ner acrešyvpertena ner ena yndaryd ci enas rentera.
+0
+Enas ersaden maraha.
+1
+Ehe, nepsa ces.
+0

@@ -1,0 +1,8 @@
+./../resource/boss/st01.png
+0
+Šan asčyr en carcysernytas?
+1
+Enas cetenata! Šan ryssa eon meseavpertena?
+0
+Arcyn eas centara marayme docarvetas.
+1

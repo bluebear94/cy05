@@ -1,0 +1,84 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp2"]
+#Text["Second spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 5;
+let level = 2;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(48);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+// I like modeling danmaku patterns after unusual deaths.
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	if (d >= 3) {TWorkOD;}
+	let rays = 4 + d;
+	let angle = 90;
+	let phase = 0;
+	let amp = 3 + d;
+	task modulate {
+		loop (300) {
+			angle += 2/15;
+			yield;
+		}
+		loop (600) {
+			angle -= 2/15;
+			yield;
+		}
+		loop (300) {
+			angle += 2/15;
+			yield;
+		}// 20 seconds by now
+		ascent (i in 0 .. 1200) {
+			angle = 90 + 45 * sin(i * 1.5 * 2 / 5);
+			yield;
+		} // 40
+		loop (2160) {
+			angle += 1/6;
+		}
+	}
+	modulate;
+	task fork {
+		while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+			loop (truncate((d + 1) / 2)) { // doo
+				CreateShotA1(rand(0, width), 0, rand(0.5, 1.5), rand(85, 95), DS_RICE_S_WHITE, 20);
+			}
+			wait(6);
+		}
+	}
+	fork;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		ascent (i in 0 .. rays) {
+			CreateShotOA1(objBoss, 3, angle + 360*i/rays + amp * sin(phase), DS_BALL_S_ORANGE, 0);
+		}
+		phase += 5;
+		yield;
+	}
+}
+
+task TWorkOD {
+	ascent (i in 0 .. 7) {
+		createCircleShot(ObjMove_GetX(objBoss), ObjMove_GetY(boss),
+			50 * i, [-300, 300][i % 2], rand(0, 360), DS_BUTTERFLY_GREEN, 360, 4800);
+	}
+}

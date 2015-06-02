@@ -1,0 +1,108 @@
+#include "../item/itemConsts.dnh"
+#include "../language.dnh"
+
+// The Calculator the Programmers Loved
+// Eat Quietly, Dragon of Past Days ~ Descended Bronze
+
+function ptIndex(score) {
+	return truncate((score / [70000000, 10000000][isHidden]) ^ (1/2));
+}
+
+task TMech {
+	let oldScore = GetScore;
+	let oldGraze = GetGraze;
+	let tick = 0;
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let path = GetCurrentScriptDirectory ~ "../resource/poc.png";
+	let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(obj, path);
+	ObjSprite2D_SetSourceRect(obj, 0, 0, 16, 16);
+	loop {
+		let pieces = ptIndex(GetScore) - ptIndex(oldScore);
+		loop (pieces) {
+			let p = createItemU1(truncate(rand(2, 4)), rand(0, width), 0, 0);
+			ObjItem_SetDefinedMovePatternA1(p, ITEM_MOVE_TOPLAYER);
+			addPIV(2048);
+		}
+		let gdiff = GetGraze - oldGraze;
+		addElemPoints(WATER, 24 * gdiff + truncate(0.5 * gdiff * gdiff));
+		if (isHidden) {
+			addScore(16384 * gdiff + getElemPoints(WATER));
+		} else {
+			addPIV(roundScore((getElemPoints(WATER) / 64) * gdiff));
+		}
+		if (gdiff != 0) {playSE("on01");}
+		if (GetPlayerState == STATE_NORMAL && tick == 0) {
+			addElemPoints(EARTH, 16 + (getSurvivalTime / 32) ^ 0.8);
+			setElemPoints(AIR, max(4096, getElemPoints(AIR) - (getSurvivalTime / 32) ^ 0.4));
+		}
+		tick++;
+		if (tick == 10) {
+			tick = 0;
+		}
+		addSurvivalTime;
+		if (isHidden) {SetPlayerRebirthFrame(5);}
+		else {SetPlayerRebirthFrame(min(30, [5, 7][getCharacter < 2] * getElemPoints(AIR) / 8192));}
+		let age = GetCommonData("Age", 0);
+		let fire = getElemPoints(FIRE) - 0.1 * age;
+		let y = height * (1 - 6144 / getElemPoints(FIRE));
+		SetCommonData("Age", age + (fire > 4096));
+		ObjSprite2D_SetDestRect(obj, 0, y - 7, 16, y + 7);
+		SetPlayerAutoItemCollectLine(y);
+		oldScore = GetScore;
+		oldGraze = GetGraze;
+		if (GetScore % 16 != getContinue) {
+			RaiseError("Axioms have been violated!!!");
+		}
+		while (inDialogue) {yield;}
+		yield;
+	}
+}
+
+task stageBonus(number) {
+	let bonus = number * 268435456;
+	bonus += GetGraze * 32768;
+	bonus += getPIV * (number * number + 3);
+	ascent (i in 0 .. 4) {
+		bonus += 4096 * getElemPoints(i);
+	}
+	bonus *= 0.5 + 0.5 * getDifficulty;
+	let objText = ObjText_Create();
+	ObjText_SetText(objText, "Stage Clear!");
+	ObjText_SetFontSize(objText, 32 * fontScale);
+	ObjText_SetFontBold(objText, true);
+	ObjText_SetFontColorTop(objText, 255, 255, 255);
+	ObjText_SetFontColorBottom(objText, 128, 128, 255);
+	ObjText_SetFontBorderType(objText, BORDER_FULL);
+	ObjText_SetFontBorderColor(objText, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objText, 1);
+	ObjText_SetFontType(objText, typeface);
+	Obj_SetRenderPriority(objText, 0.6);
+	ObjText_SetMaxWidth(objText, 384);
+	ObjText_SetHorizontalAlignment(objText, ALIGNMENT_CENTER);
+	ObjRender_SetX(objText, 0);
+	ObjRender_SetY(objText, 96);
+	let strScore = "+" ~ IntToStringBase(roundScore(bonus), base) ~
+		["[r](PIV +" ~ IntToStringBase(roundScore(GetScore / 16384), base) ~ ")", ""][isHidden];
+	addScore(bonus);
+	addPIV(roundScore(GetScore / 16384));
+	let objScore = ObjText_Create();
+	ObjText_SetText(objScore, strScore);
+	ObjText_SetFontSize(objScore, 32 * fontScale);
+	ObjText_SetFontBold(objScore, true);
+	ObjText_SetFontColorTop(objScore, 255, 255, 255);
+	ObjText_SetFontColorBottom(objScore, 255, 128, 128);
+	ObjText_SetFontBorderType(objScore, BORDER_FULL);
+	ObjText_SetFontBorderColor(objScore, 0, 0, 0);
+	ObjText_SetFontBorderWidth(objScore, 1);
+	ObjText_SetFontType(objScore, typeface);
+	Obj_SetRenderPriority(objScore, 0.6);
+	ObjRender_SetX(objScore, 120);
+	ObjRender_SetY(objScore, 140);
+	loop (120) {
+		yield;
+	}
+	Obj_Delete(objText);
+	Obj_Delete(objScore);
+}

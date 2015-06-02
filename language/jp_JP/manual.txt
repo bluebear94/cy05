@@ -1,0 +1,16 @@
+ストーリー
+It is the day before the summer solstice, but a layer of snow has covered the ground. Rencron and Rygen hunt for the source of this sudden cold...
+Controls
+* Arrow Keys - Movement[r]* Z - Shoot[r]* X - Spellcard[r]* Shift - Focus[r]* Esc - Pause[r]* C - Skip dialogue[r]* V - Induce Game Over (for debugging purposes)
+Game Screen
+* Lives - number of lives remaining.[r]&nbsp;&nbsp;&nbsp;&nbsp;(pieces) - Eight are required for the first life. Each successive life requires two more pieces than the previous. Get them from enemies or by scoring enough points.[r]* Spellcard - number of spellcard uses remaining.[r]&nbsp;&nbsp;&nbsp;&nbsp;(pieces) - Eight are required for each spellcard. Get them from enemies or by scoring enough points.[r]* Point item value (PIV) - maximum number of points given by a point item.[r]* Graze - number of bullets grazed.[r]* Elemental Meter - Elemental points achieve certain effects in the game.
+行点
+行点は、４つタイプがあります：風（黄）・地（緑）・水（青）・火（赤）。[r]* Air points are gained by using spellcards. Having more air points will lengthen the deathbomb window and decrease the number of fragments required for spellcards.[r]* Earth points are gained by surviving and decrease the number of fragments required for lives.[r]* Water points are gained by grazing and increase the point item value gained by grazing.[r]* Fire points are gained by collecting point items. They increase the number of elemental points gained and lower the line at which items are automatically collected.[r]Being hit will decrease the number of elemental points.
+Items
+* Point items (1) - primary source of score. Value increases higher up the screen.[r]* Green items (2) - Appear when bullets are canceled. Increases point item value.[r]* Life and spellcard fragments (3) - Collect enough to get more lives and spellcards![r]* Whole lives and spellcards (4) - Dropped from certain enemies.[r]* Elemental items (5) - Dropped on the fifth and later stages. Give elemental points. Value increases higher up the screen.
+Special mechanics
+* If the previous life had spellcards, the next will spawn without any.[r]* Rencron B has a 50% chance of activating the spellcard when hit. If the spellcard is activated this way, the number of elemental points will not decrease.[r]* Rygen B's spellcard will damage any enemy, even those that are normally immune to spellcards!
+Hidden mode
+Hidden mode can be accessed from the Options menu, and change some mechanics.[r]* The point item value cannot be increased.[r]* Green items and grazing will give points directly.[r]* Lives and bombs start at twelve fragments.[r]* The deathbomb window is fixed at five frames.[r]* The player's hitbox is not visible upon focusing.
+Spell Practice
+You can practice any spell that has been seen at least once.[r]In order to unlock the Overdrive version of a card, capture once or attempt 16 times its counterpart on each difficulty.

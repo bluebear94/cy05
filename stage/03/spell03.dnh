@@ -1,0 +1,83 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 9;
+let level = 3;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(10000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(64);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+let suck = false;
+let sucked = false;
+
+task nova(shot) {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	ObjShot_SetAutoDelete(shot, false);
+	ObjShot_SetSpellResist(shot, true);
+	while (!Obj_IsDeleted(shot)) {
+		if (suck) {
+			if (!sucked) {
+				ObjMove_SetAcceleration(shot, -0.2);
+				ObjMove_SetMaxSpeed(shot, -9);
+			}
+			else if (GetObjectDistance(shot, objBoss) < 5) {
+				ObjMove_SetSpeed(shot, 0);
+				ObjMove_SetAcceleration(shot, 0);
+				ObjMove_SetPosition(shot, width / 2, height / 2);
+			}
+		} else {
+			if (sucked) {
+				ObjMove_SetSpeed(shot, rand(1.5, 3.5));
+				ObjMove_SetAngle(shot, rand(0, 360));
+			}
+		}
+		yield;
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	ObjMove_SetDestAtFrame(objBoss, width / 2, height / 2, 90);
+	wait(90);
+	let count = 0;
+	loop (20 + 8 * getDifficulty) {
+		nova(CreateShotOA1(objBoss, rand(1.5, 2.5), rand(0, 360), DS_BALL_S_PURPLE, 0));
+		nova(CreateShotOA1(objBoss, rand(1.5, 2.5), rand(0, 360), DS_BALL_S_R_PURPLE, 0));
+		nova(CreateShotOA1(objBoss, rand(1.5, 2.5), rand(0, 360), DS_LIGHT_WHITE, 0));
+		nova(CreateShotOA1(objBoss, rand(1.5, 2.5), rand(0, 360), DS_LIGHT_R_WHITE, 0));
+		nova(CreateShotOA1(objBoss, rand(1.5, 2.5), rand(0, 360), DS_BALL_L_RED, 0));
+	}
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		alternative (count % 240)
+		case (70) {
+			suck = true;
+		}
+		case (230) {
+			suck = false;
+		}
+		count++;
+		yield;
+		sucked = suck;
+	}
+}

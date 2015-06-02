@@ -1,0 +1,32 @@
+./../resource/boss/st07.png
+0
+/
+4
+Eh heh, I like this place. First of all, it's on dry land.
+0
+Second, it's not too hot or too cold.
+0
+I think I'll lie down and watch the stars.
+0
+Is it night already?
+0
+/
+4
+It is simply an illusion. Outside of this garden, it is[r]still a snowy day.
+1
+[ruby rb="Cynreon Etelos" rt="Great Hidden Cessaedan"]
+3
+If you wish to dwell here, then I command you to kill the[r]protector of the forest.
+1
+What... I can't do that!
+0
+Why do many people want someone else to die?
+0
+I've been plotting for three years to take over Armadereyn.
+1
+Do it yourself!
+0
+Strangely, neither can I commit the murder.
+1
+Well, this all boils down to a battle.
+0

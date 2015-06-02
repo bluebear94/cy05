@@ -1,0 +1,12 @@
+./../resource/boss/st01.png
+0
+Snow is calmly falling...
+0
+Hey you! Stop singing!
+1
+My bad.
+0
+[ruby rb="Mernen" rt="Small Nymph"]
+3
+Look at the trees! Even the leaves are falling!
+1

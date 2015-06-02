@@ -1,0 +1,123 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 19;
+let level = 5;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(20000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(96);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let period = 225 / (1 + 0.25 * d);
+	let layers = 3 + truncate(0.5 * d);
+	let deviation = 0.1 * truncate(0.5 * d);
+	TWorkOD;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		loop (layers) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			loop (20) {
+				CreateShotOA1(objBoss, 1.2 + deviation * rand(-1, 1), rand(0, 360), DS_BALL_S_A_YELLOW, 60);
+			}
+			wait(30);
+		}
+		wait(period - 30 * layers);
+	}
+}
+
+task TWorkOD {
+	function health {return ObjEnemy_GetInfo(objBoss, INFO_LIFE);}
+	while (health > 15000) {yield;}
+	kunai;
+	while (health > 10000) {yield;}
+	snakes;
+	while (health > 5000) {yield;}
+	explosives;
+}
+
+task kunai {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let period = 30 - 3 * d;
+	let gap = 5.5;
+	let a = 90;
+	let ways = 2 + truncate(0.5 * d);
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		loop (ways) {
+			CreateShotA1(100, 50, 1.5, a, DS_KUNAI_RED, 0);
+			CreateShotA1(width - 100, 50, 1.5, 180 - a, DS_KUNAI_BLUE, 0);
+			a += 360 / ways;
+		}
+		a += gap;
+		wait(period);
+	}
+}
+
+task snakes {
+	let d = getDifficulty;
+	let period = 360 - 30 * d;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in -3 .. 4) {
+			let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss),
+				2, a + 20 * i, 90, 10, DS_BALL_SS_GREEN, 0);
+			snake(laser, 20, 1/120);
+			ObjCrLaser_SetTipDecrement(laser, 0);
+		}
+		wait(period);
+	}
+}
+
+task explode(shot) {
+	wait(150);
+	let volleys = 6 + 2 * getDifficulty;
+	if (!Obj_IsDeleted(shot)) {
+		let a = rand(0, 360);
+		ascent (i in 0 .. volleys) {
+			CreateShotOA1(shot, 0.75, a + 360 * i / volleys, DS_BALL_SS_YELLOW, 10);
+		}
+		Obj_Delete(shot);
+	}
+}
+
+task explosives {
+	let cy = GetStgFrameHeight / 2;
+	let cx = GetStgFrameWidth / 2;
+	let d = getDifficulty;
+	let period = 360 - 30 * d;
+	let volleys = 4 + 2 * d;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		let r = rand(0, cx);
+		ascent (i in 0 .. volleys) {
+			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+			let shot = CreateShotA1(cx + r * cos(a), cy + r * sin(a), 0, 0, DS_LIGHT_RED, 90);
+			explode(shot);
+			wait(120 / volleys);
+			a += 360 / volleys;
+		}
+		wait(period);
+	}
+}

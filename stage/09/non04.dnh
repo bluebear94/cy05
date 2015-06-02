@@ -1,0 +1,78 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St5 Non4"]
+#Text["Fourth nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 8;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(40);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let vd = 4 + truncate(d / 2);
+	let period = 40 - 2 * d;
+	let speed = 30 / period;
+	let yp = 0;
+	let ys = 0.8 + 0.2 * d;
+	function fire(x) {
+		let yy = yp;
+		function s(a) {
+			CreateShotB1(x, yy, speed * cos(a), speed * sin(a) + ys, DS_MISSILE_WHITE, 30);
+		}
+		ascent (i in 0 .. vd) {
+			s(30);
+			s(-30);
+			s(150);
+			s(210);
+			yy += height / vd;
+		}
+	}
+	function fire2(x) {
+		let yy = yp;
+		ascent (i in 0 .. vd) {
+			DelayLaser(x, yy, 30, 512, 20, 60, DS_BALL_S_WHITE, 60);
+			DelayLaser(x, yy, -30, 512, 20, 60, DS_BALL_S_WHITE, 60);
+			DelayLaser(x, yy, 150, 512, 20, 60, DS_BALL_S_WHITE, 60);
+			DelayLaser(x, yy, 210, 512, 20, 60, DS_BALL_S_WHITE, 60);
+			yy += height / vd;
+		}
+	}
+	fire2(50);
+	fire2(width - 50);
+	if (d >= 2) {
+		fire2(90);
+		fire2(width - 90);
+	}
+	wait(60);
+	while (!isDead) {
+		fire(50);
+		fire(width - 50);
+		if (d >= 2) {
+			fire(90);
+			fire(width - 90);
+		}
+		wait(period);
+		yp += ys * period;
+		if (yp > height / vd) {yp -= height / vd;}
+	}
+}

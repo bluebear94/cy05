@@ -1,0 +1,13 @@
+//TouhouDanmakufu
+//ScriptVersion[3]
+
+let GREEN_ITEM = 1;
+let LIFE_FRAGMENT = 2;
+let BOMB_FRAGMENT = 3;
+let POINT_ITEM = 4;
+let WHOLE_LIFE = 5;
+let WHOLE_BOMB = 6;
+let FIRE_FRAGMENT = 7;
+let WATER_FRAGMENT = 8;
+let EARTH_FRAGMENT = 9;
+let AIR_FRAGMENT = 10;
