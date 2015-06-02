@@ -581,7 +581,8 @@ function abs(x) {return absolute(x);}
 function randIntH(l, h) {return floor(rand(l, h));}
 
 task dragX(x, t) {
-	let x0 = Get2DCameraX;
+	let x0 = GetCommonData("ScheduledX", Get2DCameraX);
+	SetCommonData("ScheduledX", x);
 	let dx = x - x0;
 	loop (t) {
 		Set2DCameraFocusX(Get2DCameraX + dx / t);
@@ -590,7 +591,8 @@ task dragX(x, t) {
 }
 
 task dragY(y, t) {
-	let y0 = Get2DCameraY;
+	let y0 = GetCommonData("ScheduledY", Get2DCameraY);
+	SetCommonData("ScheduledY", y);
 	let dy = y - y0;
 	loop (t) {
 		Set2DCameraFocusY(Get2DCameraY + dy / t);
@@ -599,7 +601,8 @@ task dragY(y, t) {
 }
 
 task dragA(a, t) {
-	let a0 = Get2DCameraAngleZ;
+	let a0 = GetCommonData("ScheduledA", Get2DCameraAngleZ);
+	SetCommonData("ScheduledA", a);
 	let da = (a - a0) % 360;
 	if (da > 180) {da -= 360;}
 	loop (t) {
@@ -609,7 +612,8 @@ task dragA(a, t) {
 }
 
 task dragU(u, t) {
-	let u0 = Get2DCameraRatioX;
+	let u0 = GetCommonData("ScheduledU", Get2DCameraRatioX);
+	SetCommonData("ScheduledU", u);
 	let du = u - u0;
 	loop (t) {
 		Set2DCameraRatioX(Get2DCameraRatioX + du / t);
@@ -618,7 +622,8 @@ task dragU(u, t) {
 }
 
 task dragV(v, t) {
-	let v0 = Get2DCameraRatioY;
+	let v0 = GetCommonData("ScheduledV", Get2DCameraRatioY);
+	SetCommonData("ScheduledV", v);
 	let dv = v - v0;
 	loop (t) {
 		Set2DCameraRatioY(Get2DCameraRatioY + dv / t);

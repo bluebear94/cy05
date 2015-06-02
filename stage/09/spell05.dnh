@@ -46,6 +46,7 @@ task TWork {
 	task fork {
 		while (!isDead) {
 			Set2DCameraAngleZ(a);
+			SetCommonData("ScheduledA", a);
 			t += 1.9;
 			a += rm * (0.7 + 1.1 * sin(t));
 			yield;

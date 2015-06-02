@@ -307,13 +307,14 @@ task spawnEnemy14(x0, y0, xc, yc, xf, yf, r, speed, angle) {
 	task fire {
 		while (!Obj_IsDeleted(enemy)) {
 			let a = GetAngleToPlayer(enemy);
-			ascent (i in -d .. d + 1) {
+			ascent (i in -g .. g + 1) {
 				CreateShotOA1(enemy, 1.25, a + 20 * i, DS_RICE_S_BLUE, 0);
 			}
 			wait(10);
 		}
 	}
 	let d = getDifficulty;
+	let g = max(0, d - 2);
 	let period = 10 - d;
 	let shots = 10 * d;
 	let enemy = enemyOf(x0, y0, 0, 0,

@@ -41,7 +41,9 @@ task TWork {
 task flip1 {
 	wait(2700);
 	ascent (t in 0 .. 2700) {
-		Set2DCameraAngleZ(30 * sin(0.5 * t));
+		let a = 30 * sin(0.5 * t);
+		Set2DCameraAngleZ(a);
+		SetCommonData("ScheduledA", a);
 		yield;
 	}
 }
@@ -67,6 +69,7 @@ task flip3 {
 task notOverdrive {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
+	ObjEnemy_SetDamageRate(objBoss, 0, 0);
 	let cx = width / 2;
 	let cy = height / 2;
 	let d = getDifficulty;
@@ -110,6 +113,7 @@ task notOverdrive {
 		}
 		yield;
 	}
+	ObjEnemy_SetDamageRate(objBoss, 100, -10);
 }
 
 task laserBarrierA2(x0, x1, speed, angle, graph) {
