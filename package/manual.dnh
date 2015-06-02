@@ -19,6 +19,7 @@ task main {
 	let title = createTextS(16 - l, -h, "", true, [40, 240, 50], [128, 255, 144], 40);
 	ObjText_SetFontBold(title, true);
 	let body = createTextS(16 - l, 64 - h, "", true, [128, 255, 255], [128, 255, 255], 16);
+	ObjText_SetMaxWidth(body, 352);
 	ObjText_SetFontType(body, GetCommonData("DiaFont", "Consolas"));
 	ObjText_SetFontBorderType(body, BORDER_NONE);
 	ObjText_SetSidePitch(body, 1.05);

@@ -58,6 +58,7 @@ task TWork {
 	let width = GetStgFrameWidth;
 	let d = getDifficulty;
 	let period = 600 - 60 * d;
+	if (d >= 1) {TWorkOD;}
 	loop {
 		if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
 		let b = CreateShotOA1(objBoss, 2.5, rand(90, 270), DS_BUTTERFLY_R_WHITE, 30);
@@ -67,8 +68,17 @@ task TWork {
 }
 
 task TWorkOD {
-	ascent (i in 0 .. 7) {
-		createCircleShot(ObjMove_GetX(objBoss), ObjMove_GetY(boss),
-			50 * i, [-300, 300][i % 2], rand(0, 360), DS_BUTTERFLY_GREEN, 360, 4800);
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let period = 40 - 2 * d;
+	let ways = 6 + 2 * d;
+	while (!isDead) {
+		let a = GetAngleToPlayer(objBoss);
+		loop (ways) {
+			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, a, 0.01, 2.5, DS_BILL_WHITE, 0);
+			a += 360 / ways;
+		}
+		wait(period);
 	}
 }

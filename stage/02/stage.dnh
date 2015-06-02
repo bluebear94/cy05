@@ -18,6 +18,8 @@ let bgm = 3;
 let width = GetStgFrameWidth;
 let height = GetStgFrameHeight;
 
+// TODO: Lengthen
+
 task TStage {
 	if (getCharacter < 2) {
 		dialogueData = readDD("d2_1");
@@ -94,7 +96,7 @@ task spawnEnemy05(x1, y1, x2, y2) {
 	wait(60);
 	let time = 0;
 	while (!Obj_IsDeleted(enemy) && time < 600) {
-		CreateShotB2(x2, y2, rand(-2, 2), -rand(0, 2), 0, 0.02, 8, 4, DS_ICE_SKY, 0);
+		CreateShotB2(x2, y2, rand(-2, 2), -rand(0, 2), 0, 0.02, 8, 4, DS_ICE_GREEN, 0);
 		wait(period);
 		time += period;
 	}

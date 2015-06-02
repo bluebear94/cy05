@@ -79,7 +79,8 @@ task TShot {
 					wasFocused = false;
 				}
 				ascent (i in -5 .. 5) {
-					CreatePlayerShotA1(x, y - 2, 10, 270 + 2 * i, 4, 1, SOLAR_PROMINENCE);
+					let sp = CreatePlayerShotA1(x, y - 2, 12, 270 + 3 * i, 4, 1, SOLAR_PROMINENCE);
+					ObjRender_SetAlpha(sp, 100);
 				}
 			}
 		}

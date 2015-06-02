@@ -37,7 +37,7 @@ task TWork {
 				let y = ObjMove_GetY(objBoss);
 				let sideAngle = angle - 90;
 				let shot = CreateShotA1(x + 30 * i * cos(sideAngle), y + 30 * i * sin(sideAngle), speed, angle, DS_KNIFE_KOUMA_RED, 30);
-				ObjMove_AddPatternA3(shot, 60, speed * 0.4, angle + rand(50, 90) * (2 * round(rand(0, 1)) - 1), 0.01, 0, speed * 0.8, DS_KNIFE_KOUMA_WHITE);
+				ObjMove_AddPatternA3(shot, 60, speed * 0.1, angle + rand(50, 90) * (2 * round(rand(0, 1)) - 1), 0.01, 0, speed * 0.8, DS_KNIFE_KOUMA_WHITE);
 			}
 			angle += 90;
 		}
