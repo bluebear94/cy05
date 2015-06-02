@@ -22,7 +22,7 @@ Overdrive
 Start
 Extra
 Practice
-SpellPr
+Spell Practice
 Replay
 Data
 Option

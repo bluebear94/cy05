@@ -88,7 +88,7 @@ function TDialogue(data) {
 	ObjText_SetFontType(intro, typeface);
 	ObjText_SetFontSize(intro, 28);
 	ObjText_SetSyntacticAnalysis(intro, true);
-	ObjText_SetMaxWidth(intro, 300);
+	ObjText_SetMaxWidth(intro, 320);
 	ObjText_SetHorizontalAlignment(intro, ALIGNMENT_CENTER);
 	ObjText_SetFontColorTop(intro, 255, 192, 128);
 	ObjText_SetFontColorBottom(intro, 255, 192, 128);

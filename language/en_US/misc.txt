@@ -6,3 +6,4 @@ VL Gothic
 1
 VL Gothic
 Uruwi
+digits_small_en.png
