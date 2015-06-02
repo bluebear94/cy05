@@ -57,3 +57,4 @@ B
 あと
 回
 Now Loading...
+Left/Right to Change Player
