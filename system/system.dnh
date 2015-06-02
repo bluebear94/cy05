@@ -96,29 +96,27 @@ function initFrame() {
 	ObjSprite2D_SetDestRect(obj, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
-function createNumberObject(x, y) {
-	let path = GetCurrentScriptDirectory ~ "../resource/digits.png";
-	let obj = ObjPrim_Create(OBJ_SPRITE_LIST_2D);
-	ObjPrim_SetTexture(obj, path);
+function createNumberObject(x, y, tr, tg, tb) {
+	let obj = ObjText_Create;
 	ObjRender_SetBlendType(obj, BLEND_ALPHA);
 	Obj_SetRenderPriority(obj, 0.1);
 	ObjRender_SetY(obj, y);
 	ObjRender_SetX(obj, x);
+	ObjText_SetFontType(obj, hsFont);
+	ObjText_SetFontSize(obj, 24);
+	ObjText_SetFontColorTop(obj, tr, tg, tb);
+	ObjText_SetFontColorBottom(obj, 255, 255, 255);
+	ObjText_SetFontBorderType(obj, BORDER_FULL);
+	ObjText_SetFontBorderWidth(obj, 2);
+	ObjText_SetFontBorderColor(obj, 0, 0, 0);
 	return obj;
 }
 
 function updateNumber(obj, n, d, s) {
 	let x = ObjRender_GetX(obj);
 	let y = ObjRender_GetY(obj);
-	let listNum = DigitToArrayBase(n, base, d);
-	ascent (iObj in 0 .. d) {
-		let num = listNum[iObj];
-		ObjRender_SetX(obj, x + iObj * 14 * s);
-		ObjSpriteList2D_SetSourceRect(obj, num * 64, 0, (num + 1) * 64, 64);
-		ObjSpriteList2D_SetDestRect(obj, 0, 0, 16 * s, 24 * s);
-		ObjSpriteList2D_AddVertex(obj);
-	}
-	ObjRender_SetX(obj, x);
+	let text = IntToStringBaseLZ(n, base, d);
+	ObjText_SetText(obj, text);
 }
 
 task TScore(text, y, flag) {
@@ -135,10 +133,10 @@ task TScore(text, y, flag) {
 	Obj_SetRenderPriority(objScore, 0.01);
 	ObjRender_SetX(objScore, 428);
 	ObjRender_SetY(objScore, y);
-	let objNum = createNumberObject(428, y + 20);
+	let objNum = createNumberObject(428, y + 20, 200, 200, 255);
 	loop {
 		ObjSpriteList2D_ClearVertexCount(objNum);
-		updateNumber(objNum, [getHighScore, GetScore][flag], 14, 1);
+		updateNumber(objNum, [getHighScore, GetScore][flag], 16, 1);
 		yield;
 	}
 }
@@ -157,10 +155,10 @@ task TGraze() {
 	Obj_SetRenderPriority(objGraze, 0.01);
 	ObjRender_SetX(objGraze, 428);
 	ObjRender_SetY(objGraze, 98);
-	let objNum = createNumberObject(440, 122);
+	let objNum = createNumberObject(440, 122, 255, 200, 200);
 	loop {
 		ObjSpriteList2D_ClearVertexCount(objNum);
-		updateNumber(objNum, min(GetGraze, 999999), 5, 1);
+		updateNumber(objNum, min(GetGraze, 999999), 6, 1);
 		yield;
 	}
 }
@@ -209,7 +207,7 @@ task TPlayerLife {
 	ObjRender_SetY(lifeFragText, 180);
 	ObjText_SetFontSize(lifeFragText, 16);
 	ObjText_SetFontType(lifeFragText, typeface);
-	let objNum = createNumberObject(440, 174);
+	let objNum = createNumberObject(440, 174, 255, 200, 255);
 	loop {
 		ObjText_SetText(lifeFragText,
 			"(" ~ getInterfaceStrings(PIECES) ~ ": " ~ IntToStringBase(getLifeFrag, base) ~ "/" ~
@@ -241,7 +239,7 @@ task TPlayerSpell {
 	ObjRender_SetY(bombFragText, 232);
 	ObjText_SetFontSize(bombFragText, 16);
 	ObjText_SetFontType(bombFragText, typeface);
-	let objNum = createNumberObject(440, 226);
+	let objNum = createNumberObject(440, 226, 200, 255, 200);
 	loop {
 		ObjText_SetText(bombFragText,
 			"(" ~ getInterfaceStrings(PIECES) ~ ": " ~ IntToStringBase(getBombFrag, base) ~ "/" ~
@@ -259,7 +257,7 @@ task TPIV {
 	ObjText_SetText(objScore, getInterfaceStrings(CUR_PIV));
 	ObjText_SetFontSize(objScore, 20 * fontScale);
 	ObjText_SetFontBold(objScore, true);
-	ObjText_SetFontColorTop(objScore, 200, 200, 255);
+	ObjText_SetFontColorTop(objScore, 200, 255, 255);
 	ObjText_SetFontColorBottom(objScore, 255, 255, 255);
 	ObjText_SetFontBorderType(objScore, BORDER_FULL);
 	ObjText_SetFontBorderColor(objScore, 0, 0, 0);
@@ -268,10 +266,10 @@ task TPIV {
 	Obj_SetRenderPriority(objScore, 0.01);
 	ObjRender_SetX(objScore, 428);
 	ObjRender_SetY(objScore, 254);
-	let objNum = createNumberObject(498, 254);
+	let objNum = createNumberObject(498, 254, 200, 255, 255);
 	loop {
 		ObjSpriteList2D_ClearVertexCount(objNum);
-		updateNumber(objNum, getPIV, 9, 1);
+		updateNumber(objNum, getPIV, 10, 1);
 		yield;
 	}
 }
@@ -309,7 +307,7 @@ task TBossLife {
 }
 
 task TBossTimer {
-	let objNum = createNumberObject(150, 42);
+	let objNum = createNumberObject(150, 42, 255, 255, 200);
 	Obj_SetRenderPriority(objNum, 0.8);
 	let objScene = ID_INVALID;
 	loop {
@@ -321,11 +319,9 @@ task TBossTimer {
 	function RenderTimer() {
 		let timer = ObjEnemyBossScene_GetInfo(objScene, INFO_TIMERF) / 60;
 		timer = min(timer, base^3 - 1 / base^2);
-		ObjSpriteList2D_ClearVertexCount(objNum);
-		updateNumber(objNum, truncate(timer), 3, 1);
-		ObjRender_SetX(objNum, 192);
-		updateNumber(objNum, truncate(timer * base^2 % base^2), 2, 11/14);
-		ObjRender_SetX(objNum, 150);
+		let text = IntToStringBaseLZ(truncate(timer), base, 3) ~ "." ~
+			IntToStringBaseLZ(truncate((base^2 * timer) % base^2), base, 2);
+		ObjText_SetText(objNum, text);
 	}
 }
 
