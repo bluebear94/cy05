@@ -26,13 +26,19 @@ task main {
 		entries = entries ~
 			[createTextS(16, 16 + 12 * i, str, true, [40, 240, 50], [128, 255, 144], 12)];
 	}
-	let title = createTextS(16, 240, "", true, [128, 255, 255], [128, 255, 255], 12);
-	let desc = createTextS(16, 270, "", true, [128, 255, 255], [128, 255, 255], 12);
-	let body = createTextS(16, 290, "", true, [128, 255, 255], [128, 255, 255], 12);
+	let title = createTextS(16, 240, "", true, [128, 255, 255], [128, 255, 255], 16);
+	let desc = createTextS(16, 270, "", true, [128, 255, 255], [128, 255, 255], 16);
+	let body = createTextS(16, 290, "", true, [128, 255, 255], [128, 255, 255], 16);
 	ObjText_SetMaxWidth(body, 608);
 	ObjText_SetFontType(title, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontBorderType(title, BORDER_NONE);
+	ObjText_SetSidePitch(title, 1.05);
 	ObjText_SetFontType(desc, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontBorderType(desc, BORDER_NONE);
+	ObjText_SetSidePitch(desc, 1.05);
 	ObjText_SetFontType(body, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontBorderType(body, BORDER_NONE);
+	ObjText_SetSidePitch(body, 1.05);
 	function update(i) {
 		if (nowPlaying == i || !GetAreaCommonData("Cy05", "HeardBGM " ~ IntToString(i), false))
 			{return;}
