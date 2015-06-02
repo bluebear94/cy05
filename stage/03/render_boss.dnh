@@ -7,8 +7,8 @@ task TRender {
 		if(speed == 0) {
 			ObjSprite2D_SetSourceRect(objBoss, 0, 1, 63, 96);
 		}
-		else if(cos(angle) > 0){ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 96);}
-		else if(cos(angle) < 0){ObjSprite2D_SetSourceRect(objBoss, 128, 1, 191, 96);}
+		else if(cos(angle) > 0){ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64);}
+		else if(cos(angle) < 0){ObjSprite2D_SetSourceRect(objBoss, 128, 1, 191, 64);}
 		ObjSprite2D_SetDestCenter(objBoss);
 		yield;
 	}

@@ -462,7 +462,7 @@ function continueMenu {
 		WriteLog(GetCommonData("Stage", 1));
 		WriteLog(GetScore);
 		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, 0 + isHidden, GetCommonData("Stage", 1), GetScore]);
-		while (!GetCommonData("HSSubmitDone", false)) {WriteLog("poop"); yield;}
+		while (!GetCommonData("HSSubmitDone", false)) {yield;}
 	}
 	SetCommonData("HSSubmitDone", false);
 	if (getContinue >= maxContinues || IsReplay || gameMode != MODE_ALL) {dedz(true); CloseStgScene; return;}
