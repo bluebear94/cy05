@@ -51,8 +51,8 @@ task TShot {
 		if (shot == KEY_PUSH || shot == KEY_HOLD && tick == 0 &&
 			GetPlayerState == STATE_NORMAL && IsPermitPlayerShot) {
 			if (isFocused) {
-				CreatePlayerShotA1(x - 5, y, 10, 270, 15, 1, SPIKED_SEED);
-				CreatePlayerShotA1(x + 5, y, 10, 270, 15, 1, SPIKED_SEED);
+				CreatePlayerShotA1(x - 5, y, 10, 270, 13, 1, SPIKED_SEED);
+				CreatePlayerShotA1(x + 5, y, 10, 270, 13, 1, SPIKED_SEED);
 				CreatePlayerShotA1(x - 2.5, y, 10, 235, 7, 1, SPIKED_SEED);
 				CreatePlayerShotA1(x + 2.5, y, 10, 315, 7, 1, SPIKED_SEED);
 				CreatePlayerShotA1(x - 2.5, y + 8, 10, 90, 5, 1, SPIKED_SEED);
@@ -60,10 +60,10 @@ task TShot {
 			}
 			else {
 				home(CreatePlayerShotA1(x, y, 10, 270, 10, 1, SILVER_ARROW));
-				CreatePlayerShotA1(x - 5, y - 3, 10, 270, 10, 1, SILVER_ARROW);
-				CreatePlayerShotA1(x + 5, y - 3, 10, 270, 10, 1, SILVER_ARROW);
-				CreatePlayerShotA1(x - 10, y - 3, 10, 270, 8, 1, SILVER_ARROW);
-				CreatePlayerShotA1(x + 10, y - 3, 10, 270, 8, 1, SILVER_ARROW);
+				CreatePlayerShotA1(x - 5, y - 3, 10, 270, 7, 1, SILVER_ARROW);
+				CreatePlayerShotA1(x + 5, y - 3, 10, 270, 7, 1, SILVER_ARROW);
+				CreatePlayerShotA1(x - 10, y - 3, 10, 270, 5, 1, SILVER_ARROW);
+				CreatePlayerShotA1(x + 10, y - 3, 10, 270, 5, 1, SILVER_ARROW);
 			}
 		}
 		tick++;
