@@ -29,7 +29,8 @@ ShotData {
 }
 ShotData {
 	id = 261
-	render = ADD
+	render = ADD_ARGB
+	alpha = 50
 	rect = (64, 0, 80, 16)
 }
 ShotData {

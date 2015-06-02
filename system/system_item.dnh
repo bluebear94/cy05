@@ -87,20 +87,21 @@ task renderScore(x, y, amt, color) {
 	y += rand(-2, 2);
 	if (textures > 200 - 40 * getGraphicsCut) {return;}
 	textures++;
-	let pathDigit = GetCurrentScriptDirectory ~ "../resource/digits_small.png";
+	let pathDigit = GetCurrentScriptDirectory ~ "../resource/" ~ digitGraph;
+	let gWidth = charWidth(digitGraph);
 	let obj = ObjPrim_Create(OBJ_SPRITE_LIST_2D);
 	ObjPrim_SetTexture(obj, pathDigit);
 	ObjRender_SetBlendType(obj, BLEND_ALPHA);
 	//ObjRender_SetAlpha(obj, 127);
 	ObjRender_SetColor(obj, color[0], color[1], color[2]);
-	let listNum = DigitToArrayBaseWC(amt, 16);
+	let listNum = DigitToArrayBaseWC(amt, base);
 	let digits = length(listNum);
 	ascent (j in 0 .. 30) {
 		ObjRender_SetY(obj, y - 8 - j);
 		ObjSpriteList2D_ClearVertexCount(obj);
 		ascent (iObj in 0 .. digits) {
 			let num = listNum[iObj];
-			ObjRender_SetX(obj, x + 4 * digits - 8 * iObj);
+			ObjRender_SetX(obj, x - gWidth * digits / 2 + gWidth * iObj);
 			ObjSpriteList2D_SetSourceRect(obj, num * 16, 0, (num + 1) * 16, 16);
 			ObjSpriteList2D_SetDestRect(obj, 0, 0, 16, 16);
 			ObjSpriteList2D_AddVertex(obj);
@@ -126,4 +127,11 @@ task renderScore(x, y, amt, color) {
 	case (EV_GET_ITEM) {
 		getItem(GetEventArgument(0), GetEventArgument(1));
 	}
+}
+
+function charWidth(image) {
+	alternative (image)
+	case ("digits_small.png") {return -8;}
+	case ("digits_small_en.png") {return 8;}
+	case ("digits_small_jp.png") {return 16;}
 }
