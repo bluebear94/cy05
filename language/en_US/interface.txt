@@ -31,7 +31,7 @@ You died![r]Continue?[r](Z) Yeah![r](X) No!
 Music (0 .. 100)
 Sound
 Effect Cut
-???
+Hidden
 Language
 Default
 Back to Title

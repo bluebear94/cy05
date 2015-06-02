@@ -31,7 +31,7 @@ Quit
 Music (0 .. 100)
 Sound Effect
 Effect Cut
-???
+Hidden
 言語
 Default
 タイトルに戻る
