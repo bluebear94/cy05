@@ -29,6 +29,7 @@ let level = 9;
 task kink(shot, angle) {
 	wait(rand(0, 144));
 	ObjMove_SetAngle(shot, ObjMove_GetAngle(shot) + angle);
+	ObjMove_SetSpeed(shot, 0.4 * ObjMove_GetSpeed(shot));
 	ObjMove_SetAngularVelocity(shot, 0);
 	ObjShot_SetGraphic(shot, DS_BALL_S_R_WHITE);
 }

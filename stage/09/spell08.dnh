@@ -42,6 +42,7 @@ task flip1 {
 	wait(2700);
 	ascent (t in 0 .. 2700) {
 		Set2DCameraAngleZ(30 * sin(0.5 * t));
+		yield;
 	}
 }
 
