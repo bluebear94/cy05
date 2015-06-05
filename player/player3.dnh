@@ -4,6 +4,7 @@
 #Title["Esel Rygen 1"]
 //#Image["./ExRumiaImage.png"]
 #include "./shotc.dnh"
+#include "./player_magic_circle.dnh"
 #include "script/default_system/Default_ShotConst.txt"
 #include "../prologue.dnh"
 #include "../system/system_mech.dnh"

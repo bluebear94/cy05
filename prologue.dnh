@@ -45,10 +45,6 @@ function setDRR1(enm, shot, bomb) {
 task TExplosion {
 	return;
 }
-// TODO: magic circle effect
-task TMagicCircle {
-	return;
-}
 
 // Returns true if focused.
 function isFocused() {

@@ -3,9 +3,10 @@
 #ID["Rencron0"]
 #Title["Elssecisso Rencron 0"]
 //#Image["./ExRumiaImage.png"]
-#include"./shotc.dnh"
-#include"../prologue.dnh"
-#include"../system/system_mech.dnh"
+#include "./shotc.dnh"
+#include "./player_magic_circle.dnh"
+#include "../prologue.dnh"
+#include "../system/system_mech.dnh"
 
 
 let objPlayer = GetPlayerObjectID();

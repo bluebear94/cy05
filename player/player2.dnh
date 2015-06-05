@@ -4,6 +4,7 @@
 #Title["Esel Rygen 0"]
 //#Image["./ExRumiaImage.png"]
 #include "./shotc.dnh"
+#include "./player_magic_circle.dnh"
 #include "../prologue.dnh"
 #include "../system/system_mech.dnh"
 #include "./laser.dnh"
