@@ -27,6 +27,9 @@ task TStage {
 		dialogueData2 = readDD("d9_4");
 	}
 	let d = getDifficulty;
+	let dc41 = 5 + truncate(d / 1.5);
+	let dp41 = 20 - truncate(d / 0.75);
+	let ds41 = 1.5;
 	loop (10) {
 		spawnEnemy39;
 		wait(20);
@@ -44,6 +47,13 @@ task TStage {
 	}
 	waitForClearScreen;
 	wait(60);
+	spawnEnemies41(0, 60, ds41, 10, dc41, dp41);
+	wait(60);
+	spawnEnemies41(width, 120, ds41, -170, dc41, dp41);
+	wait(60);
+	spawnEnemies41(width, height - 120, ds41, 170, dc41, dp41);
+	wait(60);
+	spawnEnemies41(0, height - 60, ds41, -10, dc41, dp41);
 	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
@@ -98,4 +108,26 @@ task spawnEnemy40(x1, y1, x2, y2) {
 		c += p;
 	}
 	Obj_Delete(enemy);
+}
+
+task spawnEnemy41(x, y, speed, angle) {
+	let enemy = enemyOf(x, y, speed, angle,
+		"./../resource/enemy.png", 0, 32, 16, 48,
+		400, 100, 100, 8, 8,
+		[10, 10, 0, truncate(rand(0, 1.25)), 3, 3, 3, 3]);
+	let d = getDifficulty;
+	let sp = 1.4 + 0.2 * d;
+	let period = 90 - 2 * d;
+	while (!Obj_IsDeleted(enemy)) {
+		CreateShotOA1(enemy, sp * rand(1, 1.4), rand(-60, -120), DS_ICE_ORANGE, 0);
+		CreateShotOA1(enemy, sp * rand(1, 1.4), rand(60, 120), DS_ICE_ORANGE, 0);
+		wait(rand(0, 2 * period));
+	}
+}
+
+task spawnEnemies41(x, y, speed, angle, count, period) {
+	loop (count) {
+		spawnEnemy41(x, y, speed, angle);
+		wait(period);
+	}
 }

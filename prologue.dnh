@@ -238,7 +238,7 @@ function getBombFragR() {
 
 function getHighScore {
 	let hs = GetAreaCommonData("Cy05",
-		"HS" ~ IntToString(getCharacter) ~ IntToString(getDifficulty) ~ ["N", "H"][isHidden], [[0]])[0][0];
+		"HS" ~ IntToString(getCharacter) ~ IntToString(getDifficulty) ~ ["N", "H"][isHidden], [[2^32]])[0][0];
 	return max(GetScore, hs);
 }
 
