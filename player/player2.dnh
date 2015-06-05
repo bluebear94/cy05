@@ -27,6 +27,7 @@ let current = GetCurrentScriptDirectory();
 }
 
 @MainLoop {
+	SetPlayerClip(11, 11, GetStgFrameWidth-11, GetStgFrameHeight-18);
 	yield;
 }
 
