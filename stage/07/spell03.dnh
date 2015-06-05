@@ -78,7 +78,7 @@ task TWorkOD2 {
 	let period = 60 - 4 * d;
 	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
 		loop (10) {
-			CreateShotB2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(-2, 2), rand(-2, 0), 0, 0.02, 0, 2, DS_BALL_S_GREEN, 0);
+			CreateShotB2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(-2, 2), rand(-2, 0), 0, 0.02, 0, 2, DS_BALL_S_GREEN, 30);
 		}
 		wait(period);
 	}
@@ -91,8 +91,8 @@ task TWorkOD3 {
 	let width = GetStgFrameWidth;
 	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
 		loop (count) {
-			CreateShotA1(rand(0, width), 0, 2.4, 90, DS_KNIFE_YOUMU_GREEN, 0);
-			CreateShotA1(rand(0, width), height, 2.4, -90, DS_KNIFE_YOUMU_GREEN, 0);
+			CreateShotA1(rand(0, width), 0, 2.4, 90, DS_KNIFE_YOUMU_GREEN, 30);
+			CreateShotA1(rand(0, width), height, 2.4, -90, DS_KNIFE_YOUMU_GREEN, 30);
 		}
 		wait(20);
 	}
