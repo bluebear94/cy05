@@ -285,8 +285,8 @@ Veollerasesa asage «Arcameryl Veollerasa»
 Veollerasesa asage «Arcameryl Veollerasa»
 Veollerasesa asage «Arcameryl Veollerasa»
 «Nerana Sertran eas Rehel»
-Anreata «Nerana Grentoron es Esre Cissogentor»
-Anreata «Nerana Grentoron es Esre Cissogentor»
+Anreata «Nerana Grentoron es Esvella Cissogentor»
+Anreata «Nerana Grentoron es Esvella Cissogentor»
 Anreata «Vanosesa Nalda»
 Anreata «Vanosesa Nalda»
 «Srenatan Šyneoronce Šyproce eas Daeri»
@@ -305,7 +305,7 @@ Vjesa asage «Nepsa-Rysa-Mecrata»
 «Elan-Sarel»
 «Elan-Sarel»
 «Elan-Sarel»
-"Šymessa Šymessan (Ci)"
+«Šymessa Šymessan (Ci)»
 Direction Sign "Retrograde"
 Direction Sign "Retrograde"
 Direction Sign "Retrograde"
