@@ -5,7 +5,6 @@
 #Background["./stg_back.dnh"]
 #Player["./../../player/player0.dnh", "./../../player/player2.dnh"]
 #System["./../../system/system.dnh"]
-
 #include "./../../prologue.dnh"
 #include "./../../system/healthbar.dnh"
 let stage = "09";
@@ -28,6 +27,21 @@ task TStage {
 		dialogueData2 = readDD("d9_4");
 	}
 	let d = getDifficulty;
+	loop (10) {
+		spawnEnemy39;
+		wait(20);
+	}
+	wait(60);
+	spawnEnemy40(150, 0, 150, 300);
+	spawnEnemy40(width - 150, 0, width - 150, 300);
+	waitForClearScreen;
+	wait(60);
+	showStageTitle([255, 192, 255]);
+	ascent (i in 0 .. 4) {
+		spawnEnemy40(30 + 60 * i, height, 30 + 60 * i, height - 50);
+		spawnEnemy40(width - 30 - 60 * i, 0, width - 30 - 60 * i, 50);
+		wait(90);
+	}
 	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
@@ -39,3 +53,47 @@ task TStage {
 }
 
 // 64, 0, 96, 32
+
+task spawnEnemy39 {
+	let enemy = enemyOf(rand(0, GetStgFrameWidth), 0, 1.5, 90,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		200, 100, 100, 8, 8,
+		[5, 5, truncate(rand(0, 1) + 0.1), 0, 1, 1, 1, 1]);
+	wait(60);
+	let d = getDifficulty;
+	let spread = truncate(d / 2);
+	let speed = 2.70 + 0.3 * d;
+	if (!Obj_IsDeleted(enemy)) {
+		let a = GetAngleToPlayer(enemy);
+		ascent (i in 0 .. 12) {
+			ascent (j in -spread .. spread + 1) {
+				CreateShotOA1(enemy, speed * (1 + 0.1 * i), a + 10 * j, DS_KUNAI_YELLOW, 0);
+			}
+		}
+		ObjMove_SetAngle(enemy, 180 * randIntH(0, 2));
+	}
+}
+
+// I brought the 64-bit edition of Python, when this computer uses 32-bit.
+
+task spawnEnemy40(x1, y1, x2, y2) {
+	let enemy = enemyOf(x1, y1, 0, 0,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		600, 100, 100, 8, 8,
+		[20, 20, truncate(rand(0, 1) + 0.1), 0, 5, 5, 5, 5]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 60);
+	wait(60);
+	let p = 24 - 2 * getDifficulty;
+	let c = 0;
+	while (!Obj_IsDeleted(enemy) && c < 600) {
+		let x = ObjMove_GetX(enemy);
+		let y = ObjMove_GetY(enemy);
+		let a = rand(-1, 1);
+		let b = rand(-1, 1);
+		CreateShotB2(x + rand(-5, 5), y + rand(-5, 5), a, -0.5, 0, 0.01, 5 * signum(a), 5, DS_ICE_SKY, 30);
+		CreateShotB2(x + rand(-5, 5), y + rand(-5, 5), b, 0.5, 0, -0.01, 5 * signum(b), -5, DS_ICE_SKY, 30);
+		wait(p);
+		c += p;
+	}
+	Obj_Delete(enemy);
+}
