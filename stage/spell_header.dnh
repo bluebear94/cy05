@@ -37,7 +37,7 @@ task TCutIn {
 	if (id != 0) {
 		ObjEnemyBossScene_StartSpell(GetEnemyBossSceneObjectID);
 		let scName = getSpellNames(id)[getDifficulty];
-		let spellText = textOfWW(scName, 300, 16 * fontScale, 480);
+		let spellText = textOfWW(scName, 330, 16 * fontScale, 480);
 		ObjText_SetHorizontalAlignment(spellText, ALIGNMENT_RIGHT);
 		ObjText_SetFontBorderWidth(spellText, 1);
 		ObjText_SetFontBorderType(spellText, BORDER_FULL);

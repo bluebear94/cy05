@@ -59,9 +59,9 @@ task TShot {
 				CreatePlayerShotA1(x + 48, y + 8, 10, 270, 6, 1, THROWING_NEEDLE);
 			}
 			else {
-				CreatePlayerShotA1(x, y, 10, 270, 17, 1, STEEL_ARROW);
-				CreatePlayerShotA1(x + 15, y, 10, 265, 13.5, 1, STEEL_ARROW);
-				CreatePlayerShotA1(x - 15, y, 10, 275, 13.5, 1, STEEL_ARROW);
+				CreatePlayerShotA1(x, y, 10, 270, 13, 1, STEEL_ARROW);
+				CreatePlayerShotA1(x + 15, y, 10, 265, 10, 1, STEEL_ARROW);
+				CreatePlayerShotA1(x - 15, y, 10, 275, 10, 1, STEEL_ARROW);
 			}
 		}
 		tick++;
