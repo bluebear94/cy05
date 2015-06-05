@@ -292,20 +292,20 @@ Anreata «Vanosesa Nalda»
 «Srenatan Šyneoronce Šyproce eas Daeri»
 «Srenatan Šyneoronce Šyproce eas Daeri»
 «Šan Eo Sesereheras?»
-Liquid Sign "Fluid Reverse"
-Liquid Sign "Fluid Reverse"
-Direction Sign "Repolarization"
-Direction Sign "Repolarization"
-Direction Sign "Repolarization"
-Direction Sign "Repolarization"
-"Reversing Curse of the Sea"
-"Death of the Right-Side-Up"
-"Death of the Right-Side-Up"
-"The Line and the Curve"
-"The Line and the Curve"
-"The Line and the Curve"
-"The Line and the Curve"
-"End is (Not) End"
+Ecesa asage «Ardssa Yšymelerss»
+Ecesa asage «Ardssa Yšymelerss»
+Vjesa asage «Nepsa-Rysa-Mecrata»
+Vjesa asage «Nepsa-Rysa-Mecrata»
+Vjesa asage «Nepsa-Rysa-Mecrata»
+Vjesa asage «Nepsa-Rysa-Mecrata»
+«Mevasa Yšymela Sertran Neren»
+«Asenane Navoryl Nyralas»
+«Asenane Navoryl Nyralas»
+«Elan-Sarel»
+«Elan-Sarel»
+«Elan-Sarel»
+«Elan-Sarel»
+"Šymessa Šymessan (Ci)"
 Direction Sign "Retrograde"
 Direction Sign "Retrograde"
 Direction Sign "Retrograde"
