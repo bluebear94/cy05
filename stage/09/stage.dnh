@@ -55,6 +55,13 @@ task TStage {
 	wait(60);
 	spawnEnemies41(0, height - 60, ds41, -10, dc41, dp41);
 	waitForClearScreen;
+	wait(60);
+	spawnEnemies41(0, 60, ds41, 10, dc41 / 2, dp41);
+	spawnEnemies41(width, 60, ds41, 170, dc41 / 2, dp41);
+	wait(30);
+	spawnEnemy42(0, 0, 90, 90, 0, 1);
+	spawnEnemy42(width, 0, width - 90, 90, 180, -1);
+	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 	// The Boss
@@ -130,4 +137,26 @@ task spawnEnemies41(x, y, speed, angle, count, period) {
 		spawnEnemy41(x, y, speed, angle);
 		wait(period);
 	}
+}
+
+task spawnEnemy42(x1, y1, x2, y2, a0, s) {
+	let enemy = enemyOf(x1, y1, 0, 0,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		750, 100, 100, 8, 8,
+		[25, 25, 0, 0, 5, 5, 5, 5]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 60);
+	wait(60);
+	let angle = a0;
+	let d = getDifficulty;
+	let width = 20 + 4 * d;
+	let height = 1 + truncate(d / 2);
+	loop (width) {
+		ascent (i in 0 .. height) {
+			CreateShotOA1(enemy, 2 + 0.25 * height, angle, DS_RICE_M_PURPLE, 0);
+		}
+		angle += 360 * s / width;
+		wait(120 / width);
+	}
+	ObjMove_SetAngle(enemy, 180 * randIntH(0, 2));
+	ObjMove_SetSpeed(enemy, 5);
 }

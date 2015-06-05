@@ -1,0 +1,26 @@
+a./../resource/boss/st09.png
+0
+/
+4
+E seserehere.
+0
+Šyno vjon ar esada anrehe.
+0
+Cermjon enleamyn vyncyta re serčyvpertena ci-[r]Vija esso.
+1
+/
+4
+Ša ena cerfencyretas. Nealas ci.
+1
+[ruby rb="Arcame Čyrden" rt="Vjan-Sesereydyr"]
+3
+Dernan nas tarpehere sar ne!
+1
+Cerfencyretas. Corcrygo Lyrenorel myra.
+0
+Cryssosnerssen nas tarpehere sar ne.
+0
+Corcrygo Lyrenoresa nerten mentea!
+1
+Endyr nalar ci eon eorta.
+1

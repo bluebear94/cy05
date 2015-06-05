@@ -1,0 +1,4 @@
+./../resource/boss/st09.png
+0
+Šan vynssyta, lenan?
+1

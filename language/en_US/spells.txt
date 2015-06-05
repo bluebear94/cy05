@@ -264,13 +264,13 @@ Directional Confusion "Black Decoy"
 Directional Confusion "Black Decoy"
 Directional Confusion "Black Decoy"
 "Sailing at a Tangent to Earth, toward the Distant Stars"
-fook
-fook
-fook
-fook
-fook
-fook
-fook
+Scratch Sign "Wounds Seen through a Mirror"
+Scratch Sign "Wounds Seen through a Mirror"
+Scratch Sign "Aroma of Fresh Blood"
+Scratch Sign "Aroma of Fresh Blood"
+Scratch Sign "Aroma of Fresh Blood"
+Scratch Sign "Aroma of Fresh Blood"
+"Skin Cut Apart by the Sword"
 Rope Sign "Criminal Hanged Upside-Down"
 Rope Sign "Criminal Hanged Upside-Down"
 Justice "Reverse Execution"
@@ -278,13 +278,13 @@ Justice "Reverse Execution"
 Justice "Reverse Execution"
 Justice "Reverse Execution"
 "Flesh Joined Together by the Knife"
-fook
-fook
-fook
-fook
-fook
-fook
-fook
+Wall Sign "Rainbow Wall"
+Wall Sign "Rainbow Wall"
+Wall Sign "Wall of Arcame"
+Wall Sign "Wall of Arcame"
+Wall Sign "Wall of Arcame"
+Wall Sign "Wall of Arcame"
+"Concentric Maze"
 Rotation "Danmaku Appearing in the Same[r]Place"
 Rotation "Danmaku Appearing in the Same[r]Place"
 Rotation "Magic Border"
@@ -292,20 +292,20 @@ Rotation "Magic Border"
 "The Answer to Life, the Universe, and Everything"
 "The Answer to Life, the Universe, and Everything"
 "Are You Getting Dizzy?"
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
-fook
+Liquid Sign "Fluid Reverse"
+Liquid Sign "Fluid Reverse"
+Direction Sign "Repolarization"
+Direction Sign "Repolarization"
+Direction Sign "Repolarization"
+Direction Sign "Repolarization"
+"Reversing Curse of the Sea"
+"Death of the Right-Side-Up"
+"Death of the Right-Side-Up"
+"The Line and the Curve"
+"The Line and the Curve"
+"The Line and the Curve"
+"The Line and the Curve"
+"End is (Not) End"
 Direction Sign "Retrograde"
 Direction Sign "Retrograde"
 Direction Sign "Retrograde"

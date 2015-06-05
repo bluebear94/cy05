@@ -1,0 +1,20 @@
+./../resource/boss/st09.png
+0
+/
+4
+Ele rehel neraha ci.
+0
+Veollerasa essyta grentoron es endyr emta vella ci. 
+0
+- ahahahaha.
+1
+/
+4
+Endyr sesereheras?
+1
+[ruby rb="Arcame Čyrden" rt="Vjan-Sesereydyr"]
+3
+Enleamyn vyncyčyme ena evenas ci.
+1
+Yvylleryd nas tosae ryte!
+1
