@@ -248,14 +248,24 @@ function getHighScore {
 
 task hitbox {
 	let path = GetCurrentScriptDirectory ~ "resource/hurtbox.png";
+	let pathc = GetCurrentScriptDirectory ~ "resource/hurtbox_center.png";
 	let obj = ObjPrim_Create(OBJ_SPRITE_2D);
 	ObjPrim_SetTexture(obj, path);
-	ObjSprite2D_SetSourceRect(obj, 0, 0, 20, 20);
+	ObjSprite2D_SetSourceRect(obj, 0, 0, 41, 41);
+	ObjSprite2D_SetDestCenter(obj);
+	let objc = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(objc, pathc);
+	ObjSprite2D_SetSourceRect(objc, 0, 0, 7, 7);
+	ObjSprite2D_SetDestCenter(objc);
+	let t = 0;
 	loop {
-		let x = GetPlayerX;
-		let y = GetPlayerY;
-		ObjSprite2D_SetDestRect(obj, x-10, y-10, x+10, y+10);
-		Obj_SetVisible(obj, isFocused && !isHidden);
+		ObjRender_SetPosition(obj, GetPlayerX, GetPlayerY, 0);
+		ObjRender_SetPosition(objc, GetPlayerX, GetPlayerY, 0);
+		ObjRender_SetAngleXYZ(obj, 0, 0, t);
+		let showHitbox = isFocused && !isHidden && (GetPlayerState == STATE_NORMAL);
+		Obj_SetVisible(obj, showHitbox);
+		Obj_SetVisible(objc, showHitbox);
+		t += 3;
 		yield;
 	}
 }

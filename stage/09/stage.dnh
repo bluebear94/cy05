@@ -43,6 +43,8 @@ task TStage {
 		wait(90);
 	}
 	waitForClearScreen;
+	wait(60);
+	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 	// The Boss
