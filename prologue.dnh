@@ -643,6 +643,7 @@ task dragToDefaults(t) {
 	dragA(0, t);
 	dragU(1, t);
 	dragV(1, t);
+	wait(t);
 	Reset2DCamera;
 }
 

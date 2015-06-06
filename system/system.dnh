@@ -331,7 +331,7 @@ task TGainSpell(score) {
 	let multiplier = 2 ^ (bc / 300);
 	score = roundScore(score);
 	let objText = ObjText_Create();
-	ObjText_SetText(objText, "Spell Card Bonus!");
+	ObjText_SetText(objText, getInterfaceStrings(GET_BONUS));
 	ObjText_SetFontSize(objText, 32 * fontScale);
 	ObjText_SetFontBold(objText, true);
 	ObjText_SetFontColorTop(objText, 255, 255, 255);
