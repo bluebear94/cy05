@@ -23,6 +23,7 @@ let dirCurrent = GetCurrentScriptDirectory();
 	let path = dirCurrent ~ "../player/playersd.dnh";
 	LoadEnemyShotData(path);
 	initFrame();
+	dragToDefaults(2);
 	TScore(getInterfaceStrings(HISCORE), 8, false);
 	TScore(getInterfaceStrings(SCORE), 48, true);
 	TGraze();

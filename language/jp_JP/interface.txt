@@ -58,3 +58,7 @@ B
 回
 Now Loading...
 ←→　プレイヤー交替
+Bonus 
+History 
+History: 
+Failed

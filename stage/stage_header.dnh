@@ -81,8 +81,8 @@ function TDialogue(data) {
 	let dialogueText = ObjText_Create;
 	ObjText_SetFontType(dialogueText, typeface);
 	ObjText_SetFontSize(dialogueText, 16 * fontScale);
-	ObjRender_SetX(dialogueText, 32);
-	ObjText_SetMaxWidth(dialogueText, 320);
+	ObjRender_SetX(dialogueText, 22);
+	ObjText_SetMaxWidth(dialogueText, 340);
 	ObjRender_SetY(dialogueText, height - 80);
 	let intro = ObjText_Create;
 	ObjText_SetFontType(intro, typeface);

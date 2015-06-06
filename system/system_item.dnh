@@ -94,6 +94,7 @@ task renderScore(x, y, amt, color) {
 	ObjRender_SetBlendType(obj, BLEND_ALPHA);
 	//ObjRender_SetAlpha(obj, 127);
 	ObjRender_SetColor(obj, color[0], color[1], color[2]);
+	Obj_SetRenderPriority(obj, 0.29);
 	let listNum = DigitToArrayBaseWC(amt, base);
 	let digits = length(listNum);
 	ascent (j in 0 .. 30) {

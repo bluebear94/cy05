@@ -37,7 +37,7 @@ task TCutIn {
 	if (id != 0) {
 		ObjEnemyBossScene_StartSpell(GetEnemyBossSceneObjectID);
 		let scName = getSpellNames(id)[getDifficulty];
-		let spellText = textOfWW(scName, 330, 16 * fontScale, 480);
+		let spellText = textOfWW(scName, 330, 16 * fontScale, 460);
 		ObjText_SetHorizontalAlignment(spellText, ALIGNMENT_RIGHT);
 		ObjText_SetFontBorderWidth(spellText, 1);
 		ObjText_SetFontBorderType(spellText, BORDER_FULL);
@@ -79,12 +79,15 @@ task TCutIn {
 task TBonusUpdate(txt) {
 	let bs = GetEnemyBossSceneObjectID;
 	let hist = getHistory(id);
+	let sb = getInterfaceStrings(SPELL_BONUS);
+	let bf = getInterfaceStrings(BONUS_FAILED);
+	let hh = " | " ~ getInterfaceStrings(SPELL_HISTORY);
 	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
 		let score = roundScore(ObjEnemyBossScene_GetInfo(bs, INFO_SPELL_SCORE));
 		let success = ObjEnemyBossScene_GetInfo(bs, INFO_PLAYER_SHOOTDOWN_COUNT) == 0 &&
 			ObjEnemyBossScene_GetInfo(bs, INFO_PLAYER_SPELL_COUNT) == 0;
-		ObjText_SetText(txt, "Bonus " ~ ["Failed", IntToStringBase(score, base)][success] ~
-			" | History " ~ IntToStringBase(hist[0], base) ~ "/" ~ IntToStringBase(hist[1], base));
+		ObjText_SetText(txt, sb ~ [bf, IntToStringBase(score, base)][success] ~
+			hh ~ IntToStringBase(hist[0], base) ~ "/" ~ IntToStringBase(hist[1], base));
 		yield;
 	}
 }

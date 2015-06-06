@@ -58,3 +58,7 @@ B
  remaining
 Now Loading...
 Left/Right to change player
+Bonus 
+History 
+History: 
+Failed
