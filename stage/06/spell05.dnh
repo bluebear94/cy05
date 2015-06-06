@@ -41,7 +41,7 @@ task TWork {
 	let phi = 0;
 	//TWorkOD;
 	ObjEnemy_SetDamageRate(objBoss, 0, 0);
-	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+	loop (3300) {
 		ascent (i in 0 .. branchCount) {
 			let thetaP = theta + 360 * i / branchCount;
 			CreateShotA1(cx + cx * cos(thetaP), cy + cx * sin(thetaP),

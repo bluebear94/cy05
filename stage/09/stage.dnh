@@ -66,6 +66,91 @@ task TStage {
 	spawnEnemies41(0, 30, ds41, 30, dc41 / 2, dp41);
 	spawnEnemies43(width, 110, 180, dc41 * 0.75, dp41);
 	waitForClearScreen;
+	wait(60);
+	spawnEnemies41(width, 110, ds41, 150, dc41 / 2, dp41);
+	spawnEnemies43(0, 30, 0, dc41 * 0.75, dp41);
+	spawnEnemy42(0, 0, 90, 90, 0, 1);
+	spawnEnemy42(width, 0, width - 90, 90, 180, -1);
+	spawnEnemy40(width / 2, 0, width / 2, 100);
+	spawnEnemy40(0, 150, 100, 150);
+	spawnEnemy40(width, 150, width - 100, 150);
+	waitForClearScreen;
+	wait(60);
+	spawnEnemy40(width / 2, 0, width / 2, 150);
+	spawnEnemy40(0, 150, 100, 100);
+	spawnEnemy40(width, 150, width - 100, 100);
+	ascent (i in 0 .. 9) {
+		spawnEnemy44a(width * (0.1 + 0.1 * i));
+		wait(30);
+	}
+	spawnEnemies43(0, 50, 0, dc41 * 0.75, dp41);
+	spawnEnemies43(width, 50, 180, dc41 * 0.75, dp41);
+	descent (i in 0 .. 9) {
+		spawnEnemy44a(width * (0.1 + 0.1 * i));
+		wait(30);
+	}
+	waitForClearScreen;
+	wait(60);
+	spawnEnemies41(width / 2, 0, ds41, 90, dc41 * 0.75, dp41);
+	spawnEnemies41(width / 3, height, ds41, -90, dc41 * 0.65, dp41);
+	spawnEnemies41(2 * width / 3, height, ds41, -90, dc41 * 0.65, dp41);
+	spawnEnemy44b(width * 0.25);
+	spawnEnemy44b(width * 0.75);
+	wait(120);
+	spawnEnemy40(width / 2, 0, width / 2, 150);
+	waitForClearScreen;
+	wait(120);
+	ascent (i in 0 .. 9) {
+		spawnEnemy44a(width * (0.1 + 0.1 * i));
+		spawnEnemy44b(width * (0.1 + 0.1 * i));
+	}
+	loop (32) {
+		spawnEnemy39;
+	}
+	wait(60);
+	spawnEnemy40(width / 2, height, width / 2, 300);
+	spawnEnemy40(0, 300, 100, 350);
+	spawnEnemy40(width, 300, width - 100, 350);
+	waitForClearScreen;
+	wait(120);
+	task fork {
+		loop (5) {
+			spawnEnemy42(0, 0, 90, 90, 0, 1);
+			spawnEnemy42(width, 0, width - 90, 90, 180, -1);
+			wait(90);
+		}
+	}
+	fork;
+	let s = false;
+	ascent (i in 0 .. 10) {
+		spawnEnemies41(width * s, 20 + 30 * i, ds41, 180 * s, dc41 * 0.8, dp41);
+		wait(45);
+		s = !s;
+	}
+	waitForClearScreen;
+	wait(120);
+	ascent (i in 0 .. 10) {
+		spawnEnemies43(width * s, height - 20 - 30 * i, 180 * s, dc41 * 0.3, dp41);
+		wait(45);
+		s = !s;
+	}
+	waitForClearScreen;
+	wait(120);
+	loop (10) {
+		spawnEnemy39;
+		wait(20);
+	}
+	wait(60);
+	spawnEnemy40(150, 0, 150, 300);
+	spawnEnemy40(width - 150, 0, width - 150, 300);
+	waitForClearScreen;
+	wait(60);
+	descent (i in 0 .. 4) {
+		spawnEnemy40(30 + 60 * i, height, 30 + 60 * i, height - 50);
+		spawnEnemy40(width - 30 - 60 * i, 0, width - 30 - 60 * i, 50);
+		wait(90);
+	}
+	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 	// The Boss
@@ -167,7 +252,7 @@ task spawnEnemy42(x1, y1, x2, y2, a0, s) {
 
 task spawnEnemy43(x, y, angle) {
 	let enemy = enemyOf(x + rand(-10, 10), y, 2, angle,
-		"./../resource/enemy.png", 0, 48, 16, 72,
+		"./../resource/enemy.png", 0, 32, 16, 48,
 		250, 100, 100, 8, 8,
 		[10, 10, 0, 0, 2, 2, 2, 2]);
 	let d = getDifficulty;
@@ -185,4 +270,33 @@ task spawnEnemies43(x, y, angle, count, period) {
 		spawnEnemy43(x, y, angle);
 		wait(period);
 	}
+}
+
+task spawnEnemy44(x1, y1, x2, y2, x3, y3) {
+	let enemy = enemyOf(x1, y1, 0, 0,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		150, 100, 100, 8, 8,
+		[5, 5, 0, 0, 1, 1, 1, 1]);
+	let d = getDifficulty;
+	let speed = 3 + 0.5 * d;
+	let ways = 6 + 2 * d;
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 30);
+	wait(30);
+	let a = GetAngleToPlayer(enemy);
+	loop (ways) {
+		ascent (i in 0 .. 10) {
+			CreateShotOA1(enemy, speed * (1 + 0.05 * i), a, DS_BALL_S_RED, 0);
+		}
+		a += 360 / ways;
+	}
+	wait(60);
+	ObjMove_SetDestAtFrame(enemy, x3, y3, 30);
+}
+
+task spawnEnemy44a(x) {
+	spawnEnemy44(x, -10, x, 30, x, -200);
+}
+
+task spawnEnemy44b(x) {
+	spawnEnemy44(x, height + 10, x, height - 30, x, height + 200);
 }

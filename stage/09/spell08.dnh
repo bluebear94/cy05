@@ -80,6 +80,7 @@ task notOverdrive {
 	flip2;
 	flip3;
 	task ballTask(shot, av) {
+		wait(120);
 		let orig = ObjShot_GetImageID(shot);
 		while (!isDead) {
 			if (rand(0, 1) < p) {
