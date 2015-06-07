@@ -1,7 +1,7 @@
 #include "./../system/system_mech.dnh"
 #include "./../language.dnh"
 
-let NUM_STAGES = 9;
+let NUM_STAGES = 10;
 
 @Initialize {
 	//StartScript(LoadScript("./" ~ stage ~ "/stg_back.dnh"));
@@ -111,7 +111,7 @@ function TDialogue(data) {
 			let c = diaColors[type];
 			ObjText_SetFontColorBottom(dialogueText, c[0], c[1], c[2]);
 			ObjText_SetFontColorBottom(dialogueText, c[0], c[1], c[2]);
-			ObjText_SetTextWW(dialogueText, message, 540, 16 * fontScale, typeface);
+			ObjText_SetTextWW(dialogueText, message, 520, 16 * fontScale, typeface);
 			ObjRender_SetAlpha(playerPortrait, [128, 255][type == 0]);
 			ObjRender_SetAlpha(enemyPortrait, [128, 255][type == 1]);
 			Obj_SetRenderPriority(enemyPortrait, [0.29, 0.31, 0.3][type]);

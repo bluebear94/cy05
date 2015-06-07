@@ -17,3 +17,14 @@ function createStar(x, y, s, t, a, b, l, w, av, g, d) {
 	ObjMove_SetAngle(first, t);
 	return first;
 }
+
+function astroid(t, points) {
+	let scale = points / 4;
+	t *= scale;
+	let c = cos(t);
+	if (c == 0) {return 1;}
+	return
+		absolute(1 / c) / (
+			1 + absolute(tan(t)) ^ (2 / 3)
+		) ^ 1.5;
+}

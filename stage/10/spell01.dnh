@@ -5,8 +5,8 @@
 #Player["./../../player/player0.dnh"]
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
-let id = 38;
-let level = 9;
+let id = 46;
+let level = 10;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,10 +14,10 @@ let level = 9;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(8500);
+		SetScriptResult(10000);
 	}
 	case (EV_REQUEST_TIMER) {
-		SetScriptResult(60);
+		SetScriptResult(80);
 	}
 	case (EV_REQUEST_SPELL_SCORE) {
 		SetScriptResult(spellBonus);
@@ -26,33 +26,56 @@ let level = 9;
 
 @Finalize {}
 
-task kink(shot, angle) {
-	wait(rand(0, 144));
-	ObjMove_SetAngle(shot, ObjMove_GetAngle(shot) + angle);
-	ObjMove_SetSpeed(shot, 0.4 * ObjMove_GetSpeed(shot));
-	ObjMove_SetAngularVelocity(shot, 0);
-	ObjShot_SetGraphic(shot, DS_BALL_S_R_WHITE);
-}
-
 task TWork {
 	let width = GetStgFrameWidth;
 	let height = GetStgFrameHeight;
 	let d = getDifficulty;
-	let ways = 5 + d;
-	let s = 0.4 + 0.1 * d;
+	let p = 70 - 5 * d;
+	let a = 4 + d;
 	let t = 0;
-	if (d >= 2) {TWorkOD;}
-	while (!isDead) {
-		let a = GetAngleToPlayer(objBoss) + 180 / ways;
-		loop (ways) {
-			let shot = CreateShotOA1(objBoss, 2.5, a, DS_BALL_S_WHITE, 0);
-			ObjMove_SetAngularVelocity(shot, s * sin(4.63 * t));
-			kink(shot, 90 * randomSign);
-			a += 360 / ways;
+	task bulletTask(shot, i, b, s) {
+		wait(10 * i);
+		if (GetPlayerY < height / 2) {
+			ObjMove_SetAngle(shot, GetAngleToPlayer(shot));
+			ObjMove_SetSpeed(shot, 8);
+		} else {
+			ObjMove_SetAngle(shot, b + 10 * s * i + a * sin(t));
+			ObjMove_SetSpeed(shot, 1.5);
 		}
-		if (t % 60 == 59) {s *= -1;}
-		t++;
-		wait(10);
+	}
+	task fork {
+		while (!isDead) {
+			let a = rand(0, 360);
+			loop (12) {
+				CreateShotOA1(objBoss, 3, a, DS_ICE_WHITE, 0);
+				a += 30;
+			}
+			wait(p * 0.8);
+		}
+	}
+	task fork2 {
+		while (!isDead) {
+			CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), GetAngleToPlayer(objBoss), 600, 10, 0.5 * p, DS_BEAM_SKY, p);
+			wait(p * 2);
+		}
+	}
+	fork;
+	fork2;
+	while (!isDead) {
+		ascent (i in 0 .. 10) {
+			let shot1 = CreateShotOA1(objBoss, 3, 150, DS_ICE_SKY, 0);
+			bulletTask(shot1, i, 0, 1);
+			let shot2 = CreateShotOA1(objBoss, 3, 30, DS_ICE_SKY, 0);
+			bulletTask(shot2, i, 180, -1);
+			if (d >= 1) {
+				let shot3 = CreateShotOA1(objBoss, 3.5, 130, DS_ICE_SKY, 0);
+				bulletTask(shot3, i, 0, 1);
+				let shot4 = CreateShotOA1(objBoss, 3.5, 50, DS_ICE_SKY, 0);
+				bulletTask(shot4, i, 180, -1);
+			}
+			t += 3.17;
+		}
+		wait(p);
 	}
 }
 

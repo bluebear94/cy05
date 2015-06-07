@@ -1,4 +1,4 @@
-./../resource/boss/st09.png
+./../resource/boss/st10.png
 0
 /
 4
@@ -48,11 +48,11 @@ How am I supposed to value your opinion?
 1
 And why should Vija value yours?
 0
-Vija (at a distance): what, what did you say about me?
+Vija (at a distance): &osb; WHAT, WHAT DID YOU SAY ABOUT ME? &csb;
 2
-I'm ashamed of my ancestry!
+&osb; I PREFER THAT WE AVOID DISCUSSING THIS MATTER. &csb;
 2
-Who cares about all that?
+&osb; AFTER ALL, IT IS IRRELEVANT IN MODERN TIMES. &csb;
 2
 Then I shall stop the snowfall if you manage to defeat me in battle.
 1

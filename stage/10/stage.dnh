@@ -19,10 +19,10 @@ let height = GetStgFrameHeight;
 
 task TStage {
 	if (getCharacter < 2) {
-		dialogueData = readDD("d9_1");
+		dialogueData = readDD("d10_1");
 	}
 	else {
-		dialogueData = readDD("d9_3");
+		dialogueData = readDD("d10_3");
 	}
 	let d = getDifficulty;
 	waitForClearScreen;

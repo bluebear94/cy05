@@ -1,4 +1,4 @@
-./../resource/boss/st09.png
+./../resource/boss/st10.png
 0
 /
 4
