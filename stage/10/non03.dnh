@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 9;
+let level = 10;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,7 +14,7 @@ let level = 9;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(5000);
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,24 +26,27 @@ let level = 9;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
 	let d = getDifficulty;
-	let ways = 4 + 2 * d;
-	let interval = 360 / ways;
-	let rho = 1 + 0.15 * d;
-	let irho = interval * rho;
-	let s = irho / 8;
-	let a = GetAngleToPlayer(objBoss);
+	let period = 60 / (20 + 2 * d);
+	let pd = period - truncate(period);
+	let pdb = 0;
 	let t = 0;
+	let u = 0;
 	while (!isDead) {
-		loop (ways) {
-			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, a + t, -0.03, 1.2, DS_KUNAI_RED, 0);
-			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, a - t, -0.03, 1.2, DS_KUNAI_GREEN, 0);
-			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4, a + 0.7 * t, -0.025, 1, DS_KUNAI_YELLOW, 0);
-			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4, a - 0.7 * t, -0.025, 1, DS_KUNAI_BLUE, 0);
-			a += ways;
+		loop (6) {
+			CreateShotA1(cx * (1 + cos(4.37 * t)), 0.5 * cy * (1 + sin(23.4 * t)), rand(1.5, 2.5), u + t + rand(-15, 15), [DS_SCALE_BLUE, DS_SCALE_SKY, DS_SCALE_WHITE][randIntH(0, 3)], 30);
+			t += 60;
 		}
-		t += 9.7;
-		wait(12);
+		pdb += pd;
+		wait(period);
+		if (pdb >= 1) {
+			pdb--;
+			yield;
+		}
+		t++;
+		u += 1 + 1.5 * sin(6 * t);
 	}
 }
 
