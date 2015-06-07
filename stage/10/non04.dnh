@@ -1,0 +1,58 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 9;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(5000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let ways = 4 + 2 * d;
+	let interval = 360 / ways;
+	let rho = 1 + 0.15 * d;
+	let irho = interval * rho;
+	let s = irho / 8;
+	let a = GetAngleToPlayer(objBoss);
+	let t = 0;
+	while (!isDead) {
+		loop (ways) {
+			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, a + t, -0.03, 1.2, DS_KUNAI_RED, 0);
+			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, a - t, -0.03, 1.2, DS_KUNAI_GREEN, 0);
+			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4, a + 0.7 * t, -0.025, 1, DS_KUNAI_YELLOW, 0);
+			CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4, a - 0.7 * t, -0.025, 1, DS_KUNAI_BLUE, 0);
+			a += 360 / ways;
+		}
+		t += 9.7;
+		wait(12);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

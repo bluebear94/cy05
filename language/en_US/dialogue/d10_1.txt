@@ -1,0 +1,60 @@
+./../resource/boss/st09.png
+0
+/
+4
+Are you there?
+0
+... god, it's cold.
+0
+...
+0
+... are you there?
+0
+/
+4
+So you've passed even Čyrden.
+1
+I hope you've reoriented yourself.
+1
+Just a few seconds.
+0
+[ruby rb="Arcame Dernar" rt="Keeper of Vanar-Cyren"]
+3
+Anyway, my name is, eh...
+1
+Arcame Dernar.
+1
+So you've been causing this trouble, right?
+0
+I prefer not to use that term.
+1
+You know, I don't take warm weather very well.
+1
+Of course, you're wearing thick clothing. Why not take it off?
+0
+I'm afraid I can't take it off.
+1
+The leaves are falling off the trees
+0
+and the creatures of the forest are shivering.
+0
+Therefore, I demand you to stop the snowfall.
+0
+I'll gladly accept your demand.
+1
+Under what circumstances is a completely different story.
+1
+It is unwise to play with my words.
+0
+Do you know who I am?
+0
+I'm afraid I haven't asked for your name.
+1
+Elssecisso Rencron, last of the Protectors.
+0
+My duty is to protect the forests of this land.
+0
+I won't spare any strength on an evil being like you!
+0
+I won't accept your demand without a good fight!
+1

@@ -15,12 +15,12 @@ task TMagicCircle {
 	}
 	let coR = oR;
 	let ciR = iR;
-	function rotate(theta, bx, by, scale) {
+	function rotate(theta, bx, by) {
 		ascent (i in 0 .. 5) {
 			let c = cos(theta);
 			let s = sin(theta);
-			ObjPrim_SetVertexPosition(circle, i * 2, bx + coR * scale * c, by + coR * scale * s, 0);
-			ObjPrim_SetVertexPosition(circle, i * 2 + 1, bx + ciR * scale * c, by + ciR * scale * s, 0);
+			ObjPrim_SetVertexPosition(circle, i * 2, bx + coR * c, by + coR * s, 0);
+			ObjPrim_SetVertexPosition(circle, i * 2 + 1, bx + ciR * c, by + ciR * s, 0);
 			theta += 90;
 		}
 	}
@@ -30,7 +30,7 @@ task TMagicCircle {
 		let i = GetPlayerInvincibilityFrame;
 		coR = oR * (i / MAX_FRAMES) ^ 0.5;
 		ciR = iR * (i / MAX_FRAMES) ^ 0.5;
-		rotate(angle, GetPlayerX, GetPlayerY, 1);
+		rotate(angle, GetPlayerX, GetPlayerY);
 		angle++;
 		yield;
 	}

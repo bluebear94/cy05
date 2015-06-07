@@ -1,0 +1,73 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 42;
+let level = 9;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(72);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	ObjMove_SetDestAtFrame(objBoss, cx, cy, 60);
+	let d = getDifficulty;
+	let ways = 4 + truncate(d / 2);
+	let speed = 1 + 0.2 * d;
+	let period = [10, 8, 7, 6, 5, 4, 3][d];
+	let rm = 0.9 + 0.1 * d;
+	task laserTask(l, t0) {
+		while (!isDead) {
+			ObjStLaser_SetAngle(l, t0 - a);
+			yield;
+		}
+	}
+	task fork {
+		while (!isDead) {
+			Set2DCameraAngleZ(a);
+			SetCommonData("ScheduledA", a);
+			t += 1.9;
+			a += rm * (0.7 + 1.1 * sin(t));
+			yield;
+		}
+	}
+	let a = 0;
+	let t = 0;
+	let la = 90;
+	loop (ways) {
+		let laser = CreateStraightLaserA1(cx, cy, la, 512, 20, 9999, DS_BEAM_RED, 9999);
+		laserTask(laser, la);
+		la += 360 / ways;
+	}
+	fork;
+	//TWorkOD;
+	while (!isDead) {
+		let la = 90 - a;
+		loop (ways) {
+			CreateShotA1(cx, cy, speed, la, DS_BALL_S_RED, 0);
+			la += 360 / ways;
+		}
+		wait(period);
+	}
+}

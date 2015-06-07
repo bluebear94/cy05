@@ -1,0 +1,70 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 38;
+let level = 9;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(8500);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task kink(shot, angle) {
+	wait(rand(0, 144));
+	ObjMove_SetAngle(shot, ObjMove_GetAngle(shot) + angle);
+	ObjMove_SetSpeed(shot, 0.4 * ObjMove_GetSpeed(shot));
+	ObjMove_SetAngularVelocity(shot, 0);
+	ObjShot_SetGraphic(shot, DS_BALL_S_R_WHITE);
+}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let ways = 5 + d;
+	let s = 0.4 + 0.1 * d;
+	let t = 0;
+	if (d >= 2) {TWorkOD;}
+	while (!isDead) {
+		let a = GetAngleToPlayer(objBoss) + 180 / ways;
+		loop (ways) {
+			let shot = CreateShotOA1(objBoss, 2.5, a, DS_BALL_S_WHITE, 0);
+			ObjMove_SetAngularVelocity(shot, s * sin(4.63 * t));
+			kink(shot, 90 * randomSign);
+			a += 360 / ways;
+		}
+		if (t % 60 == 59) {s *= -1;}
+		t++;
+		wait(10);
+	}
+}
+
+task TWorkOD {
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		let a = GetAngleToPlayer(objBoss);
+		loop (8) {
+			ascent (i in 0 .. 20) {
+				CreateShotOA1(objBoss, 3 + 0.01 * i, a, DS_KUNAI_YELLOW, i / 2);
+			}
+			a += 45;
+		}
+		wait(150);
+	}
+}
