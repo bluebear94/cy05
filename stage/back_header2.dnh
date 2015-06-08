@@ -69,7 +69,8 @@ function fromData(def) {
 	ObjPrim_SetTexture(bg, sky);
 	ObjSprite2D_SetSourceRect(bg, 0, 0, GetStgFrameWidth, GetStgFrameHeight);
 	ObjSprite2D_SetDestRect(bg, 0, 0, GetStgFrameWidth, GetStgFrameHeight);
-	Obj_SetRenderPriority(bg, 0.21);
+	ObjRender_SetPosition(bg, GetStgFrameLeft, GetStgFrameTop, 0);
+	Obj_SetRenderPriority(bg, 0.19);
 	customBehavior;
 	debug;
 }
