@@ -61,6 +61,9 @@ let primitives = [];
 
 @MainLoop {
 	// stub
+	let objScene = GetEnemyBossSceneObjectID();
+	let inSpell = objScene != ID_INVALID && ObjEnemyBossScene_GetInfo(objScene, INFO_IS_SPELL);
+	yield;
 }
 
 @Finalize {

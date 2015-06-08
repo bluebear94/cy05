@@ -208,6 +208,9 @@ task TPlayerLife {
 	ObjRender_SetY(lifeFragText, 180);
 	ObjText_SetFontSize(lifeFragText, 16);
 	ObjText_SetFontType(lifeFragText, typeface);
+	ObjText_SetFontBorderType(lifeFragText, BORDER_FULL);
+	ObjText_SetFontBorderWidth(lifeFragText, 2);
+	ObjText_SetFontBorderColor(lifeFragText, 0, 0, 0);
 	let objNum = createNumberObject(440, 174, 255, 200, 255);
 	loop {
 		ObjText_SetText(lifeFragText,
@@ -240,6 +243,9 @@ task TPlayerSpell {
 	ObjRender_SetY(bombFragText, 232);
 	ObjText_SetFontSize(bombFragText, 16);
 	ObjText_SetFontType(bombFragText, typeface);
+	ObjText_SetFontBorderType(bombFragText, BORDER_FULL);
+	ObjText_SetFontBorderWidth(bombFragText, 2);
+	ObjText_SetFontBorderColor(bombFragText, 0, 0, 0);
 	let objNum = createNumberObject(440, 226, 200, 255, 200);
 	loop {
 		ObjText_SetText(bombFragText,
