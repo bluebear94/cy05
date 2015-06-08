@@ -32,29 +32,33 @@ function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, uv) {
 
 let primitives = [];
 
+function fromData(def) {
+	let prim = ObjPrim_Create(OBJ_PRIMITIVE_3D);
+	primitives = primitives ~ [prim];
+	let header = def[0];
+	let txi = header[0];
+	let vc = header[1];
+	let type = header[2];
+	ObjPrim_SetTexture(prim, txIndex[txi]);
+	ObjPrim_SetPrimitiveType(prim, type);
+	ObjPrim_SetVertexCount(prim, vc);
+	ascent(j in 0 .. vc) {
+		let vdef = def[j + 1];
+		ObjPrim_SetVertexPosition(prim, j, vdef[0], vdef[1], vdef[2]);
+		ObjPrim_SetVertexUV(prim, j, vdef[3], vdef[4]);
+		ObjPrim_SetVertexAlpha(prim, j, vdef[5]);
+		ObjPrim_SetVertexColor(prim, j, vdef[6], vdef[7], vdef[8]);
+	}
+	ObjRender_SetBlendType(prim, BLEND_ALPHA);
+	Obj_SetRenderPriority(prim, 0.22);
+	return prim;
+}
+
 @Initialize {
 	// stub
 	let l = length(objects);
 	ascent (i in 0 .. l) {
-		let prim = ObjPrim_Create(OBJ_PRIMITIVE_3D);
-		primitives = primitives ~ [prim];
-		let def = objects[i];
-		let header = def[0];
-		let txi = header[0];
-		let vc = header[1];
-		let type = header[2];
-		ObjPrim_SetTexture(prim, txIndex[txi]);
-		ObjPrim_SetPrimitiveType(prim, type);
-		ObjPrim_SetVertexCount(prim, vc);
-		ascent(j in 0 .. vc) {
-			let vdef = def[j + 1];
-			ObjPrim_SetVertexPosition(prim, j, vdef[0], vdef[1], vdef[2]);
-			ObjPrim_SetVertexUV(prim, j, vdef[3], vdef[4]);
-			ObjPrim_SetVertexAlpha(prim, j, vdef[5]);
-			ObjPrim_SetVertexColor(prim, j, vdef[6], vdef[7], vdef[8]);
-		}
-		ObjRender_SetBlendType(prim, BLEND_ALPHA);
-		Obj_SetRenderPriority(prim, 0.22);
+		primitives = primitives ~ [fromData(objects[i])];
 	}
 	if (length(fog) == 0) {SetFogEnable(false);}
 	else {
