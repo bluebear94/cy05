@@ -85,11 +85,29 @@ task debug {
 		}
 		ObjRender_SetBlendType(axis, BLEND_ALPHA);
 	}
+	let text = ObjText_Create;
+	ObjRender_SetPosition(text, 0, 0, 0);
+	ObjText_SetFontType(text, typeface);
+	ObjText_SetFontColorTop(text, 255, 255, 255);
+	ObjText_SetFontColorBottom(text, 255, 255, 255);
+	ObjText_SetFontBorderType(text, BORDER_FULL);
+	ObjText_SetFontBorderWidth(text, 2);
+	ObjText_SetFontBorderColor(text, 0, 0, 0);
 	while (!IsCloseScript(GetOwnScriptID)) {
 		SetPlayerInvincibilityFrame(99999);
 		function pr(k) {
 			return GetKeyState(k) == KEY_HOLD;
 		}
+		ObjText_SetText(text,
+			"X " ~ ToString(GetCameraFocusX) ~
+			"[r]Y " ~ ToString(GetCameraFocusY) ~
+			"[r]Z " ~ ToString(GetCameraFocusZ) ~
+			"[r]pitch " ~ ToString(GetCameraPitch) ~
+			"[r]roll " ~ ToString(GetCameraRoll) ~
+			"[r]yaw " ~ ToString(GetCameraYaw) ~
+			"[r]azimuth " ~ ToString(GetCameraAzimuthAngle) ~
+			"[r]elevation " ~ ToString(GetCameraElevationAngle)
+		);
 		if (pr(KEY_W)) {
 			SetCameraFocusZ(GetCameraFocusZ + 1);
 		}
