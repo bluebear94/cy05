@@ -97,6 +97,7 @@ task TShot {
 			ascent (i in 0 .. len) {
 				Obj_Delete(lasers[i]);
 			}
+			wasFocused = false;
 		}
 		tick++;
 		if (tick == 3) {tick = 0;}
