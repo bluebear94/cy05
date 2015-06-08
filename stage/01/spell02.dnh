@@ -38,6 +38,7 @@ task TWork {
 	task buildPlant(x) {
 		let offset = rand(0, 360);
 		let i = height;
+		whipSound;
 		while (i > 0) {
 			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
 			let xoff = 40 * sin(i * 1.5 + offset);
@@ -60,6 +61,7 @@ task TWorkOD {
 			ascent (i in -10 .. 10) {
 				CreateShotOA1(objBoss, 3, angle + 6 * i, DS_RICE_M_RED, 0);
 			}
+			shotSound;
 		}
 		loop(60) {yield};
 	}
@@ -70,6 +72,7 @@ task TWorkOD2 {
 	let bc = 18 * getDifficulty;
 	loop {
 		if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
+		swingSound;
 		ascent (i in 0 .. bc) {
 			if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
 			let angle = 360 / bc * i;
