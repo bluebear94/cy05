@@ -14,10 +14,12 @@ let level = 10;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(12000);
+		let scale = 0.3 + 0.05 * getDifficulty;
+		SetScriptResult(40000 * scale);
 	}
 	case (EV_REQUEST_TIMER) {
-		SetScriptResult(90);
+		let scale = 0.3 + 0.05 * getDifficulty;
+		SetScriptResult(300 * scale);
 	}
 	case (EV_REQUEST_SPELL_SCORE) {
 		SetScriptResult(spellBonus);
@@ -33,7 +35,7 @@ task TWork {
 	let cy = height / 2 - 100;
 	let d = getDifficulty;
 	let snowLevel = height - 5;
-	let slrps = 2.3 / (1 + 0.15 * d);
+	let slrps = 3.7 / (1 + 0.15 * d);
 	let maxSnowLevel = height * (0.7 - 0.05 * d);
 	let li = 20 - 2 * d;
 	task snowTask(shot) {
@@ -62,14 +64,5 @@ task TWork {
 		}
 		wait(60);
 		snowLevel = height - 5;
-	}
-}
-
-task TWorkOD {
-	let s = -1;
-	while (!isDead) {
-		dragV(s, 60);
-		s *= -1;
-		wait(137);
 	}
 }

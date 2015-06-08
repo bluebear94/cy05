@@ -55,8 +55,8 @@ task TShot {
 			if (isFocused) {
 				CreatePlayerShotA1(x - 5, y, 10, 270, 13, 1, SPIKED_SEED);
 				CreatePlayerShotA1(x + 5, y, 10, 270, 13, 1, SPIKED_SEED);
-				CreatePlayerShotA1(x - 2.5, y, 10, 235, 7, 1, SPIKED_SEED);
-				CreatePlayerShotA1(x + 2.5, y, 10, 315, 7, 1, SPIKED_SEED);
+				CreatePlayerShotA1(x - 2.5, y, 10, 255, 7, 1, SPIKED_SEED);
+				CreatePlayerShotA1(x + 2.5, y, 10, 285, 7, 1, SPIKED_SEED);
 				CreatePlayerShotA1(x - 2.5, y + 8, 10, 90, 5, 1, SPIKED_SEED);
 				CreatePlayerShotA1(x + 2.5, y + 8, 10, 90, 5, 1, SPIKED_SEED);
 			}
