@@ -6,16 +6,19 @@ ShotData {
 	id = 256
 	rect = (1, 0, 16, 15)
 	delay_color = (224, 224, 224)
+	alpha = 110
 }
 ShotData {
 	id = 257
 	rect = (16, 0, 32, 16)
 	delay_color = (144, 144, 144)
+	alpha = 110
 }
 ShotData {
 	id = 258
 	rect = (32, 0, 48, 16)
 	delay_color = (128, 200, 128)
+	alpha = 110
 }
 ShotData {
 	id = 259
