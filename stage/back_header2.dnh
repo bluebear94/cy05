@@ -1,0 +1,24 @@
+// background
+
+#include "./../prologue.dnh"
+
+/*
+txIndex: a list of file paths
+objects:
+	1 Entry ->
+		[texture index, vertex count]
+		[x, y, z, u, v, alpha, color] (as many as the vertex count)
+Possible mesh support?
+*/
+
+@Initialize {
+	// stub
+}
+
+@MainLoop {
+	// stub
+}
+
+@Finalize {
+	// stub
+}
