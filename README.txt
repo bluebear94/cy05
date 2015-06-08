@@ -18,6 +18,7 @@ Resource Credits
 Shadows Into Light Two <https://www.google.com/fonts/download?kit=eJhuI2ean-_ITI7KjvRiETxDaIBbKziu-hFgSMSgcgT3rGVtsTkPsbDajuO5ueQw> by Kimberly Geswein; licensed under SIL Open Font License.
 Readme & Licenses for VLGothic fonts can be found in fonts/VLGothic/.
 Sound effects by Osabisi <http://osabisi.sakura.ne.jp/m2/>
+STG frame by Sparen
 Seamless textures by maxtextures.com (license: <http://www.mb3d.co.uk/mb3d/The_License_Agreement.html>)
 
 
