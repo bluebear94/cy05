@@ -18,10 +18,10 @@ let objects = [
 	rectangular(0, -512, 0, -512, -512, 0, 512, 512, 0, 512, 512, 0, -512, 8)
 	//rectangular(0, 0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 8)
 ];
-let fog = [];//[200, 400, 192, 200, 255];
+let fog = [512, 1024, 192, 200, 255];
 
 task customBehavior {
-	SetCameraFocusXYZ(100, 100, 100);
+	SetCameraFocusXYZ(0, 10, 0);
 	SetCameraRadius(1);
 	SetCameraElevationAngle(0);
 	//SetCameraAzimuthAngle(0);
