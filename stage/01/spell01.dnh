@@ -27,6 +27,7 @@ let level = 1;
 
 task TWork {
 	task trail(shot, angle) {
+		whipSound;
 		while (!Obj_IsDeleted(shot)) {
 			ObjShot_SetDeleteFrame(CreateShotOA1(shot, 0, angle, DS_ICE_GREEN, 0), 600);
 			yield;
@@ -65,6 +66,7 @@ task TWork {
 			let s = CreateShotA1(x, y, 3, a + zzAngularOffset, DS_BUTTERFLY_YELLOW, 0);
 			zigzag(s, a + zzAngularOffset);
 		}
+		shotSound;
 		zzAngularOffset *= -1;
 		wait(period);
 	}

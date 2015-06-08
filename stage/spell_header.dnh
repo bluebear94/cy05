@@ -148,7 +148,27 @@ function isDead {
 }
 
 sub shotSound {
-	playSE("sha00");
+	playSE("arrow02");
+}
+
+sub explosionShort {
+	playSE("bom01");
+}
+
+sub explosionLong {
+	playSE("bom11");
+}
+
+sub htechShotSound {
+	playSE("shoot04");
+}
+
+sub swingSound {
+	playSE("swing10");
+}
+
+sub whipSound {
+	playSE("whip00");
 }
 
 task TTimer {

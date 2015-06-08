@@ -35,6 +35,7 @@ task TWork {
 	if (getDifficulty < 3 || getDifficulty >= 5) {TWorkOD;}
 	if (getDifficulty < 3) {return;}
 	task volley(shot) {
+		shotSound;
 		let x = ObjMove_GetX(shot);
 		while (!Obj_IsDeleted(shot)) {
 			let y = ObjMove_GetY(shot);
@@ -44,6 +45,7 @@ task TWork {
 				if (x < px) {angle = rand(-90, 90);}
 				else {angle = rand(90, 270);}
 			}
+			shotSound;
 			CreateShotOA1(shot, 2, angle, SILVER_ARROW, 0);
 			CreateShotOA1(shot, 1.5, angle - 90, SILVER_ARROW, 0);
 			CreateShotOA1(shot, 1.5, angle + 90, SILVER_ARROW, 0);
@@ -79,6 +81,7 @@ task TWorkOD {
 				counter += 1 / w;
 			}
 		}
+		swingSound;
 		t += dt / 6 + rand(-1, 1);
 	}
 }

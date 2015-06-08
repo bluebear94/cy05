@@ -9,6 +9,7 @@ objects:
 		[texture index, vertex count, type]
 		[x, y, z, u, v, alpha, red, green, blue] (as many as the vertex count)
 fog: [start, end, red, green, blue]
+customBehavior(): task for custom control of objects
 Possible mesh support?
 */
 
@@ -41,6 +42,7 @@ let primitives = [];
 		SetFogEnable(true);
 		SetFogParam(fog[0], fog[1], fog[2], fog[3], fog[4]);
 	}
+	customBehavior;
 }
 
 @MainLoop {
@@ -48,5 +50,8 @@ let primitives = [];
 }
 
 @Finalize {
-	// stub
+	let l = length(primitives);
+	ascent (i in 0 .. l) {
+		Obj_Delete(primitives[i]);
+	}
 }

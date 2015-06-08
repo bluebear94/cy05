@@ -1,4 +1,5 @@
 #include "./replay_slot.dnh"
+#include "../sound.dnh"
 
 function enterName(str) {
 	let name = GetAreaCommonData("Cy05", "Name", "");
@@ -10,10 +11,12 @@ function enterName(str) {
 		if (GetKeyState(k) == KEY_PUSH) {
 			if (k == KEY_BACK && name != "") {
 				name = name[0 .. length(name) - 1];
+				playSE("type00");
 			}
 			else if (k != KEY_BACK && length(name) < 8 && chara != "") {
 				name = name ~
 					[chara, schar][GetKeyState(KEY_LSHIFT) == KEY_HOLD || GetKeyState(KEY_RSHIFT) == KEY_HOLD];
+				playSE("type00");
 			}
 			ObjText_SetText(text, name ~ "_");
 			return true;
