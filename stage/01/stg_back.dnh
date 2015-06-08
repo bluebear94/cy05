@@ -14,16 +14,17 @@ Possible mesh support?
 let dir = GetCurrentScriptDirectory ~ "../../resource/bg/mt/";
 let txIndex = [dir ~ "Ground_05_UV_H_CM_1.jpg"];
 let objects = [
-	rectangular(0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 0)
+	//rectangular(0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 0, 8)
+	rectangular(0, -512, 0, -512, -512, 0, 512, 512, 0, 512, 512, 0, -512, 8)
+	//rectangular(0, 0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 8)
 ];
-let fog = []; //[20000, 40000, 192, 200, 255];
+let fog = [];//[200, 400, 192, 200, 255];
 
 task customBehavior {
-	SetCameraFocusXYZ(0, 0, 100);
-	SetCameraRadius(200);
+	SetCameraFocusXYZ(100, 100, 100);
+	SetCameraRadius(1);
 	SetCameraElevationAngle(0);
-	SetCameraAzimuthAngle(0);
-	SetCameraPitch(0);
+	//SetCameraAzimuthAngle(0);
 	SetCameraRoll(0);
 	SetCameraYaw(0);
 }

@@ -19,13 +19,13 @@ Possible mesh support?
 // 2 - top right
 // 3 - bottom right
 // 4 - bottom left
-function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
+function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, uv) {
 	return [
-		[txi, 4, PRIMITIVE_TRIANGLESTRIP],
+		[txi, 4, PRIMITIVE_TRIANGLEFAN],
 		[x1, y1, z1, 0, 0, 255, 255, 255, 255],
-		[x2, y2, z2, 1, 0, 255, 255, 255, 255],
-		[x3, y3, z3, 1, 1, 255, 255, 255, 255],
-		[x4, y4, z4, 0, 1, 255, 255, 255, 255]
+		[x2, y2, z2, uv, 0, 255, 255, 255, 255],
+		[x3, y3, z3, uv, uv, 255, 255, 255, 255],
+		[x4, y4, z4, 0, uv, 255, 255, 255, 255]
 	];
 }
 
@@ -60,6 +60,75 @@ let primitives = [];
 		SetFogParam(fog[0], fog[1], fog[2], fog[3], fog[4]);
 	}
 	customBehavior;
+	debug;
+}
+
+task debug {
+	let data = [
+		[1000, 0, 0, 255, 0, 0],
+		[0, 1000, 0, 0, 255, 0],
+		[0, 0, 1000, 0, 0, 255],
+		[-1000, 0, 0, 0, 255, 255],
+		[0, -1000, 0, 255, 0, 255],
+		[0, 0, -1000, 255, 255, 0]
+	];
+	let l = length(data);
+	ascent (i in 0 .. l) {
+		let axis = ObjPrim_Create(OBJ_PRIMITIVE_3D);
+		let d = data[i];
+		ObjPrim_SetPrimitiveType(axis, PRIMITIVE_LINELIST);
+		ObjPrim_SetVertexCount(axis, 2);
+		ObjPrim_SetVertexPosition(axis, 0, 0, 0, 0);
+		ObjPrim_SetVertexPosition(axis, 1, d[0], d[1], d[2]);
+		ascent (j in 0 .. 2) {
+			ObjPrim_SetVertexColor(axis, j, d[3], d[4], d[5]);
+		}
+		ObjRender_SetBlendType(axis, BLEND_ALPHA);
+	}
+	while (!IsCloseScript(GetOwnScriptID)) {
+		SetPlayerInvincibilityFrame(99999);
+		function pr(k) {
+			return GetKeyState(k) == KEY_HOLD;
+		}
+		if (pr(KEY_W)) {
+			SetCameraFocusZ(GetCameraFocusZ + 1);
+		}
+		else if (pr(KEY_S)) {
+			SetCameraFocusZ(GetCameraFocusZ - 1);
+		}
+		else if (pr(KEY_A)) {
+			SetCameraFocusX(GetCameraFocusX - 1);
+		}
+		else if (pr(KEY_D)) {
+			SetCameraFocusX(GetCameraFocusX + 1);
+		}
+		else if (pr(KEY_T)) {
+			SetCameraFocusY(GetCameraFocusY + 1);
+		}
+		else if (pr(KEY_G)) {
+			SetCameraFocusY(GetCameraFocusY - 1);
+		}
+		else if (pr(KEY_Y)) {
+			SetCameraElevationAngle(GetCameraElevationAngle - 1);
+		}
+		else if (pr(KEY_H)) {
+			SetCameraElevationAngle(GetCameraElevationAngle + 1);
+		}
+		else if (pr(KEY_U)) {
+			SetCameraRoll(GetCameraRoll - 1);
+		}
+		else if (pr(KEY_I)) {
+			SetCameraRoll(GetCameraRoll + 1);
+		}
+		else if (pr(KEY_J)) {
+			SetCameraYaw(GetCameraYaw - 1);
+		}
+		else if (pr(KEY_K)) {
+			SetCameraYaw(GetCameraYaw + 1);
+		}
+		yield;
+		
+	}
 }
 
 @MainLoop {
