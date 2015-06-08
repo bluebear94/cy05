@@ -6,13 +6,41 @@
 txIndex: a list of file paths
 objects:
 	1 Entry ->
-		[texture index, vertex count]
-		[x, y, z, u, v, alpha, color] (as many as the vertex count)
+		[texture index, vertex count, type]
+		[x, y, z, u, v, alpha, red, green, blue] (as many as the vertex count)
+fog: [start, end, red, green, blue]
 Possible mesh support?
 */
 
+let primitives = [];
+
 @Initialize {
 	// stub
+	let l = length(objects);
+	ascent (i in 0 .. l) {
+		let prim = ObjPrim_Create(OBJ_PRIMITIVE_3D);
+		primitives = primitives ~ prim;
+		let def = objects[i];
+		let header = def[0];
+		let txi = header[0];
+		let vc = header[1];
+		let type = header[2];
+		ObjPrim_SetTexture(prim, txIndex[txi]);
+		ObjPrim_SetPrimitiveType(prim, type);
+		ObjPrim_SetVertexCount(prim, vc);
+		ascent(j in 0 .. vc) {
+			let vdef = def[j + 1];
+			ObjPrim_SetVertexPosition(prim, j, vdef[0], vdef[1], vdef[2]);
+			ObjPrim_SetVertexUV(prim, j, vdef[3], vdef[4]);
+			ObjPrim_SetVertexAlpha(prim, j, vdef[5]);
+			ObjPrim_SetVertexColor(prim, j, vdef[6], vdef[7], vdef[8]);
+		}
+	}
+	if (length(fog) == 0) {SetFogEnable(false);}
+	else {
+		SetFogEnable(true);
+		SetFogParam(fog[0], fog[1], fog[2], fog[3], fog[4]);
+	}
 }
 
 @MainLoop {
