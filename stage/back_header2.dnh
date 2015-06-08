@@ -11,6 +11,7 @@ objects:
 		[texture index, vertex count, type]
 		[x, y, z, u, v, alpha, red, green, blue] (as many as the vertex count)
 fog: [start, end, red, green, blue]
+sky: path to sky texture
 customBehavior(): task for custom control of objects
 Possible mesh support?
 */
@@ -52,13 +53,19 @@ let primitives = [];
 			ObjPrim_SetVertexAlpha(prim, j, vdef[5]);
 			ObjPrim_SetVertexColor(prim, j, vdef[6], vdef[7], vdef[8]);
 		}
-		Obj_SetRenderPriority(prim, 0.21);
+		ObjRender_SetBlendType(prim, BLEND_ALPHA);
+		Obj_SetRenderPriority(prim, 0.22);
 	}
 	if (length(fog) == 0) {SetFogEnable(false);}
 	else {
 		SetFogEnable(true);
 		SetFogParam(fog[0], fog[1], fog[2], fog[3], fog[4]);
 	}
+	let bg = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(bg, sky);
+	ObjSprite2D_SetSourceRect(bg, 0, 0, GetStgFrameWidth, GetStgFrameHeight);
+	ObjSprite2D_SetDestRect(bg, 0, 0, GetStgFrameWidth, GetStgFrameHeight);
+	Obj_SetRenderPriority(bg, 0.21);
 	customBehavior;
 	debug;
 }

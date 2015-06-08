@@ -19,6 +19,7 @@ let objects = [
 	//rectangular(0, 0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 8)
 ];
 let fog = [512, 1024, 192, 200, 255];
+let sky = GetCurrentScriptDirectory ~ "../../resource/bg/sky.png";
 
 task customBehavior {
 	SetCameraFocusXYZ(0, 10, 0);

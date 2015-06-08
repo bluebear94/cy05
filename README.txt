@@ -8,9 +8,7 @@ It is the day before the summer solstice, but a layer of snow has covered the gr
 Information
 -----------
 
-* This game runs on Touhou Danmakufu PH3. Version .1pre6 is prepackaged here. Just run "cy05tr.exe".
-* As of 0.05tr, only the first five stages are released.
-* Due to personal and emotional issues from the Japanese translator, the Japanese language pack is not yet fully updated. We apologize for the inconvenience.
+* This game runs on Touhou Danmakufu PH3.
 
 Resource Credits
 ----------------
