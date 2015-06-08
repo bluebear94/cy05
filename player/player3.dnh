@@ -57,13 +57,14 @@ task laserTask(laser) {
 	ObjCrLaser_SetTipDecrement(laser, 0.2);
 	ObjRender_SetAlpha(laser, 80);
 	wait(20);
+	if (Obj_IsDeleted(laser)) {return;}
 	ObjShot_SetDamage(laser, 1.5);
 	ObjRender_SetAlpha(laser, 120);
 	ObjMove_SetAngularVelocity(laser, rand(0, 0.5) + rand(0, 0.5));
 	wait(20);
 	let x = ObjMove_GetX(laser);
 	let y = ObjMove_GetY(laser);
-	if (IsPermitPlayerShot) {
+	if (IsPermitPlayerShot && !Obj_IsDeleted(laser)) {
 		ascent (i in 0 .. 36) {
 			let pellet = CreatePlayerShotA1(x, y, rand(0, 4), rand(0, 360), 8, 1, DS_BALL_SS_RED);
 			ObjShot_SetDeleteFrame(pellet, 90);
@@ -89,7 +90,7 @@ task TShot {
 			}
 			else {
 				ascent (i in 0 .. 7) {
-					ObjRender_SetAlpha(CreatePlayerShotA1(x, y, 10, 270 + 30 * sin(counter + 360 * i / 7), 20, 1, DS_ICE_RED + i), 60);
+					ObjRender_SetAlpha(CreatePlayerShotA1(x, y, 10, 270 + 30 * sin(counter + 360 * i / 7), 20, 1, DS_ICE_RED + i), 80);
 				}
 			}
 		}
