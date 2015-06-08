@@ -1,5 +1,32 @@
 // background
 
-let backgroundImage = ["./../resource/bg/st01a.png"];
-#include "./../back_header.dnh"
+/*
+txIndex: a list of file paths
+objects:
+	1 Entry ->
+		[texture index, vertex count, type]
+		[x, y, z, u, v, alpha, red, green, blue] (as many as the vertex count)
+fog: [start, end, red, green, blue]
+customBehavior(): task for custom control of objects
+Possible mesh support?
+*/
+
+let dir = GetCurrentScriptDirectory ~ "../../resource/bg/mt/";
+let txIndex = [dir ~ "Ground_05_UV_H_CM_1.jpg"];
+let objects = [
+	rectangular(0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 0)
+];
+let fog = []; //[20000, 40000, 192, 200, 255];
+
+task customBehavior {
+	SetCameraFocusXYZ(0, 0, 100);
+	SetCameraRadius(200);
+	SetCameraElevationAngle(0);
+	SetCameraAzimuthAngle(0);
+	SetCameraPitch(0);
+	SetCameraRoll(0);
+	SetCameraYaw(0);
+}
+
+#include "./../back_header2.dnh"
 

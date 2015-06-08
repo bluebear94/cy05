@@ -2,6 +2,8 @@
 
 #include "./../prologue.dnh"
 
+let done = false;
+
 /*
 txIndex: a list of file paths
 objects:
@@ -20,10 +22,10 @@ Possible mesh support?
 function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
 	return [
 		[txi, 4, PRIMITIVE_TRIANGLESTRIP],
-		[x1, y1, z1, 0, 0, 255, 0, 0, 0],
-		[x2, y2, z2, 1, 0, 255, 0, 0, 0],
-		[x3, y3, z3, 1, 1, 255, 0, 0, 0],
-		[x4, y4, z4, 0, 1, 255, 0, 0, 0]
+		[x1, y1, z1, 0, 0, 255, 255, 255, 255],
+		[x2, y2, z2, 1, 0, 255, 255, 255, 255],
+		[x3, y3, z3, 1, 1, 255, 255, 255, 255],
+		[x4, y4, z4, 0, 1, 255, 255, 255, 255]
 	];
 }
 
@@ -34,7 +36,7 @@ let primitives = [];
 	let l = length(objects);
 	ascent (i in 0 .. l) {
 		let prim = ObjPrim_Create(OBJ_PRIMITIVE_3D);
-		primitives = primitives ~ prim;
+		primitives = primitives ~ [prim];
 		let def = objects[i];
 		let header = def[0];
 		let txi = header[0];
@@ -71,4 +73,5 @@ let primitives = [];
 	ascent (i in 0 .. l) {
 		Obj_Delete(primitives[i]);
 	}
+	done = true;
 }
