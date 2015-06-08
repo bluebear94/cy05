@@ -13,6 +13,20 @@ customBehavior(): task for custom control of objects
 Possible mesh support?
 */
 
+// 1 - top left
+// 2 - top right
+// 3 - bottom right
+// 4 - bottom left
+function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4) {
+	return [
+		[txi, 4, PRIMITIVE_TRIANGLESTRIP],
+		[x1, y1, z1, 0, 0, 255, 0, 0, 0],
+		[x2, y2, z2, 1, 0, 255, 0, 0, 0],
+		[x3, y3, z3, 1, 1, 255, 0, 0, 0],
+		[x4, y4, z4, 0, 1, 255, 0, 0, 0]
+	];
+}
+
 let primitives = [];
 
 @Initialize {
