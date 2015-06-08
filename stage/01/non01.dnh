@@ -35,6 +35,7 @@ task TWork {
 			let speed = speeds[i % 10] * (0.05 + 0.02 * getDifficulty);
 			CreateShotOA1(objBoss, speed, realAngle, DS_ICE_GREEN, 30);
 		}
+		shotSound;
 		loop (period) {yield;}
 	}
 }

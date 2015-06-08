@@ -147,7 +147,7 @@ function isDead {
 	return ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0;
 }
 
-task shotSound {
+sub shotSound {
 	playSE("sha00");
 }
 

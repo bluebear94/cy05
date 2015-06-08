@@ -308,7 +308,7 @@ task TBossLife {
 }
 
 task TBossTimer {
-	let objNum = createNumberObject(150, 42, 255, 255, 200);
+	let objNum = createNumberObject(300, 6, 255, 255, 200);
 	Obj_SetRenderPriority(objNum, 0.8);
 	let objScene = ID_INVALID;
 	loop {

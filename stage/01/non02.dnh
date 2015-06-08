@@ -37,6 +37,7 @@ task TWork {
 			CreateShotOA1(objBoss, speed, realAngle, DS_ICE_GREEN, 30);
 			CreateShotOA1(objBoss, speed2, realAngle + 6, DS_ICE_RED, 30);
 		}
+		shotSound;
 		loop (period) {yield;}
 	}
 }
