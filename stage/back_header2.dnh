@@ -52,6 +52,7 @@ let primitives = [];
 			ObjPrim_SetVertexAlpha(prim, j, vdef[5]);
 			ObjPrim_SetVertexColor(prim, j, vdef[6], vdef[7], vdef[8]);
 		}
+		Obj_SetRenderPriority(prim, 0.21);
 	}
 	if (length(fog) == 0) {SetFogEnable(false);}
 	else {
