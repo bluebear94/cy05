@@ -14,7 +14,7 @@ Possible mesh support?
 let dir = GetCurrentScriptDirectory ~ "../../resource/bg/mt/";
 let txIndex = [dir ~ "modified/st01.jpg"];
 let objects = [
-	rectangular(0, -1024, 0, -1024, -1024, 0, 1024, 1024, 0, 1024, 1024, 0, -1024, 16)
+	rectangular(0, -1024, 0, -1024, -1024, 0, 1024, 1024, 0, 1024, 1024, 0, -1024, 16, 16)
 ];
 let fog = [1024, 2048, 192, 200, 255];
 let sky = GetCurrentScriptDirectory ~ "../../resource/bg/sky.png";

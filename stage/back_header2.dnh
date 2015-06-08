@@ -20,13 +20,13 @@ Possible mesh support?
 // 2 - top right
 // 3 - bottom right
 // 4 - bottom left
-function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, uv) {
+function rectangular(txi, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, u, v) {
 	return [
 		[txi, 4, PRIMITIVE_TRIANGLEFAN],
 		[x1, y1, z1, 0, 0, 255, 255, 255, 255],
-		[x2, y2, z2, uv, 0, 255, 255, 255, 255],
-		[x3, y3, z3, uv, uv, 255, 255, 255, 255],
-		[x4, y4, z4, 0, uv, 255, 255, 255, 255]
+		[x2, y2, z2, u, 0, 255, 255, 255, 255],
+		[x3, y3, z3, u, v, 255, 255, 255, 255],
+		[x4, y4, z4, 0, v, 255, 255, 255, 255]
 	];
 }
 
