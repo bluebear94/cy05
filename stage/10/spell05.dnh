@@ -39,7 +39,7 @@ task TWork {
 	task fork {
 		while (!isDead) {
 			let x = rand(0, width);
-			DelayLaser(x, 0, 90, 512, 20, 1, DS_BEAM_SKY, 90);
+			DelayLaser(x, 0, 90, 512, 24, 1, DS_BEAM_SKY, 90);
 			wait(90);
 			loop (90) {
 				if (isDead) {return;}
