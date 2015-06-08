@@ -12,7 +12,7 @@ Possible mesh support?
 */
 
 let dir = GetCurrentScriptDirectory ~ "../../resource/bg/mt/";
-let txIndex = [dir ~ "Ground_05_UV_H_CM_1.jpg"];
+let txIndex = [dir ~ "Snow_01_UV_H_CM_1.jpg"];
 let objects = [
 	//rectangular(0, -512, -512, 0, -512, 512, 0, 512, 512, 0, 512, -512, 0, 8)
 	rectangular(0, -512, 0, -512, -512, 0, 512, 512, 0, 512, 512, 0, -512, 8)
