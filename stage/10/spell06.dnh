@@ -6,15 +6,15 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 43;
-let level = 9;
+let id = 51;
+let level = 10;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(5500 + 4500 * (getDifficulty >= 2));
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,13 +26,9 @@ let level = 9;
 
 @Finalize {}
 
-let direction = 1;
-
-task reverse {
-	let nd = -direction / 30;
-	loop (60) {
-		direction += nd;
-	}
+function cl(x0, y0, x1, y1, dt) {
+	DelayLaser(x0, y0, getAngleTwoPoints(x0, y0, x1, y1), getDistanceTwoPoints(x0, y0, x1, y1),
+		24, dt, DS_BEAM_WHITE, dt);
 }
 
 task TWork {
@@ -40,70 +36,35 @@ task TWork {
 	let width = GetStgFrameWidth;
 	let cx = width / 2;
 	let cy = height / 2;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
 	let d = getDifficulty;
-	let p = 0.15 + 0.02 * d;
-	let ma = 0.015 + 0.005 * d;
-	let ms = 4;
-	move;
-	task moveShot(s) {
-		let f = d < 2 || (d == 6 && rand(0, 1) < 0.5);
-		while (!Obj_IsDeleted(s)) {
-			if (f) {
-				ObjMove_AddPatternB2(s, 0, NO_CHANGE, NO_CHANGE, 0, ma * direction, 100, ms * signum(direction));
-			} else {
-				ObjMove_SetAcceleration(s, ma * direction);
-				ObjMove_SetMaxSpeed(s, ms * signum(direction));
+	let bc = 10 + 2 * d;
+	let bsp = 3.5 + 0.2 * d;
+	let p = 0.4 + 0.1 * d;
+	while (!isDead) {
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in -bc .. bc + 1) {
+			if (isDead) {return;}
+			let da = 60 * i / bc;
+			let sp = bsp + 0.01 * da;
+			ascent (j in 0 .. 4) {
+				CreateShotOA1(objBoss, sp * (1 + 0.1 * j), a + da, DS_RICE_S_YELLOW, j);
+				CreateShotOA1(objBoss, sp * (1 + 0.1 * j), a - da, DS_RICE_S_YELLOW, j);
+			}
+			wait(50 / bc);
+		}
+		x = GetPlayerX;
+		y = GetPlayerY;
+		cl(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), x, y, 90);
+		wait(60);
+		ObjMove_SetDestAtFrame(objBoss, x, y, 30);
+		loop (30) {
+			if (isDead) {return;}
+			if (rand(0, 1) < p) {
+				CreateShotOA1(objBoss, rand(0.1, 0.3), rand(0, 360), DS_BALL_M_RED + randIntH(0, 8), 0);
 			}
 			yield;
 		}
-	}
-	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
-		if (rand(0, 1) < p) {
-			if (rand(0, 1) > min(0.5, 0.125 * d)) {
-				let shot = CreateShotB2(0, rand(0, height), rand(1, 2), 0, 0, ma * direction, 100, ms * signum(direction), DS_RICE_M_BLUE, 0);
-				moveShot(shot);
-			} else {
-				let shot = CreateShotB2(width, rand(0, height), -rand(1, 2), 0, 0, ma * direction, -100, ms * signum(direction), DS_RICE_M_BLUE, 0);
-				moveShot(shot);
-			}
-		}
-		yield;
-	}
-}
-
-task move {
-	let height = GetStgFrameHeight;
-	let width = GetStgFrameWidth;
-	let cx = width / 2;
-	let cy = height / 2;
-	let th = 50;
-	let d = getDifficulty;
-	let cd = 0;
-	ObjMove_SetSpeed(objBoss, 2);
-	ObjMove_SetAngle(objBoss, rand(0, 360));
-	while (!isDead) {
-		let x = ObjMove_GetX(objBoss);
-		let y = ObjMove_GetY(objBoss);
-		if (x < th) {
-			ObjMove_SetAngle(objBoss, rand(-90, 90));
-			wait(5);
-		} else if (x > width - th) {
-			ObjMove_SetAngle(objBoss, rand(90, 270));
-			wait(5);
-		}
-		if (y < th) {
-			ObjMove_SetAngle(objBoss, rand(0, 180));
-			wait(5);
-		} else if (y > height - th) {
-			ObjMove_SetAngle(objBoss, rand(-180, 0));
-			wait(5);
-		}
-		let shots = GetShotIdInCircleA2(x, y, 50, TARGET_ENEMY);
-		if (cd == 0 && length(shots) > 0) {
-			reverse;
-			cd = 120;
-		}
-		if (cd != 0) {cd--;}
-		yield;
 	}
 }

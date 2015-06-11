@@ -341,10 +341,17 @@ Freeze Sign "Wall of Snowflakes"
 Freeze Sign "Wall of Snowflakes"
 Freeze Sign "Wall of Snowflakes"
 "Super Ice Bazooka"
-fook
-fook
-fook
-fook
-fook
-fook
-fook
+Frozen River "Genar-Edan"
+Frozen River "Genar-Edan"
+Frozen River "Genar-Edan"
+Snow Snake "Slither Illusion"
+Snow Snake "Slither Illusion"
+Snow Snake "Slither Illusion"
+"Seeking Snake - Hail"
+Ice Sign "Crystallized Wings"
+Ice Sign "Crystallized Wings"
+Ice Sign "Crystallized Wings"
+Flight Sign "Lift from the Land of Endless Snow"
+Flight Sign "Lift from the Land of Endless Snow"
+Flight Sign "Lift from the Land of Endless Snow"
+"Two Wings, One Slash, Thirty Orbs"
