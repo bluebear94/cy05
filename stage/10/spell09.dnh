@@ -1,0 +1,251 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 54;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+let height = GetStgFrameHeight;
+let width = GetStgFrameWidth;
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(120);
+	}
+	case (EV_REQUEST_IS_DURABLE_SPELL) {
+		SetScriptResult(true);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task confinement {
+	let d = getDifficulty;
+	let r0 = 100 - 5 * d;
+	let u = 0;
+	while (!isDead) {
+		let t = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF); // 0 - 7200.
+		let x = GetPlayerX;
+		let y = GetPlayerY;
+		let r = r0 * (0.28 + t / 10000);
+		let a = 12 * sin(u);
+		loop (30) {
+			CreateShotA1(x + r * cos(a), y + r * sin(a), 1.2, a, DS_LIGHT_BLUE, 30 * (d >= 3));
+			a += 12;
+		}
+		u += 57;
+		wait(20);
+	}
+}
+
+task trains {
+	let d = getDifficulty;
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let trainRadius = 50 + 7 * d;
+	let trainPeriod = 540 - 20 * d;
+	let trainSpeed = 2.2 + 0.3 * d;
+	loop (6000 / trainPeriod) {
+		wait(trainPeriod);
+		if (isDead) {return;}
+		let isVertical = rand(0, 1);
+		if (isVertical) {
+			let x = rand(trainRadius, width - trainRadius);
+			let s = randomSign;
+			let y = cy * (1 + s);
+			let a = -90 * s;
+			DelayLaser(x, y, a, 600, 24, 120, DS_BEAM_RED, 120);
+			wait(90);
+			ascent (i in 0 .. 30) {
+				if (isDead) {return;}
+				CreateShotA1(x + rand(-trainRadius, trainRadius), y, trainSpeed * (1 + 0.02 * i), a, DS_BALL_L_RED, 0);
+				yield;
+			}
+		}
+		else {
+			let y = rand(trainRadius, height - trainRadius);
+			let s = randomSign;
+			let x = cx * (1 + s);
+			let a = 90 - 90 * s;
+			DelayLaser(x, y, a, 600, 24, 120, DS_BEAM_RED, 120);
+			wait(90);
+			ascent (i in 0 .. 30) {
+				if (isDead) {return;}
+				CreateShotA1(x, y + rand(-trainRadius, trainRadius), trainSpeed * (1 + 0.02 * i), a, DS_BALL_L_RED, 0);
+				yield;
+			}
+		}
+		trainRadius++;
+	}
+}
+
+task ranShots {
+	let d = getDifficulty;
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let tps = 2400 - 200 * d;
+	while (!isDead) {
+		let t = 7200 - ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF); // 0 - 7200
+		let spread = truncate(t / tps);
+		ascent (i in -spread .. spread + 1) {
+			if (isDead) {return;}
+			let dir = i % 2; // mkm the idiot forgot the bitwise operators
+			CreateShotA1(cx + 30 * i, height * dir, 1.2, 90 - 180 * dir, DS_BALL_S_BLUE, 0);
+			CreateShotA1(width * dir, cy + 30 * i, 1.2, 180 * dir, DS_BALL_S_BLUE, 0);
+			wait(2);
+		}
+		wait(45 - 2 * spread);
+	}
+}
+
+task forbid {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let limit;
+	let cx = width / 2;
+	let cy = height / 2;
+	descent (limit in height - 240 .. height) {
+		loop (6) {
+			CreateShotA1(0, rand(limit, height), rand(5, 8), 0, DS_STAR_S_RED, 0);
+			CreateShotA1(width, rand(limit, height), rand(5, 8), 180, DS_STAR_S_RED, 0);
+		}
+		wait(6);
+	}
+	// 24s
+	ascent (limit in 0 .. 180) {
+		loop (6) {
+			CreateShotA1(rand(0, limit), 0, rand(5, 8), 90, DS_STAR_S_ORANGE, 0);
+			CreateShotA1(rand(0, limit), height, rand(5, 8), -90, DS_STAR_S_ORANGE, 0);
+		}
+		wait(6);
+	}
+	// 42s
+	ascent (limit in 0 .. 240) {
+		loop (6) {
+			CreateShotA1(0, rand(0, limit), rand(5, 8), 0, DS_STAR_S_YELLOW, 0);
+			CreateShotA1(width, rand(0, limit), rand(5, 8), 180, DS_STAR_S_YELLOW, 0);
+		}
+		wait(6);
+	}
+	// 66s
+	descent (limit in width - 180 .. width) {
+		loop (6) {
+			CreateShotA1(rand(limit, width), 0, rand(5, 8), 90, DS_STAR_S_GREEN, 0);
+			CreateShotA1(rand(limit, width), height, rand(5, 8), -90, DS_STAR_S_GREEN, 0);
+		}
+		wait(6);
+	}
+	// 84s
+	loop (4) {
+		wait(30);
+		let x = GetPlayerX;
+		let y = GetPlayerY;
+		loop (60) {
+			let speed = rand(0.5, 2.5);
+			let radius = rand(60, 120);
+			let s = CreateShotA1(x, y, speed, rand(0, 360), DS_STAR_S_BLUE, 180);
+			ObjShot_SetDeleteFrame(s, radius / speed);
+		}
+		wait(210);
+	}
+	// 100 s
+	let r0 = (cx ^ 2 + cy ^ 2) ^ 0.5; // ~ 300
+	descent (r in r0 - 240 .. r0) {
+		loop (5) {
+			if (isDead) {return;}
+			let a = rand(0, 360);
+			CreateShotA1(cx + r * cos(a), cy + r * sin(a), rand(5, 8), a + 90 * randomSign, DS_STAR_S_PURPLE, 0);
+			CreateShotA1(cx + r * cos(a), cy + r * sin(a), rand(5, 8), a + rand(-90, 90), DS_STAR_S_WHITE, 0);
+			yield;
+		}
+	}
+	// 120 s
+}
+
+task TWork {
+	confinement;
+	trains;
+	ranShots;
+	forbid;
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	if (d == 6) {TWorkOD;}
+	let p = 1 / 300 + d / 1200;
+	let speed = 1 + 0.1 * d;
+	let period = 400 / (1 + 0.15 * d);
+	while (!isDead) {
+		if (rand(0, 0.05) < p) {
+			CreateShotOA1(objBoss, rand(0.5, 1.5), rand(0, 360), DS_BILL_RED + randIntH(0, 8), 0);
+		}
+		yield;
+	}
+}
+
+task TWorkOD {
+	let SPEED = 3;
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let interval = 16;
+	let ih = height / interval;
+	let iw = width / interval;
+	let period = 300;
+	function redBullet(x, y) {
+		CreateShotA1(x, y, SPEED, getAngleToXY(GetPlayerObjectID, x, y) + 180, DS_BALL_M_A_RED, 0);
+	}
+	function orangeBullet(x, y) {
+		let direction = 0;
+		if (x == width) {direction = 180;}
+		else if (y == 0) {direction = 90;}
+		else if (y == height) {direction = 270;}
+		CreateShotA1(x, y, SPEED, direction, DS_BALL_M_A_ORANGE, 0);
+		CreateShotA1(x, y, SPEED * 0.6, direction, DS_BALL_M_A_ORANGE, 0);
+	}
+	function greenBullet(x, y) {
+		let direction = 0;
+		if (x == width) {direction = 180;}
+		else if (y == 0) {direction = 90;}
+		else if (y == height) {direction = 270;}
+		CreateShotA1(x, y, SPEED, direction + 20, DS_BALL_M_A_GREEN, 0);
+		CreateShotA1(x, y, SPEED, direction - 20, DS_BALL_M_A_GREEN, 0);
+	}
+	function shoot(x, y, n) {
+		alternative (n)
+		case (0) {redBullet(x, y);}
+		case (1) {orangeBullet(x, y);}
+		case (2) {greenBullet(x, y);}
+	}
+	while (!isDead) {
+		let n = randIntH(0, 2);
+		ascent (i in 0 .. iw) {
+			shoot(i * interval, 0, n);
+			shoot(i * interval, height, n);
+		}
+		ascent (i in 0 .. ih) {
+			shoot(0, i * interval, n);
+			shoot(width, i * interval, n);
+		}
+		wait(period);
+		period *= 0.99;
+	}
+}

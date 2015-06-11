@@ -30,27 +30,41 @@ task TWork {
 	let y = ObjMove_GetY(objBoss);
 	let d = getDifficulty;
 	let period = 30 - 2 * d;
-	let p = 0.4 + 0.05 * d;
+	let p = 0.1 + 0.02 * d;
 	let a = 0;
 	task aimed {
 		wait(120);
 		while (!isDead) {
-			let a = GetAngleToPlayer(objBoss);
-			CreateShotOA1(objBoss, 10, a + 4.5, DS_BALL_SS_BLUE, 0);
-			CreateShotOA1(objBoss, 10, a - 4.5, DS_BALL_SS_BLUE, 0);
-			CreateShotOA1(objBoss, 10, a + 6.5, DS_BALL_SS_BLUE, 0);
-			CreateShotOA1(objBoss, 10, a - 6.5, DS_BALL_SS_BLUE, 0);
-			yield;
+			loop (30) {
+				if (isDead) {return;}
+				let a = GetAngleToPlayer(objBoss);
+				CreateShotOA1(objBoss, 10, a , DS_BALL_SS_BLUE, 0);
+				CreateShotOA1(objBoss, 10, a + 1.5, DS_BALL_SS_BLUE, 0);
+				CreateShotOA1(objBoss, 10, a - 1.5, DS_BALL_SS_BLUE, 0);
+				yield;
+			}
+			wait(60);
 		}
 	}
 	aimed;
+	task bulletTask(shot) {
+		wait(100);
+		if (!Obj_IsDeleted(shot)) {
+			let a = 90;
+			loop (8) {
+				CreateShotOA1(shot, 0.5, a, DS_BALL_SS_BLUE, 0);
+				a += 45;
+			}
+			Obj_Delete(shot);
+		}
+	}
 	while (!isDead) {
 		x = rand(0, width);
 		y = rand(0, height / 2);
 		ObjMove_SetDestAtFrame(objBoss, x, y, period);
 		loop (period) {
 			if (isDead) {return;}
-			if (rand(0, 1) < p) {CreateShotOA1(objBoss, rand(1, 2), rand(0, 360), [DS_SCALE_YELLOW, DS_SCALE_SKY][randIntH(0, 2)], 0);}
+			if (rand(0, 1) < p) {bulletTask(CreateShotOA1(objBoss, rand(1, 2), rand(0, 360), [DS_SCALE_YELLOW, DS_SCALE_SKY][randIntH(0, 2)], 0))};
 			yield;
 		}
 	}
