@@ -14,7 +14,7 @@ let objSlowShot = ID_INVALID;
 let current = GetCurrentScriptDirectory();
 
 @Initialize {
-	SetPlayerSpeed(7, 1.5);
+	SetPlayerSpeed(5, 1.5);
 	ObjPlayer_AddIntersectionCircleA1(objPlayer, 0, 0, 1.5, 20); //Sets the hitbox of the player
 	let path = current ~ "playersd.dnh";
 	LoadPlayerShotData(path); //Loads the player bullet graphics
