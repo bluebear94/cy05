@@ -125,7 +125,7 @@ task TSpell {
 		ObjShot_SetEraseShot(star, true);
 		starTask(star);
 	}
-	wait(60);
+	wait(90);
 	Obj_Delete(objManage);
 }
 
