@@ -32,7 +32,7 @@ function TBossPost {
 	stageBonus(atoi(stage));
 	wait(240);
 	if (atoi(stage) == NUM_STAGES && !IsReplay && gameMode == MODE_ALL) {
-		let eid = 1 + (getCharacter >= 2) + 2 * (getContinue != 0);
+		let eid = 1 + (getCharacter >= 2) + 2 * (getContinue != 0 || getDifficulty == 0);
 		ending(eid);
 		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, isHidden, 12, GetScore]);
 		while (!GetCommonData("HSSubmitDone", false)) {/*WriteLog("poop");*/ yield;}
