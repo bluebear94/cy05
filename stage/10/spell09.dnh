@@ -61,7 +61,7 @@ task trains {
 	let trainRadius = 50 + 7 * d;
 	let trainPeriod = 540 - 20 * d;
 	let trainSpeed = 2.2 + 0.3 * d;
-	loop (6000 / trainPeriod) {
+	loop (6000 / (trainPeriod + 90)) {
 		wait(trainPeriod);
 		if (isDead) {return;}
 		let isVertical = rand(0, 1);

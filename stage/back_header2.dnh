@@ -48,7 +48,7 @@ let primitives = [];
 	Obj_SetRenderPriority(bg, 0.19);
 	initBG;
 	customBehavior;
-	debug;
+	//debug;
 }
 
 task debug {

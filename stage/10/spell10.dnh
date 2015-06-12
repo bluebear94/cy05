@@ -120,8 +120,8 @@ let reverse = false;
 
 task spiral(x, y) {
 	let a = getAngleToXY(GetPlayerObjectID, x, y) + 180;
-	let d = getDifficulty - 1;
-	let interval = 29 - 2.9 * d;
+	let d = getDifficulty;
+	let interval = 87 - 6.7 * d;
 	let s = randomSign;
 	let speed = 1.2 + 0.03 * d;
 	while (!isDead) {
@@ -192,6 +192,6 @@ task part5 {
 			bulletTask(shot);
 			b += 360 / ad;
 		}
-		wait(140);
+		wait(240);
 	}
 }

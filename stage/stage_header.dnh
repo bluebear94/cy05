@@ -32,6 +32,8 @@ function TBossPost {
 	stageBonus(atoi(stage));
 	wait(240);
 	if (atoi(stage) == NUM_STAGES && !IsReplay && gameMode == MODE_ALL) {
+		let eid = 1 + (getCharacter >= 2) + 2 * (getContinue != 0);
+		ending(eid);
 		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, isHidden, 12, GetScore]);
 		while (!GetCommonData("HSSubmitDone", false)) {/*WriteLog("poop");*/ yield;}
 		SetCommonData("HSSubmitDone", false);
@@ -290,4 +292,48 @@ function canDeleteEnemy(enemy) {
 	let y = ObjMove_GetY(enemy);
 	return (x < -100) || (x > GetStgFrameWidth + 100) ||
 		(y < -100) || (y > GetStgFrameWidth + 100);
+}
+
+function ending(id) {
+	let dir = GetCurrentScriptDirectory ~ "./resource/endings/";
+	let bg = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(bg, dir ~ "bg.png");
+	ObjSprite2D_SetSourceRect(bg, 0, 0, 640, 480);
+	ObjSprite2D_SetDestRect(bg, 0, 0, 640, 480);
+	Obj_SetRenderPriority(bg, 0.9);
+	let img = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(img, dir ~ "e" ~ IntToString(id) ~ "_0.png");
+	ObjSprite2D_SetSourceRect(img, 0, 0, 640, 480);
+	ObjSprite2D_SetDestRect(img, 0, 0, 640, 480);
+	Obj_SetRenderPriority(img, 0.91);
+	let imgId = 0;
+	let textObjs = [];
+	let data = readEndings(id);
+	let len = length(data);
+	ascent (i in 0 .. len) {
+		let entry = data[i];
+		let istr = SplitString(entry[0], ",");
+		if (istr[0] != "256") {
+			let t = ObjText_Create;
+			Obj_SetRenderPriority(t, 0.92);
+			ObjRender_SetPosition(t, 20, 400 + 16 * length(textObjs), 0);
+			ObjText_SetText(t, entry[1]);
+			ObjText_SetFontType(t, typeface);
+			ObjText_SetFontBorderType(t, BORDER_FULL);
+			ObjText_SetFontColorTop(t, atoi(istr[0]), atoi(istr[1]), atoi(istr[2]));
+			ObjText_SetFontColorBottom(t, atoi(istr[0]), atoi(istr[1]), atoi(istr[2]));
+			textObjs = textObjs ~ [t];
+		}
+		else {
+			imgId = atoi(istr[1]);
+			ObjPrim_SetTexture(img, dir ~ "e" ~ IntToString(id) ~ "_" ~ IntToString(imgId) ~ ".png");
+			ascent (j in 0 .. length(textObjs)) {Obj_Delete(textObjs[j]);}
+			textObjs = [];
+		}
+		while (GetVirtualKeyState(VK_OK) != KEY_PUSH) {yield;}
+		yield;
+	}
+	ascent (j in 0 .. length(textObjs)) {Obj_Delete(textObjs[j]);}
+	Obj_Delete(bg);
+	Obj_Delete(img);
 }
