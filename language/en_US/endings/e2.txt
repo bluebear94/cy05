@@ -1,0 +1,44 @@
+0,0,0
+The castle of Vanar.
+0,0,0
+The blizzard had finally subsided.
+256,1,0
+-- NEXT PAGE --
+50,0,60
+Rygen: "What happened?"
+0,150,200
+Dernar: "Unfortunately, I can't stand the heat very well.
+0,150,200
+That's why I started this incident."
+256,2,0
+-- NEXT PAGE --
+40,90,80
+Vija: "I have a solution!"
+0,0,0
+A fan started whirring.
+0,150,200
+Dernar: "Ah, that feels good."
+256,3,0
+-- NEXT PAGE --
+50,0,60
+Rygen: "By the way, I don't want to swim through the
+50,0,60
+canal again."
+40,90,80
+Vija: "!"
+256,4,0
+-- NEXT PAGE --
+0,0,120
+Etelos: "That's a nice boat."
+0,0,0
+The summer had been saved, and the life of the forests
+0,0,0
+could rest again.
+256,4,0
+-- NEXT PAGE --
+0,0,0
+The snow would melt in a few days' time.
+0,100,0
+Good End #2 - The Trees are Saved!
+0,100,0
+All Clear! Now try the Extra Stage!

@@ -1,0 +1,24 @@
+0,0,0
+The Armadereyn.
+0,0,0
+Snow still fell from the clouds.
+256,1,0
+-- NEXT PAGE --
+0,90,0
+Rencron: "It's so cold..."
+0,0,0
+Suddenly, the door opened.
+256,2,0
+-- NEXT PAGE --
+50,90,0
+Narendani: "Hey, I'm here to take over your place~"
+0,90,0
+Rencron: "Is there really anything left to take?"
+256,2,0
+-- NEXT PAGE --
+0,0,0
+Summer would not return for another year.
+0,100,0
+Bad End #3 - Try Again!
+0,100,0
+Try to clear Normal or higher without continues!

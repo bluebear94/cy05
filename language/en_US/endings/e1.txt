@@ -1,0 +1,32 @@
+0,0,0
+The castle of Vanar.
+0,0,0
+The blizzard had finally subsided.
+256,1,0
+-- NEXT PAGE --
+0,150,200
+Dernar: "Ergh, it's getting too hot."
+0,90,0
+Rencron: "Eh?"
+256,2,0
+-- NEXT PAGE --
+150,100,0
+Čyrden: "I'll carry you in.
+150,100,0
+You are truly an evil being."
+0,90,0
+Rencron: "I am?"
+256,2,0
+-- NEXT PAGE --
+0,90,0
+Rencron: "I guess there will always be someone accusing me
+0,90,0
+for whatever I do. I feel bad for a person who can't stand
+0,90,0
+that much warmth."
+256,2,0
+-- NEXT PAGE --
+0,100,0
+Good End #1 - Get a Fan?
+0,100,0
+All Clear! Now try the Extra Stage!
