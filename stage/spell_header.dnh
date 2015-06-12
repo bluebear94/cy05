@@ -117,7 +117,7 @@ task TEnd {
 		(ObjEnemyBossScene_GetInfo(bs, INFO_TIMERF) != 0 ||
 		ObjEnemyBossScene_GetInfo(bs, INFO_IS_DURABLE_SPELL));
 	if (success) {
-		if (id != 0) {NotifyEventAll(EV_GAIN_SPELL, id);}
+		//if (id != 0) {NotifyEventAll(EV_GAIN_SPELL, id);}
 		createItemU1(2, rand(0, width), 0, 0);
 		createItemU1(3, rand(0, width), 0, 0);
 	}

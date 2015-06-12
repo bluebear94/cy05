@@ -352,6 +352,7 @@ task TGainSpell(score) {
 	let strScore = "+" ~ IntToStringBase(score, base) ~ " X"
 		~ IntToStringBase(multiplier, base) ~ "." ~ IntToStringBaseLZ((multiplier * base ^ 2) % (base ^ 2), base, 2)
 		~ "[r]= " ~ IntToStringBase(roundScore(score * multiplier), base);
+	WriteLog(strScore);
 	let objScore = ObjText_Create();
 	ObjText_SetText(objScore, strScore);
 	ObjText_SetFontSize(objScore, 28 * fontScale);

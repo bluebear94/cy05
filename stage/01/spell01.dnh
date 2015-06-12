@@ -59,6 +59,7 @@ task TWork {
 			speed, a, DS_BUTTERFLY_GREEN, 0);
 		trail(s, a);
 		wait(period * 0.25);
+		if (ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0) {return;}
 		let r = rand(0, 360);
 		ascent(i in 0 .. zzButterflyQty) {
 			let a = (360 / zzButterflyQty) * i + r;
