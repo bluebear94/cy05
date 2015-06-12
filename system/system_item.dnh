@@ -19,7 +19,8 @@ task getItem(type, objItem) {
 	case (POINT_ITEM) {
 		let piv = getPIV;
 		let y = GetPlayerY;
-		let poc = max(0, GetStgFrameHeight * (1 - 6144 / getElemPoints(FIRE)));
+		let age = GetCommonData("Age", 0);
+		let poc = max(0, GetStgFrameHeight * (1 - 8192 / (getElemPoints(FIRE) - age)));
 		let multiplier = min(1, 1 - (y - poc) / 600);
 		if (multiplier < 1) {multiplier *= 0.8;}
 		addScore(multiplier * piv);

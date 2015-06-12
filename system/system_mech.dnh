@@ -45,9 +45,9 @@ task TMech {
 		if (isHidden) {SetPlayerRebirthFrame(5);}
 		else {SetPlayerRebirthFrame(min(30, [5, 7][getCharacter < 2] * getElemPoints(AIR) / 8192));}
 		let age = GetCommonData("Age", 0);
-		let fire = getElemPoints(FIRE) - 0.1 * age;
-		let y = height * (1 - 6144 / getElemPoints(FIRE));
-		SetCommonData("Age", age + 2 * truncate(fire / 4096));
+		let fire = getElemPoints(FIRE) - age;
+		let y = height * (1 - 8192 / fire);
+		SetCommonData("Age", age + truncate(fire / 4096));
 		ObjSprite2D_SetDestRect(obj, 0, y - 7, 16, y + 7);
 		SetPlayerAutoItemCollectLine(y);
 		oldScore = GetScore;
