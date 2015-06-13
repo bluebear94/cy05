@@ -35,7 +35,7 @@ task TMech {
 		if (gdiff != 0) {playSE("on01");}
 		if (GetPlayerState == STATE_NORMAL && tick == 0) {
 			addElemPoints(EARTH, 16 + (getSurvivalTime / 32) ^ 0.8);
-			setElemPoints(AIR, max(4096, getElemPoints(AIR) - (getSurvivalTime / 32) ^ 0.4));
+			setElemPoints(AIR, max(4096, getElemPoints(AIR) - (getSurvivalTime / 32) ^ 0.6));
 		}
 		tick++;
 		if (tick == 10) {
