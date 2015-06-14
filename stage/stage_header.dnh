@@ -31,6 +31,7 @@ function TBossPre {
 function TBossPost {
 	stageBonus(atoi(stage));
 	wait(240);
+	setLastStage(getCharacter, getDifficulty, atoi(stage));
 	if (atoi(stage) == NUM_STAGES && !IsReplay && gameMode == MODE_ALL) {
 		let showBad = (getContinue != 0 || getDifficulty == 0);
 		let eid = 1 + (getCharacter >= 2) + 2 * showBad;
@@ -299,7 +300,7 @@ function canDeleteEnemy(enemy) {
 }
 
 function ending(id) {
-	let dir = GetCurrentScriptDirectory ~ "./resource/endings/";
+	let dir = GetCurrentScriptDirectory ~ "../resource/endings/";
 	let bg = ObjPrim_Create(OBJ_SPRITE_2D);
 	ObjPrim_SetTexture(bg, dir ~ "bg.png");
 	ObjSprite2D_SetSourceRect(bg, 0, 0, 640, 480);
@@ -344,6 +345,7 @@ function ending(id) {
 
 function credits {
 	let str = readCredits;
+	restartBGM(23);
 	let t = ObjText_Create;
 	ObjText_SetFontType(t, typeface);
 	ObjText_SetFontSize(t, 12 * fontScale);
@@ -362,7 +364,7 @@ function credits {
 	ObjSprite2D_SetSourceRect(bg, 0, 0, 640, 480);
 	ObjSprite2D_SetDestRect(bg, 0, 0, 640, 480);
 	Obj_SetRenderPriority(bg, 0.9);
-	descent (y in -ObjText_GetTotalHeight(t) .. 480) {ObjRender_SetY(t, y);}
+	descent (y in -ObjText_GetTotalHeight(t) .. 480) {ObjRender_SetY(t, y); yield;}
 	Obj_Delete(bg);
 	Obj_Delete(t);
 }

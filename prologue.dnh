@@ -480,6 +480,14 @@ function getGraphicsCut {
 	return GetAreaCommonData("Cy05", "EffCut", 1);
 }
 
+function getLastStage(ch, d) {
+	return GetAreaCommonData("Cy05", "LastStage" ~ IntToString(ch) ~ IntToString(d), 1);
+}
+
+task setLastStage(ch, d, st) {
+	SetAreaCommonData("Cy05", "LastStage" ~ IntToString(ch) ~ IntToString(d), max(getLastStage(ch, d), st));
+}
+
 let MODE_ALL = 0;
 let MODE_STAGE = 10;
 let MODE_SPELL = 100;
