@@ -45,7 +45,7 @@ task TWork {
 			let s = CreateShotA1(x + xoff, i, 0, rand(0, 360), DS_ICE_GREEN, 30);
 			ObjMove_AddPatternA2(s, 300, 0, NO_CHANGE, speed / 60, 0, speed);
 			i -= separation;
-			loop (5) {yield;}
+			wait(3);
 		}
 	}
 	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {

@@ -32,8 +32,8 @@ task TWork {
 		let angle = rand(0, 360);
 		ascent (i in 0 .. 30) {
 			let realAngle = angle + 12 * i;
-			let speed = speeds[i % 10] * (0.05 + 0.02 * getDifficulty);
-			let speed2 = speeds[(i + 5) % 10] * (0.05 + 0.02 * getDifficulty);
+			let speed = speeds[i % 10] * (0.08 + 0.02 * getDifficulty);
+			let speed2 = speeds[(i + 5) % 10] * (0.08 + 0.02 * getDifficulty);
 			CreateShotOA1(objBoss, speed, realAngle, DS_ICE_GREEN, 30);
 			CreateShotOA1(objBoss, speed2, realAngle + 6, DS_ICE_RED, 30);
 		}

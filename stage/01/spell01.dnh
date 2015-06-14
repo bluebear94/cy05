@@ -42,7 +42,7 @@ task TWork {
 		}
 	}
 	if (getDifficulty >= 4) {TWorkOD;}
-	let period = 120 - 15 * getDifficulty;
+	let period = 90 - 15 * getDifficulty;
 	let speed = 5 + 3 * getDifficulty;
 	if (getDifficulty > 3) {period += 6 * (getDifficulty - 3); speed -= 2 * getDifficulty - 3;}
 	let zzButterflyQty = 8 * getDifficulty;
