@@ -38,7 +38,7 @@ function TBossPost {
 		let bgm = 21 + showBad;
 		restartBGM(bgm);
 		ending(eid);
-		if (!showBad) {credits;}
+		if (!showBad) {credits; SetAreaCommonData("Cy05", "Ex" ~ IntToString(getCharacter), true);}
 		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, isHidden, 12, GetScore]);
 		while (!GetCommonData("HSSubmitDone", false)) {/*WriteLog("poop");*/ yield;}
 		SetCommonData("HSSubmitDone", false);
