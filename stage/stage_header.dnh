@@ -42,6 +42,10 @@ function TBossPost {
 		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, isHidden, 12, GetScore]);
 		while (!GetCommonData("HSSubmitDone", false)) {/*WriteLog("poop");*/ yield;}
 		SetCommonData("HSSubmitDone", false);
+	} else if (atoi(stage) >= 11) {
+		NotifyEventAll(EV_SUBMIT, [getCharacter, getDifficulty, isHidden, 12, GetScore]);
+		while (!GetCommonData("HSSubmitDone", false)) {/*WriteLog("poop");*/ yield;}
+		SetCommonData("HSSubmitDone", false);
 	}
 	CloseStgScene;
 }

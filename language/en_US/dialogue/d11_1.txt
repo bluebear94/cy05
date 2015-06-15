@@ -1,0 +1,40 @@
+./../resource/boss/st11.png
+0
+/
+4
+Surprise!
+1
+/
+4
+Who the hell are you?
+0
+Elssecisso Rencron.
+1
+HEY! ... that's my name!
+0
+[ruby rb="Esel Rygen" rt="A Light Magician"]
+3
+Everyone knows you don't deserve that name.
+1
+After all, I solved this incident.
+1
+Are you in a trance? It's clear that I was the one.
+0
+Eh heh, not since we stopped using the word "she".
+1
+Well. There must still be some lunatics who use that word.
+0
+Then I might still be in a trance.
+1
+You know what? I'm probably in a trance.
+1
+Maybe you're in a trance.
+1
+Maybe this is all made up.
+1
+Close your mouth!
+0
+Well, all other measures have been exhausted.
+1
+Prepare to face the power of the nine colors!
+1

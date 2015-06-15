@@ -8,7 +8,7 @@
 #include "./../../language.dnh"
 
 let name = getBossNames(10);
-let bgm = 26;
+let bgm = 25;
 #include "./../boss_header.dnh"
 
 

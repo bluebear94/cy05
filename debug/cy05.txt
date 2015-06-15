@@ -318,6 +318,8 @@ HeardBGM 2 is true
 HeardBGM 20 is true
 HeardBGM 21 is true
 HeardBGM 23 is true
+HeardBGM 24 is true
+HeardBGM 25 is true
 HeardBGM 3 is true
 HeardBGM 4 is true
 HeardBGM 5 is true
@@ -341,6 +343,7 @@ HeardBGM cy05_title.ogg is true
 Hidden is 0.000000
 Language is en_US
 LastStage11 is 10.000000
+LastStage15 is 11.000000
 LastStage31 is 1.000000
 LastStage34 is 1.000000
 Name is Uruwi

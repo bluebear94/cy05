@@ -1,0 +1,18 @@
+./../resource/boss/st11.png
+0
+Iyaaaaaah~
+1
+Did I knock you out of your trance?
+0
+Probably.
+1
+There's no guarantee that you're out of your trance, though.
+1
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10. I still have all my fingers.
+0
+Silly, that just means you're not dreaming.
+1
+Well, now we have evidence that this is all real.
+1
+It's almost morning. Go to the village.
+1

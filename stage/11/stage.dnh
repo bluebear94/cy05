@@ -11,21 +11,15 @@ let stage = "11";
 let done = false;
 let dialogueData;
 let dialogueData2;
-let bgm = 25;
+let bgm = 24;
 #include "./../stage_header.dnh"
 
 let width = GetStgFrameWidth;
 let height = GetStgFrameHeight;
 
 task TStage {
-	if (getCharacter < 2) {
-		dialogueData = readDD("d11_1");
-		dialogueData2 = readDD("d11_2");
-	}
-	else {
-		dialogueData = readDD("d11_3");
-		dialogueData2 = readDD("d11_4");
-	}
+	dialogueData = readDD("d11_1");
+	dialogueData2 = readDD("d11_2");
 	let d = getDifficulty;
 	waitForClearScreen;
 	wait(300);

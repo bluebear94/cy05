@@ -69,7 +69,7 @@ let dirCurrent = GetCurrentScriptDirectory();
 task reset {
 	yield;
 	if (gameMode < MODE_SPELL) {
-		SetPlayerLife([64, 2][gameMode == MODE_ALL]);
+		SetPlayerLife([64, 2][gameMode == MODE_ALL || gameMode >= MODE_STAGE + 11]);
 		SetPlayerSpell(3 + (getCharacter >= 2));
 	} else {
 		SetPlayerLife(0);
