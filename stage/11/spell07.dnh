@@ -1,0 +1,73 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 52;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(90);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+let reverse = false;
+
+task spiral(x, y) {
+	let a = getAngleToXY(GetPlayerObjectID, x, y) + 180;
+	let d = getDifficulty;
+	let interval = 29 - 2.9 * d;
+	let s = randomSign;
+	let speed = 1.2 + 0.03 * d;
+	while (!isDead) {
+		CreateShotA1(x, y, speed, a, DS_RICE_S_GREEN, 30);
+		CreateShotA1(x, y, speed, 0.5 * a, DS_RICE_S_GREEN, 30);
+		if (reverse) {
+			CreateStraightLaserA1(x, y, getAngleToXY(GetPlayerObjectID, x, y) + 180, 600, 24, 30, DS_BEAM_SKY, 90);
+			s = randomSign;
+		}
+		a += interval * s;
+		wait(interval / 2);
+	}
+}
+
+task spiral2(x, y) {
+	spiral(x, y);
+	spiral(GetStgFrameWidth - x, y);
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let interval = 29 - 2.9 * d;
+	spiral2(100, 50);
+	spiral2(50, 150);
+	spiral2(100, 200);
+	spiral(cx, 250);
+	spiral(cx, 75);
+	while (!isDead) {
+		reverse = true;
+		wait(interval / 2);
+		reverse = false;
+		wait(180);
+	}
+}
+

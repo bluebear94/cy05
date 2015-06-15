@@ -307,7 +307,7 @@ function ending(id) {
 	ObjSprite2D_SetDestRect(bg, 0, 0, 640, 480);
 	Obj_SetRenderPriority(bg, 0.9);
 	let img = ObjPrim_Create(OBJ_SPRITE_2D);
-	ObjPrim_SetTexture(img, dir ~ "d" ~ IntToString(id) ~ "_0.png");
+	ObjPrim_SetTexture(img, dir ~ "e" ~ IntToString(id) ~ "_0.png");
 	ObjSprite2D_SetSourceRect(img, 0, 0, 640, 480);
 	ObjSprite2D_SetDestRect(img, 0, 0, 640, 480);
 	Obj_SetRenderPriority(img, 0.91);
@@ -328,14 +328,14 @@ function ending(id) {
 			ObjText_SetFontColorTop(t, atoi(istr[0]), atoi(istr[1]), atoi(istr[2]));
 			ObjText_SetFontColorBottom(t, atoi(istr[0]), atoi(istr[1]), atoi(istr[2]));
 			textObjs = textObjs ~ [t];
+			while (GetVirtualKeyState(VK_OK) != KEY_PUSH) {yield;}
 		}
 		else {
 			imgId = atoi(istr[1]);
-			ObjPrim_SetTexture(img, dir ~ "d" ~ IntToString(id) ~ "_" ~ IntToString(imgId) ~ ".png");
+			ObjPrim_SetTexture(img, dir ~ "e" ~ IntToString(id) ~ "_" ~ IntToString(imgId) ~ ".png");
 			ascent (j in 0 .. length(textObjs)) {Obj_Delete(textObjs[j]);}
 			textObjs = [];
 		}
-		while (GetVirtualKeyState(VK_OK) != KEY_PUSH) {yield;}
 		yield;
 	}
 	ascent (j in 0 .. length(textObjs)) {Obj_Delete(textObjs[j]);}
@@ -359,7 +359,7 @@ function credits {
 	ObjRender_SetPosition(t, 320, 480, 0);
 	Obj_SetRenderPriority(t, 0.93);
 	let bg = ObjPrim_Create(OBJ_SPRITE_2D);
-	let dir = GetCurrentScriptDirectory ~ "./resource/bg/credits.png";
+	let dir = GetCurrentScriptDirectory ~ "../resource/bg/credits.png";
 	ObjPrim_SetTexture(bg, dir);
 	ObjSprite2D_SetSourceRect(bg, 0, 0, 640, 480);
 	ObjSprite2D_SetDestRect(bg, 0, 0, 640, 480);

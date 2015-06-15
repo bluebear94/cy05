@@ -1,0 +1,63 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(5000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let ad = 36 + 8 * d;
+	let b = 0;
+	task bulletTask(shot) {
+		wait(100);
+		if (!Obj_IsDeleted(shot)) {
+			let a = 90;
+			loop (8) {
+				CreateShotOA1(shot, 0.5, a, DS_BALL_SS_BLUE, 0);
+				a += 45;
+			}
+			Obj_Delete(shot);
+		}
+	}
+	while (!isDead) {
+		let a = 0;
+		loop (ad) {
+			let shot = CreateShotOA1(objBoss, 3 * astroid(a, 4), a + b, DS_BALL_S_SKY, 0);
+			bulletTask(shot);
+			a += 360 / ad;
+		}
+		b += 1080 / ad;
+		wait(120);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

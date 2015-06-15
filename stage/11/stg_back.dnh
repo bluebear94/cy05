@@ -1,0 +1,5 @@
+// background
+
+let backgroundImage = ["./../resource/bg/st01.png"];
+#include "./../back_header.dnh"
+

@@ -1,0 +1,68 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 48;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		let scale = 0.3 + 0.05 * getDifficulty;
+		SetScriptResult(40000 * scale);
+	}
+	case (EV_REQUEST_TIMER) {
+		let scale = 0.3 + 0.05 * getDifficulty;
+		SetScriptResult(300 * scale);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2 - 100;
+	let d = getDifficulty;
+	let snowLevel = height - 5;
+	let slrps = 3.7 / (1 + 0.15 * d);
+	let maxSnowLevel = height * (0.7 - 0.05 * d);
+	let li = 20 - 2 * d;
+	task snowTask(shot) {
+		while (ObjMove_GetY(shot) < snowLevel) {if (Obj_IsDeleted(shot)) {return;} yield;}
+		ObjMove_SetSpeed(shot, 0);
+		snowLevel -= slrps;
+		while (snowLevel > maxSnowLevel) {if (Obj_IsDeleted(shot)) {return;} yield;}
+		wait(60);
+		if (!Obj_IsDeleted(shot)) {
+			CreateShotOA1(shot, rand(0.2, 0.3), -90, DS_BALL_SS_WHITE, 0);
+			ObjMove_SetSpeed(shot, rand(0.2, 0.3));
+			ObjMove_SetAngle(shot, 90);
+		}
+	}
+	while (!isDead) {
+		while (snowLevel > maxSnowLevel) {
+			if (isDead) {return;}
+			snowTask(CreateShotOA1(objBoss, rand(2, 4), rand(0, 360), DS_BALL_SS_WHITE, 0));
+			wait(randIntH(1, 3));
+		}
+		wait(60);
+		if (isDead) {return;}
+		let a = GetAngleToPlayer(objBoss);
+		ascent (i in -1 .. 2) {
+			CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), a + i * li, 600, 20, 60, DS_BEAM_SKY, 60);
+		}
+		wait(60);
+		snowLevel = height - 5;
+	}
+}

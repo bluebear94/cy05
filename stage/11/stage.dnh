@@ -1,0 +1,40 @@
+#TouhouDanmakufu[Stage]
+#ScriptVersion[3]
+#Title["St9"]
+#Text["Extra stage!"]
+#Background["./stg_back.dnh"]
+#Player["./../../player/player0.dnh", "./../../player/player2.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../system/healthbar.dnh"
+let stage = "11";
+let done = false;
+let dialogueData;
+let dialogueData2;
+let bgm = 25;
+#include "./../stage_header.dnh"
+
+let width = GetStgFrameWidth;
+let height = GetStgFrameHeight;
+
+task TStage {
+	if (getCharacter < 2) {
+		dialogueData = readDD("d11_1");
+		dialogueData2 = readDD("d11_2");
+	}
+	else {
+		dialogueData = readDD("d11_3");
+		dialogueData2 = readDD("d11_4");
+	}
+	let d = getDifficulty;
+	waitForClearScreen;
+	wait(300);
+	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
+	// The Boss
+	TDialogue(dialogueData);
+	TBossPre;
+	TDialogue(dialogueData2);
+	TBossPost;
+}
+
+// 64, 0, 96, 32

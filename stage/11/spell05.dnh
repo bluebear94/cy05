@@ -1,0 +1,75 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 50;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(72);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let ways = 24 + truncate(d * 3.3);
+	let speed = 1.6 + 0.2 * d;
+	let period = 30 - 2 * d;
+	let a = 0;
+	task fork {
+		while (!isDead) {
+			let x = rand(0, width);
+			DelayLaser(x, 0, 90, 512, 24, 1, DS_BEAM_SKY, 90);
+			wait(90);
+			loop (90) {
+				if (isDead) {return;}
+				// snake(shot, amplitude, frequency)
+				let s1 = CreateShotA1(x, 0, 8, 90, DS_ICE_SKY, 0);
+				snake(s1, 4, 1 / 10);
+				let s2 = CreateShotA1(x, 0, 8, 90, DS_ICE_GREEN, 0);
+				snake(s2, -4, 1 / 10);
+				let s3 = CreateShotA1(x - 8, 0, 8, 90, DS_ICE_BLUE, 0);
+				snake(s3, 3, 1 / 10);
+				let s4 = CreateShotA1(x + 8, 0, 8, 90, DS_ICE_PURPLE, 0);
+				snake(s4, -3, 1 / 10);
+				yield;
+				CreateShotA1(x - 32, 0, 8, 90, DS_ICE_WHITE, 0);
+				CreateShotA1(x + 32, 0, 8, 90, DS_ICE_WHITE, 0);
+				CreateShotA1(x + rand(-64, 64), 0, 5, 90, DS_BALL_S_WHITE, 0);
+			}
+			wait(period * 3);
+		}
+	}
+	fork;
+	while (!isDead) {
+		loop (ways) {
+			CreateShotOA1(objBoss, speed, a, DS_ICE_BLUE, 0);
+			a += 360 / ways;
+		}
+		loop (ways * 0.75) {
+			CreateShotOA1(objBoss, speed * 1.2, rand(0, 360), DS_ICE_SKY, 0);
+		}
+		a += 159 / ways;
+		wait(period);
+	}
+}

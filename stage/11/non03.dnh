@@ -1,0 +1,61 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty;
+	let period = 60 / (20 + 2 * d);
+	let pd = period - truncate(period);
+	let pdb = 0;
+	let t = 0;
+	let u = 0;
+	while (!isDead) {
+		loop (6) {
+			CreateShotA1(cx * (1 + cos(4.37 * t)), 0.5 * cy * (1 + sin(23.4 * t)), rand(1.5, 2.5), u + t + rand(-15, 15), [DS_SCALE_BLUE, DS_SCALE_SKY, DS_SCALE_WHITE][randIntH(0, 3)], 30);
+			t += 60;
+		}
+		pdb += pd;
+		wait(period);
+		if (pdb >= 1) {
+			pdb--;
+			yield;
+		}
+		t++;
+		u += 1 + 1.5 * sin(6 * t);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

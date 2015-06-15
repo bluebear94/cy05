@@ -1,0 +1,51 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St5 Non4"]
+#Text["Fourth nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let x = ObjMove_GetX(objBoss);
+	let y = ObjMove_GetY(objBoss);
+	let d = getDifficulty;
+	let interval = 30 - 2 * d;
+	let a = 0;
+	task bulletTask(shot) {
+		while (getDistanceToPlayer(shot) > 50) {
+			if (Obj_IsDeleted(shot)) {return;}
+			yield;
+		}
+		ObjMove_SetAngle(shot, GetAngleToPlayer(shot) + rand(-45, 45));
+		ObjMove_SetSpeed(shot, 0.15);
+		ObjShot_SetGraphic(shot, DS_BALL_S_SKY);
+	}
+	while (!isDead) {
+		ascent (i in 0 .. 16) {
+			let s = CreateShotOA1(objBoss, (1 + 0.125 * i) * (1 + 0.5 * sin(a)), a + 120 * i, DS_BALL_S_BLUE, 0);
+			bulletTask(s);
+		}
+		a += interval;
+		wait(interval / 3);
+	}
+}

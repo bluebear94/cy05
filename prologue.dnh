@@ -221,7 +221,7 @@ task setBombFrag(amt) {
 }
 
 function getLifeFragR() {
-	return max(4, GetCommonData("LifeFragR", [8, 12][isHidden]) - truncate(getElemPoints(EARTH) / 65536));
+	return max(4, GetCommonData("LifeFragR", [8, 12][isHidden]) - truncate((getElemPoints(EARTH) / 65536) ^ 0.8));
 }
 
 function getLifeFragRR() {

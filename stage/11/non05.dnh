@@ -1,0 +1,80 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 10;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(6000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let d = getDifficulty;
+	let ways = 8 + 2 * d;
+	let speed = 2 + 0.2 * d;
+	let period = 30 - 2 * d;
+	sub shoot {
+		let a = rand(0, 360);
+		loop (ways) {
+			CreateShotOA1(objBoss, speed, a, DS_BALL_BS_WHITE, 0);
+			a += 360 / ways;
+		}
+	}
+	function shootN(n) {
+		loop (n) {
+			if (isDead) {return;}
+			shoot;
+			wait(period);
+		}
+	}
+	task lasers {
+		loop (2) {
+			if (isDead) {return;}
+			let a = GetAngleToPlayer(objBoss);
+			ascent (i in -1 .. 2) {
+				CreateLooseLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), speed * 0.65, a + 30 * i, 100, 10, DS_BEAM_SKY, 0);
+			}
+			wait(period * 1.5);
+		}
+	}
+	while (!isDead) {
+		shootN(3);
+		if (isDead) {return;}
+		lasers;
+		shootN(4);
+		if (isDead) {return;}
+		let a = 0;
+		loop (ways) {
+			let s = CreateShotOA1(objBoss, 3, a, DS_ICE_SKY, 0);
+			ObjMove_AddPatternA4(s, 40, 4, 0, -0.02, 0, 2.4, GetPlayerObjectID, DS_ICE_SKY);
+			a += 360 / ways;
+		}
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

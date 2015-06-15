@@ -116,12 +116,14 @@ function replayString(slot) {
 		let charR = getInterfaceStrings(RP_SHOT01 + (char[length(char) - 1] == '1'));
 		let char2 = charL ~ charR;
 		let com = GetReplayInfo(slot, REPLAY_COMMENT);
+		let comR = com[1..length(com)];
+		if (comR == "Stage 11" || comR == "Stage 12") {comR = "Extra";}
 		return text ~
 			vtos("-8s", GetReplayInfo(slot, REPLAY_USER_NAME)) ~ " " ~
 			GetReplayInfo(slot, REPLAY_DATE_TIME) ~ " " ~
 			(scoreStringR)[(length(scoreStringR) - 14) .. length(scoreStringR)] ~ " " ~
 			vtos("-8s", char2) ~ " " ~
-			com[0..1] ~ " " ~ com[1..length(com)];
+			com[0..1] ~ " " ~ comR;
 	}
 	else {
 		return text ~ "Civoro";
