@@ -5,8 +5,8 @@
 #Player["./../../player/player0.dnh"]
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
-let id = 46;
-let level = 10;
+let id = 56;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -26,68 +26,72 @@ let level = 10;
 
 @Finalize {}
 
+function hitPoint(laser) {
+	let w = GetStgFrameWidth;
+	let h = GetStgFrameHeight;
+	let x = ObjMove_GetX(laser);
+	let y = ObjMove_GetY(laser);
+	let t = ObjStLaser_GetAngle(laser);
+	let dx = cos(t);
+	let dy = sin(t);
+	let m = tan(t);
+	if (dx < 0) { // laser points left
+		let yp = y - m * x;
+		if (yp > 0 && yp < h) {return [0, yp, 0];}
+	}
+	else if (dx > 0) {
+		let yp = y + m * (w - x);
+		if (yp > 0 && yp < h) {return [w, yp, 180];}
+	}
+	if (dy < 0) {
+		let xp = x - y / m;
+		return [xp, 0, 90];
+	}
+	else if (dy > 0) {
+		let xp = x + (h - y) / m;
+		return [xp, h, -90];
+	}
+	RaiseError("Impossible!");
+}
+
+task laserTask(laser) {
+	wait(30);
+	let pt = hitPoint(laser);
+	let x = pt[0];
+	let y = pt[1];
+	let a = pt[2];
+	if (Obj_IsDeleted(laser) || rand(0, 1) < 0.6) {return;}
+	ascent (i in -3 .. 4) {
+		DelayLaser(x, y, a + 30 * i, 600, 24, 40, DS_BEAM_WHITE, 40);
+	}
+	wait(rand(30, 40));
+	if (Obj_IsDeleted(laser)) {return;}
+	ascent (i in -3 .. 4) {
+		ascent (j in 0 .. (getDifficulty - 3)) {
+			CreateShotA1(x, y, 2 + 0.5 * j, a + 30 * i, DS_STAR_S_RED, 0);
+		}
+	}
+	shotSound;
+}
+
 task TWork {
 	let width = GetStgFrameWidth;
 	let height = GetStgFrameHeight;
-	let d = getDifficulty;
-	let p = 70 - 5 * d;
-	let a = 4 + d;
-	let t = 0;
-	task bulletTask(shot, i, b, s) {
-		wait(10 * i);
-		if (GetPlayerY < height / 2) {
-			ObjMove_SetAngle(shot, GetAngleToPlayer(shot));
-			ObjMove_SetSpeed(shot, 8);
-		} else {
-			ObjMove_SetAngle(shot, b + 10 * s * i + a * sin(t));
-			ObjMove_SetSpeed(shot, 1.5);
-		}
-	}
-	task fork {
-		while (!isDead) {
-			let a = rand(0, 360);
-			loop (12) {
-				CreateShotOA1(objBoss, 3, a, DS_ICE_WHITE, 0);
-				a += 30;
-			}
-			wait(p * 0.8);
-		}
-	}
-	task fork2 {
-		while (!isDead) {
-			CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), GetAngleToPlayer(objBoss), 600, 20, 0.5 * p, DS_BEAM_SKY, p);
-			wait(p * 2);
-		}
-	}
-	fork;
-	fork2;
+	let d = getDifficulty - 5;
+	let p = 130 - 10 * d;
+	let lps = 3 + d;
 	while (!isDead) {
-		ascent (i in 0 .. 10) {
-			let shot1 = CreateShotOA1(objBoss, 3, 150, DS_ICE_SKY, 0);
-			bulletTask(shot1, i, 0, 1);
-			let shot2 = CreateShotOA1(objBoss, 3, 30, DS_ICE_SKY, 0);
-			bulletTask(shot2, i, 180, -1);
-			if (d >= 1) {
-				let shot3 = CreateShotOA1(objBoss, 3.5, 130, DS_ICE_SKY, 0);
-				bulletTask(shot3, i, 0, 1);
-				let shot4 = CreateShotOA1(objBoss, 3.5, 50, DS_ICE_SKY, 0);
-				bulletTask(shot4, i, 180, -1);
-			}
-			t += 3.17;
+		ascent (i in 0 .. lps) {
+			let i5 = i + 0.5;
+			let xc = width * i5 / lps;
+			let yc = height * i5 / lps;
+			laserTask(CreateStraightLaserA1(0, yc + rand(-30, 30), rand(-20, 20), 600, 24, 75, DS_BEAM_RED, 60));
+			laserTask(CreateStraightLaserA1(width, yc + rand(-30, 30), rand(160, 200), 600, 24, 75, DS_BEAM_RED, 60));
+			laserTask(CreateStraightLaserA1(xc + rand(-30, 30), 0, rand(70, 90), 600, 24, 75, DS_BEAM_RED, 60));
+			laserTask(CreateStraightLaserA1(xc + rand(-30, 30), height, rand(-90, -70), 600, 24, 75, DS_BEAM_RED, 60));
 		}
 		wait(p);
 	}
 }
 
-task TWorkOD {
-	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
-		let a = GetAngleToPlayer(objBoss);
-		loop (8) {
-			ascent (i in 0 .. 20) {
-				CreateShotOA1(objBoss, 3 + 0.01 * i, a, DS_KUNAI_YELLOW, i / 2);
-			}
-			a += 45;
-		}
-		wait(150);
-	}
-}
+
