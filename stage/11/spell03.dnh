@@ -6,20 +6,18 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 48;
-let level = 10;
+let id = 58;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		let scale = 0.3 + 0.05 * getDifficulty;
-		SetScriptResult(40000 * scale);
+		SetScriptResult(7000);
 	}
 	case (EV_REQUEST_TIMER) {
-		let scale = 0.3 + 0.05 * getDifficulty;
-		SetScriptResult(300 * scale);
+		SetScriptResult(90);
 	}
 	case (EV_REQUEST_SPELL_SCORE) {
 		SetScriptResult(spellBonus);
@@ -28,41 +26,85 @@ let level = 10;
 
 @Finalize {}
 
+let BOSS_SPEED = 6;
+let BOSS_DELAY = 15;
+
+task shoot(a) {
+	ascent (i in -3 .. 4) {
+		ascent (j in 0 .. 2) {
+			CreateShotOA1(objBoss, (0.7 + 0.15 * j) * BOSS_SPEED, a + 30 * i, DS_BALL_S_BLUE, 0);
+			CreateShotOA1(objBoss, 1 + 1.5 * j, a + 30 * i, DS_BALL_S_R_BLUE, 0);
+		}
+	}
+	shotSound;
+	wait(20);
+	swingSound;
+}
+
+task moveBoss {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let a = rand(0, 360);
+	DelayLaser(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), a, 600, 24, 2 * BOSS_DELAY, DS_BEAM_WHITE, 2 * BOSS_DELAY);
+	wait(BOSS_DELAY);
+	ObjMove_SetSpeed(objBoss, BOSS_SPEED);
+	ObjMove_SetAngle(objBoss, a);
+	while (!isDead) {
+		let x = ObjMove_GetX(objBoss);
+		let y = ObjMove_GetY(objBoss);
+		let t = ObjMove_GetAngle(objBoss);
+		let dx = cos(t);
+		let dy = sin(t);
+		if (x < 0 && dx < 0) {
+			let a = rand(-90, 90);
+			ObjMove_SetSpeed(objBoss, 0);
+			DelayLaser(x, y, a, 600, 24, 2 * BOSS_DELAY, DS_BEAM_WHITE, 2 * BOSS_DELAY);
+			wait(BOSS_DELAY);
+			ObjMove_SetSpeed(objBoss, BOSS_SPEED);
+			ObjMove_SetAngle(objBoss, a);
+			shoot(0);
+		}
+		else if (x > width && dx > 0) {
+			let a = rand(90, 270);
+			ObjMove_SetSpeed(objBoss, 0);
+			DelayLaser(x, y, a, 600, 24, 2 * BOSS_DELAY, DS_BEAM_WHITE, 2 * BOSS_DELAY);
+			wait(BOSS_DELAY);
+			ObjMove_SetSpeed(objBoss, BOSS_SPEED);
+			ObjMove_SetAngle(objBoss, a);
+			shoot(180);
+		}
+		if (y < 0 && dy < 0) {
+			let a = rand(0, 180);
+			ObjMove_SetSpeed(objBoss, 0);
+			DelayLaser(x, y, a, 600, 24, 2 * BOSS_DELAY, DS_BEAM_WHITE, 2 * BOSS_DELAY);
+			wait(BOSS_DELAY);
+			ObjMove_SetSpeed(objBoss, BOSS_SPEED);
+			ObjMove_SetAngle(objBoss, a);
+			shoot(90);
+		}
+		else if (y > height && dy > 0) {
+			let a = rand(-180, 0);
+			ObjMove_SetSpeed(objBoss, 0);
+			DelayLaser(x, y, a, 600, 24, 2 * BOSS_DELAY, DS_BEAM_WHITE, 2 * BOSS_DELAY);
+			wait(BOSS_DELAY);
+			ObjMove_SetSpeed(objBoss, BOSS_SPEED);
+			ObjMove_SetAngle(objBoss, a);
+			shoot(-90);
+		}
+		yield;
+	}
+}
+
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
 	let cx = width / 2;
 	let cy = height / 2 - 100;
-	let d = getDifficulty;
-	let snowLevel = height - 5;
-	let slrps = 3.7 / (1 + 0.15 * d);
-	let maxSnowLevel = height * (0.7 - 0.05 * d);
-	let li = 20 - 2 * d;
-	task snowTask(shot) {
-		while (ObjMove_GetY(shot) < snowLevel) {if (Obj_IsDeleted(shot)) {return;} yield;}
-		ObjMove_SetSpeed(shot, 0);
-		snowLevel -= slrps;
-		while (snowLevel > maxSnowLevel) {if (Obj_IsDeleted(shot)) {return;} yield;}
-		wait(60);
-		if (!Obj_IsDeleted(shot)) {
-			CreateShotOA1(shot, rand(0.2, 0.3), -90, DS_BALL_SS_WHITE, 0);
-			ObjMove_SetSpeed(shot, rand(0.2, 0.3));
-			ObjMove_SetAngle(shot, 90);
-		}
-	}
+	let d = getDifficulty - 5;
+	moveBoss;
 	while (!isDead) {
-		while (snowLevel > maxSnowLevel) {
-			if (isDead) {return;}
-			snowTask(CreateShotOA1(objBoss, rand(2, 4), rand(0, 360), DS_BALL_SS_WHITE, 0));
-			wait(randIntH(1, 3));
-		}
-		wait(60);
-		if (isDead) {return;}
-		let a = GetAngleToPlayer(objBoss);
-		ascent (i in -1 .. 2) {
-			CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), a + i * li, 600, 20, 60, DS_BEAM_SKY, 60);
-		}
-		wait(60);
-		snowLevel = height - 5;
+		CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, ObjMove_GetAngle(objBoss) + 90, 0.01, 3, DS_RICE_S_R_BLUE, 0);
+		if (d) {CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1, ObjMove_GetAngle(objBoss) - 90, 0.01, 3, DS_RICE_S_R_BLUE, 0);}
+		wait(6);
 	}
 }

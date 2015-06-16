@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 10;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,7 +14,7 @@ let level = 10;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(5000);
+		SetScriptResult(7000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,29 +26,23 @@ let level = 10;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let d = getDifficulty;
-	let ad = 36 + 8 * d;
-	let b = 0;
-	task bulletTask(shot) {
-		wait(100);
-		if (!Obj_IsDeleted(shot)) {
-			let a = 90;
-			loop (8) {
-				CreateShotOA1(shot, 0.5, a, DS_BALL_SS_BLUE, 0);
-				a += 45;
-			}
-			Obj_Delete(shot);
-		}
-	}
+	let period = 16;
+	let t = rand(0, 360);
+	let u = 0;
 	while (!isDead) {
-		let a = 0;
-		loop (ad) {
-			let shot = CreateShotOA1(objBoss, 3 * astroid(a, 4), a + b, DS_BALL_S_SKY, 0);
-			bulletTask(shot);
-			a += 360 / ad;
+		ascent (i in 0 .. period) {
+			if (isDead) {return;}
+			loop (24) {
+				let r = 60 * polygon(4, u);
+				CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.06, t, DS_STAR_S_RED, 30);
+				CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, t, DS_STAR_S_RED, 30);
+				shotSound;
+				t += 15;
+				u += 15;
+			}
+			t += 23.7;
+			wait(15);
 		}
-		b += 1080 / ad;
-		wait(120);
 	}
 }
 

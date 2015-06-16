@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 10;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,7 +14,7 @@ let level = 10;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(6000);
+		SetScriptResult(7000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,27 +26,25 @@ let level = 10;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let cx = width / 2;
-	let cy = height / 2;
-	let d = getDifficulty;
-	let period = 60 / (20 + 2 * d);
-	let pd = period - truncate(period);
-	let pdb = 0;
-	let t = 0;
+	let rhythm = [1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0];
+	let period = 16;
 	let u = 0;
 	while (!isDead) {
-		loop (6) {
-			CreateShotA1(cx * (1 + cos(4.37 * t)), 0.5 * cy * (1 + sin(23.4 * t)), rand(1.5, 2.5), u + t + rand(-15, 15), [DS_SCALE_BLUE, DS_SCALE_SKY, DS_SCALE_WHITE][randIntH(0, 3)], 30);
-			t += 60;
+		ascent (i in 0 .. period) {
+			if (isDead) {return;}
+			if (rhythm[i]) {
+				let t = GetAngleToPlayer(objBoss);
+				loop (36) {
+					let r = 40 * polygon(4, u);
+					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0875, 180 + t, DS_STAR_S_YELLOW, 30);
+					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0625, 180 + t, DS_STAR_S_YELLOW, 30);
+					shotSound;
+					t += 10;
+					u += 10;
+				}
+			}
+			wait(15);
 		}
-		pdb += pd;
-		wait(period);
-		if (pdb >= 1) {
-			pdb--;
-			yield;
-		}
-		t++;
-		u += 1 + 1.5 * sin(6 * t);
 	}
 }
 

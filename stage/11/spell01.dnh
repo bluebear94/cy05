@@ -47,11 +47,10 @@ function hitPoint(laser) {
 		let xp = x - y / m;
 		return [xp, 0, 90];
 	}
-	else if (dy > 0) {
+	else {
 		let xp = x + (h - y) / m;
 		return [xp, h, -90];
 	}
-	RaiseError("Impossible!");
 }
 
 task laserTask(laser) {
