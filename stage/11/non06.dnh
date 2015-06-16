@@ -1,12 +1,12 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["St5 Non4"]
-#Text["Fourth nonspell!"]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
 #Player["./../../player/player0.dnh"]
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 10;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -26,26 +26,48 @@ let level = 10;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let x = ObjMove_GetX(objBoss);
-	let y = ObjMove_GetY(objBoss);
-	let d = getDifficulty;
-	let interval = 30 - 2 * d;
-	let a = 0;
-	task bulletTask(shot) {
-		while (getDistanceToPlayer(shot) > 50) {
-			if (Obj_IsDeleted(shot)) {return;}
-			yield;
-		}
-		ObjMove_SetAngle(shot, GetAngleToPlayer(shot) + rand(-45, 45));
-		ObjMove_SetSpeed(shot, 0.15);
-		ObjShot_SetGraphic(shot, DS_BALL_S_SKY);
-	}
+	let t = rand(0, 360);
+	let u = 0;
+	let period = 16;
 	while (!isDead) {
-		ascent (i in 0 .. 16) {
-			let s = CreateShotOA1(objBoss, (1 + 0.125 * i) * (1 + 0.5 * sin(a)), a + 120 * i, DS_BALL_S_BLUE, 0);
-			bulletTask(s);
+		ascent (i in 0 .. period) {
+			if (isDead) {return;}
+			loop (12) {
+				let r = 70 * polygon(3, u);
+				loop (3) {
+					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.05, t, DS_STAR_S_BLUE, 30);
+					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.03, t, DS_STAR_S_BLUE, 30);
+					t += 120;
+				}
+				t += 10;
+				u += 10;
+			}
+			shotSound;
+			if (i == 15) {
+				loop (10) {
+					let r = 70 * polygon(6, u);
+					loop (6) {
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, t, DS_STAR_S_BLUE, 30);
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, 30 + t, DS_STAR_S_BLUE, 30);
+						t += 60;
+					}
+					t += 6;
+					u += 6;
+				}
+				explosionShort;
+			}
+			t += 27.9;
+			wait(20);
 		}
-		a += interval;
-		wait(interval / 3);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
 	}
 }
