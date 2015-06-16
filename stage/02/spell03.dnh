@@ -67,11 +67,11 @@ task wall(shot) {
 		let canHitTop = true;
 		let angle = ObjMove_GetAngle(shot);
 		if (x < 0) {
-			ObjMove_SetAngle(shot, -angle);
+			ObjMove_SetAngle(shot, 180 - angle);
 			return;
 		}
 		else if (x > width) {
-			ObjMove_SetAngle(shot, -angle);
+			ObjMove_SetAngle(shot, 180 - angle);
 			return;
 		}
 		else if (y < 0 && canHitTop) {
@@ -101,7 +101,7 @@ task easy {
 			let shot = CreateShotA1(x + 5 * c * i, y + 5 * s * i, 2, angle - 90, DS_ICE_BLUE, 30);
 			wall(shot);
 		}
-		wait(20);
+		wait(30);
 	}
 }
 

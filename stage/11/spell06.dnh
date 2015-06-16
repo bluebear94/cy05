@@ -57,7 +57,6 @@ task clockTask(shot, t) {
 		ObjMove_SetPosition(shot, cx + 2 * cy * cos(t) / 3, cy + 2 * cy * sin(t) / 3);
 		if (c % 30 == 0) {
 			CreateShotOA1(shot, 1.5, u, DS_BALL_S_YELLOW, 0);
-			u += 45;
 		}
 		t += 0.25;
 		u += 2.3;

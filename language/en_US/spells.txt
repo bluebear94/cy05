@@ -355,13 +355,13 @@ Flight Sign "Lift from the Land of Endless Snow"
 Flight Sign "Lift from the Land of Endless Snow"
 Flight Sign "Lift from the Land of Endless Snow"
 "Two Wings, One Slash, Thirty Orbs"
-fook
-fook
-fook
-fook
-fook
-fook
-fook
+Freeze Sign "Pine Needles in Ice"
+Freeze Sign "Pine Needles in Ice"
+Freeze Sign "Pine Needles in Ice"
+Leaf Sign "Trees Shedding Ice-Coated Leaves"
+Leaf Sign "Trees Shedding Ice-Coated Leaves"
+Leaf Sign "Trees Shedding Ice-Coated Leaves"
+"Glimmering Ice Leaves"
 Sixteen Years "Reverse Blizzard"
 Sixteen Years "Reverse Blizzard"
 Sixteen Years "Reverse Blizzard"
@@ -425,3 +425,10 @@ haxx
 haxx
 Yellow Sign "Familiar No. 2 Spiral Clock"
 "Past, Present, and Future Telling"
+haxx
+haxx
+haxx
+haxx
+haxx
+Nine Colors "Fading into Reality Neo-Impressionism"
+"Brush that Paints from Red to Violet"
