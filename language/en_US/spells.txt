@@ -411,3 +411,10 @@ haxx
 haxx
 Cyan Sign "Mirror Orb Spherical Reflection"
 "Perfect Glass Sphere (Light Bending)"
+haxx
+haxx
+haxx
+haxx
+haxx
+Magenta Sign "Great Optics Sinusoidal Paddle"
+"Silver-Coated Wings (Pristine Mirror)"

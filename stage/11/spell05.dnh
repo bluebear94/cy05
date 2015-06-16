@@ -6,8 +6,8 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 50;
-let level = 10;
+let id = 60;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 
@@ -17,7 +17,7 @@ let level = 10;
 		SetScriptResult(12000);
 	}
 	case (EV_REQUEST_TIMER) {
-		SetScriptResult(72);
+		SetScriptResult(80);
 	}
 	case (EV_REQUEST_SPELL_SCORE) {
 		SetScriptResult(spellBonus);
@@ -26,50 +26,97 @@ let level = 10;
 
 @Finalize {}
 
+let registeredPaddles = [];
+
+function paddleSide(bx, by, paddle) {
+	let x = bx - ObjMove_GetX(paddle);
+	let y = by - ObjMove_GetY(paddle);
+	let tp = ObjStLaser_GetAngle(paddle);
+	let tb = atan2(y, x);
+	let dt = (tb - tp) % 360;
+	if (dt > 180) {dt -= 360;}
+	return dt;
+}
+
+task bulletTask(shot) {
+	let px = ObjMove_GetX(shot);
+	let py = ObjMove_GetY(shot);
+	while (!Obj_IsDeleted(shot)) {
+		let x = ObjMove_GetX(shot);
+		let y = ObjMove_GetY(shot);
+		let l = length(registeredPaddles);
+		ascent (i in 0 .. l) {
+			let paddle = registeredPaddles[i];
+			let curps = paddleSide(x, y, paddle);
+			let prevps = paddleSide(px, py, paddle);
+			let prod = curps * prevps;
+			if (prod <= 0 && prod > -8100) {
+				let incident = ObjMove_GetAngle(shot);
+				let radial = ObjStLaser_GetAngle(paddle) + 90 * signum([curps, -prevps][curps == 0]);
+				if (cos(incident - radial) > 0) {
+					ObjMove_SetAngle(shot, 2 * radial - incident + 180);
+					ObjMove_SetSpeed(shot, 3);
+					ObjMove_SetAcceleration(shot, -0.05);
+					ObjMove_SetMaxSpeed(shot, 1);
+					wait(5);
+				}
+			}
+			i++;
+		}
+		px = ObjMove_GetX(shot);
+		py = ObjMove_GetY(shot);
+		yield;
+	}
+}
+
+task laserTask(laser, ad) {
+	wait(60);
+	registeredPaddles = registeredPaddles ~ [laser];
+	let ba = ObjStLaser_GetAngle(laser);
+	let t = 0;
+	while (!Obj_IsDeleted(laser)) {
+		ObjStLaser_SetAngle(laser, ba + ad * sin(t));
+		t += 0.8;
+		yield;
+	}
+}
+
+task createPaddle(x, y, ba, ad) {
+	laserTask(
+		CreateStraightLaserA1(x, y, ba, 600, 24, 99999, DS_BEAM_PURPLE, 60),
+		ad
+	);
+}
+
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
 	let cx = width / 2;
 	let cy = height / 2;
-	let d = getDifficulty;
-	let ways = 24 + truncate(d * 3.3);
-	let speed = 1.6 + 0.2 * d;
-	let period = 30 - 2 * d;
-	let a = 0;
-	task fork {
-		while (!isDead) {
-			let x = rand(0, width);
-			DelayLaser(x, 0, 90, 512, 24, 1, DS_BEAM_SKY, 90);
-			wait(90);
-			loop (90) {
-				if (isDead) {return;}
-				// snake(shot, amplitude, frequency)
-				let s1 = CreateShotA1(x, 0, 8, 90, DS_ICE_SKY, 0);
-				snake(s1, 4, 1 / 10);
-				let s2 = CreateShotA1(x, 0, 8, 90, DS_ICE_GREEN, 0);
-				snake(s2, -4, 1 / 10);
-				let s3 = CreateShotA1(x - 8, 0, 8, 90, DS_ICE_BLUE, 0);
-				snake(s3, 3, 1 / 10);
-				let s4 = CreateShotA1(x + 8, 0, 8, 90, DS_ICE_PURPLE, 0);
-				snake(s4, -3, 1 / 10);
-				yield;
-				CreateShotA1(x - 32, 0, 8, 90, DS_ICE_WHITE, 0);
-				CreateShotA1(x + 32, 0, 8, 90, DS_ICE_WHITE, 0);
-				CreateShotA1(x + rand(-64, 64), 0, 5, 90, DS_BALL_S_WHITE, 0);
-			}
-			wait(period * 3);
-		}
+	let d = getDifficulty - 5;
+	let period = 25 - 5 * d;
+	createPaddle(cx - 120, cy / 2, 110, 40);
+	createPaddle(cx + 120, cy / 2, 70, -40);
+	createPaddle(cx - 140, cy * 0.75, 155, 40);
+	createPaddle(cx + 140, cy * 0.75, 25, -40);
+	if (d) {
+		createPaddle(0, height * 0.8, 30, 50);
+		createPaddle(width, height * 0.8, 150, -50);
 	}
-	fork;
+	wait(60);
+	let t = rand(0, 360);
+	let u = rand(0, 360);
+	let v = 0;
 	while (!isDead) {
-		loop (ways) {
-			CreateShotOA1(objBoss, speed, a, DS_ICE_BLUE, 0);
-			a += 360 / ways;
+		loop (4) {
+			bulletTask(CreateShotA1(cx, height / 4, 1, t, DS_ICE_PURPLE, period));
+			bulletTask(CreateShotA1(cx, 3 * height / 4, 1, u, DS_ICE_PURPLE, period));
+			t += 90;
+			u += 90;
 		}
-		loop (ways * 0.75) {
-			CreateShotOA1(objBoss, speed * 1.2, rand(0, 360), DS_ICE_SKY, 0);
-		}
-		a += 159 / ways;
+		t += 17 + 52 * sin(v);
+		u += 13 + 49 * cos(v);
 		wait(period);
+		v += period;
 	}
 }
