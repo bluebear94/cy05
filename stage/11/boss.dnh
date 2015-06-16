@@ -21,8 +21,8 @@ task addSpells(obj) {
 	ObjEnemyBossScene_Add(obj, 2, dir ~ "non03.dnh");
 	ObjEnemyBossScene_Add(obj, 2, dir ~ "spell03.dnh");
 	ObjEnemyBossScene_Add(obj, 3, dir ~ "non04.dnh");
-	/*ObjEnemyBossScene_Add(obj, 3, dir ~ "spell04.dnh");
-	ObjEnemyBossScene_Add(obj, 4, dir ~ "non05.dnh");
+	ObjEnemyBossScene_Add(obj, 3, dir ~ "spell04.dnh");
+	/*ObjEnemyBossScene_Add(obj, 4, dir ~ "non05.dnh");
 	ObjEnemyBossScene_Add(obj, 4, dir ~ "spell05.dnh");
 	ObjEnemyBossScene_Add(obj, 5, dir ~ "non06.dnh");
 	ObjEnemyBossScene_Add(obj, 5, dir ~ "spell06.dnh");

@@ -410,4 +410,4 @@ haxx
 haxx
 haxx
 Cyan Sign "Mirror Orb Spherical Reflection"
-"Perfectly Spherical Mirror (Pristine Surface)"
+"Perfect Glass Sphere (Light Bending)"

@@ -75,17 +75,17 @@ function getAngleTo(obj1, obj2) {
 	let x2 = ObjMove_GetX(obj2);
 	let y1 = ObjMove_GetY(obj1);
 	let y2 = ObjMove_GetY(obj2);
-	return (atan2(y2 - y1, x2 - x1) + 360) % 360;
+	return atan2(y2 - y1, x2 - x1) % 360;
 }
 
 function getAngleToXY(obj1, x2, y2) {
 	let x1 = ObjMove_GetX(obj1);
 	let y1 = ObjMove_GetY(obj1);
-	return (atan2(y2 - y1, x2 - x1) + 360) % 360;
+	return atan2(y2 - y1, x2 - x1) % 360;
 }
 
 function getAngleTwoPoints(x1, y1, x2, y2) {
-	return (atan2(y2 - y1, x2 - x1) + 360) % 360;
+	return atan2(y2 - y1, x2 - x1) % 360;
 }
 
 function getDistanceTo(obj1, obj2) {
@@ -283,7 +283,7 @@ task setElemPoints(elem, amt) {
 
 task youDedz() {
 	let points = GetCommonData("Elem", [4096, 4096, 4096, 4096]);
-	ascent (i in 0 .. 3) {
+	ascent (i in 0 .. 4) {
 		points[i] = (points[i] - 4096) / 2 + 4096;
 	}
 	SetCommonData("Elem", points);
