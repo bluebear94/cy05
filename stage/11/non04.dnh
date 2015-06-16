@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 10;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,7 +14,7 @@ let level = 10;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(5000);
+		SetScriptResult(8000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -23,39 +23,34 @@ let level = 10;
 
 @Finalize {}
 
+let explosion = false;
+
+task starTask(shot) {
+	while (!explosion) {yield;}
+	if (!Obj_IsDeleted(shot)) {
+		let a = rand(0, 360);
+		loop (4) {
+			CreateShotOA1(shot, 0.4 * ObjMove_GetSpeed(shot), a, DS_STAR_S_GREEN, 0);
+			a += 90;
+		}
+		Obj_Delete(shot);
+	}
+}
+
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let d = getDifficulty;
-	let ad = 36 + 8 * d;
-	let b = 0;
-	task bulletTask(shot) {
-		wait(100);
-		if (!Obj_IsDeleted(shot)) {
-			let a = 90;
-			loop (9) {
-				CreateShotOA1(shot, 0.5, a, DS_BALL_SS_BLUE, 0);
-				a += 40;
-			}
-			Obj_Delete(shot);
-		}
-	}
+	let d = getDifficulty - 5;
 	while (!isDead) {
-		let a = 0;
-		loop (ad) {
-			let shot = CreateShotOA1(objBoss, 3 * astroid(a, 4), a + b, DS_BALL_S_SKY, 0);
-			bulletTask(shot);
-			a += 360 / ad;
+		loop (120) {
+			if (isDead) {return;}
+			let star = CreateShotOA1(objBoss, rand(1, 3.5), rand(0, 360), DS_STAR_M_GREEN, 0);
+			starTask(star);
+			yield;
 		}
-		let k = rand(0, 360);
-		let t = 0;
-		loop (30) {
-			let shot = CreateShotA1(ObjMove_GetX(objBoss) + 25 * cos(t), ObjMove_GetY(objBoss) + 25 * sin(t), 1, k, DS_BALL_S_SKY, 0);
-			bulletTask(shot);
-			t += 12;
-		}
-		b = 360 / ad * randIntH(0, ad);
+		explosion = true;
 		wait(120);
+		explosion = false;
 	}
 }
 

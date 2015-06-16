@@ -32,14 +32,17 @@ task TWork {
 	while (!isDead) {
 		ascent (i in 0 .. period) {
 			if (isDead) {return;}
-			loop (24) {
+			loop (6) {
 				let r = 60 * polygon(4, u);
-				CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.06, t, DS_STAR_S_RED, 30);
-				CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, t, DS_STAR_S_RED, 30);
-				shotSound;
+				loop (4) {
+					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.06, t, DS_STAR_S_ORANGE, 30);
+					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, t, DS_STAR_S_ORANGE, 30);
+					t += 90;
+				}
 				t += 15;
 				u += 15;
 			}
+			shotSound;
 			t += 23.7;
 			wait(15);
 		}

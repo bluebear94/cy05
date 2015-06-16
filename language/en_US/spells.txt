@@ -404,3 +404,10 @@ haxx
 haxx
 Blue Sign "Fox's Cave-Searching Stygian Blue"
 "Vengeful Fox's Erratic Chase"
+haxx
+haxx
+haxx
+haxx
+haxx
+Cyan Sign "Mirror Orb Spherical Reflection"
+"Perfectly Spherical Mirror (Pristine Surface)"

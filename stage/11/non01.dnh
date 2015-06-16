@@ -34,14 +34,17 @@ task TWork {
 		ascent (i in 0 .. period) {
 			if (isDead) {return;}
 			if (rhythm[i]) {
-				loop (36) {
+				loop (9) {
 					let r = 40 * polygon(4, u);
-					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0875, 180 + t, DS_STAR_S_RED, 30);
-					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0625, 180 + t, DS_STAR_S_RED, 30);
-					shotSound;
+					loop (4) {
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0875, 180 + t, DS_STAR_S_RED, 30);
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0625, 180 + t, DS_STAR_S_RED, 30);
+						t += 90;
+					}
 					t += 10;
 					u += 10;
 				}
+				shotSound;
 			}
 			t += 23.7;
 			wait(15);
