@@ -1,0 +1,44 @@
+0,0,0
+Vanar cyren.
+0,0,0
+Genarercedjon sandyta.
+256,1,0
+-- NEXT PAGE --
+50,0,60
+Rygen: «Vynssyta?»
+0,150,200
+Dernar: «Agnaren nadamyn mentea ci
+0,150,200
+anasčyr elamyn vecnyte.»
+256,2,0
+-- NEXT PAGE --
+40,90,80
+Vija: «Daeri vella!»
+0,0,0
+Evryllyr ešyrllyta.
+0,150,200
+Dernar: «A-, nadamyn agreae.»
+256,3,0
+-- NEXT PAGE --
+50,0,60
+Rygen: «Erayn, getera veollerelten
+50,0,60
+nysos tenyryvretnea ci.»
+40,90,80
+Vija: «!»
+256,4,0
+-- NEXT PAGE --
+0,0,120
+Etelos: «Emta nade aprama.»
+0,0,0
+Endyr vandar srena. Getera cryssesra
+0,0,0
+srenadillyr rylssyvpertenyte.
+256,4,0
+-- NEXT PAGE --
+0,0,0
+Endyr myron amtar envo, genar nassala.
+0,100,0
+Vyl Nade Šymessa - Enyr Sreno!
+0,100,0
+Endyr, emevesa erpetojan šyldryvsenlehentes!

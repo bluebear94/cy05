@@ -1,0 +1,32 @@
+0,0,0
+Vanar cyren.
+0,0,0
+Genarercedjon sandyta.
+256,1,0
+-- NEXT PAGE --
+0,150,200
+Dernar: «Erh, retenamyn asgera esre.»
+0,90,0
+Rencron: «E--?»
+256,2,0
+-- NEXT PAGE --
+150,100,0
+Čyrden: «Esnan ar meftea.
+150,100,0
+Eo vyrtamyn cete nava.»
+0,90,0
+Rencron: «Vyrtamyn?»
+256,2,0
+-- NEXT PAGE --
+0,90,0
+Rencron: «Nhn-, šyno ne sar enčon nas naen.
+0,90,0
+Agnaren nadamyn mentehe ci nava
+0,90,0
+tranterss ne.»
+256,2,0
+-- NEXT PAGE --
+0,100,0
+Ces Nade Šymessa - Evryllyr Esmyrad?
+0,100,0
+Endyr, emevesa erpetojan šyldryvsenlehentes!

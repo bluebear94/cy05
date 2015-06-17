@@ -4,11 +4,11 @@
 4
 Šan ves?
 0
-... Nerassan es, arcenda.
+- Nerassan es, arcenda.
 0
-...
+--
 0
-... šan eo ves?
+- šan eo ves?
 0
 /
 4
@@ -20,7 +20,7 @@ Renyl nendo.
 0
 [ruby rb="Arcame Dernar" rt="Vanar-Cyren Erveadyr"]
 3
-Erayn, e...
+Erayn, e-
 1
 «Arcame Dernar» o ercenčonare.
 1
