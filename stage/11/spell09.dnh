@@ -6,8 +6,8 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 54;
-let level = 10;
+let id = 64;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -21,7 +21,7 @@ let width = GetStgFrameWidth;
 		SetScriptResult(12000);
 	}
 	case (EV_REQUEST_TIMER) {
-		SetScriptResult(120);
+		SetScriptResult(60);
 	}
 	case (EV_REQUEST_IS_DURABLE_SPELL) {
 		SetScriptResult(true);
@@ -33,6 +33,58 @@ let width = GetStgFrameWidth;
 
 @Finalize {}
 
+task bullets {
+	let t = rand(0, 360);
+	let u = rand(0, 360);
+	let p = 7 - getDifficulty;
+	while (!isDead) {
+		CreateShotOA1(objBoss, 1.5, t, DS_BALL_S_A_RED + randIntH(0, 8), 30);
+		t += 17 + 13 * sin(u);
+		u += 5.7;
+		wait(p);
+	}
+}
+
+task movement {
+	ObjMove_SetDestAtFrame(objBoss, 60, 220, 60); // 264 x 160
+	let FRAMES = 7;
+	wait(60);
+	while (!isDead) {
+		ascent (i in 0 .. 8) {
+			if (isDead) {return;}
+			let x = 60 + 33 * i;
+			ObjMove_SetDestAtFrame(objBoss, x + 16, 60, FRAMES);
+			wait(FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, x + 33, 220, FRAMES);
+			wait(FRAMES);
+		}
+		ascent (i in 0 .. 4) {
+			if (isDead) {return;}
+			let y = 220 - 40 * i;
+			ObjMove_SetDestAtFrame(objBoss, 60, y - 20, 2 * FRAMES);
+			wait(2 * FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, 324, y - 40, 2 * FRAMES);
+			wait(2 * FRAMES);
+		}
+		ascent (i in 0 .. 8) {
+			if (isDead) {return;}
+			let x = 324 - 33 * i;
+			ObjMove_SetDestAtFrame(objBoss, x - 16, 220, FRAMES);
+			wait(FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, x - 33, 60, FRAMES);
+			wait(FRAMES);
+		}
+		ascent (i in 0 .. 4) {
+			if (isDead) {return;}
+			let y = 60 + 40 * i;
+			ObjMove_SetDestAtFrame(objBoss, 324, y + 20, 2 * FRAMES);
+			wait(2 * FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, 60, y + 40, 2 * FRAMES);
+			wait(2 * FRAMES);
+		}
+	}
+}
+
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
@@ -43,9 +95,24 @@ task TWork {
 	let p = 1 / 300 + d / 1200;
 	let speed = 1 + 0.1 * d;
 	let period = 400 / (1 + 0.15 * d);
+	movement;
+	bullets;
+	let t = rand(0, 360);
+	let cl = randIntH(0, 8);
 	while (!isDead) {
-		
-		yield;
+		loop (5) {
+			loop (12) {
+				CreateShotA1(cx + cx * cos(t), cy + cx * sin(t), 1, t, DS_BILL_RED + cl, 60);
+				CreateShotA1(cx + cx * cos(t), cy + cx * sin(t), 1, 180 + t, DS_BILL_RED + cl, 60);
+				t += 3;
+			}
+			cl = (cl + 1) % 8;
+			t += 36;
+		}
+		t += rand(0, 18) + rand(0, 18);
+		let left = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF) /
+			ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_ORGTIMERF);
+		wait(90 + 90 * left);
 	}
 }
 
