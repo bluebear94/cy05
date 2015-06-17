@@ -7,7 +7,7 @@ Rotroseda genar caršyta.
 0,90,0
 Rencron: «Denefamyn arcenda-»
 0,0,0
-Tarcamyn, csserys cynryte.
+Tarcamyn, csserys cynryta.
 256,2,0
 -- NEXT PAGE --
 50,90,0
