@@ -1,20 +1,20 @@
 0,0,0
-The castle of Vanar.
+Vanar cyren.
 0,0,0
-Snow still fell from the clouds.
+Rotroseda genar caršyta.
 256,1,0
 -- NEXT PAGE --
 50,0,60
-Rygen: "I'm exhausted.
+Rygen: «Soroheron.
 50,0,60
-Is there anywhere to rest?
+Šan rylssyd grentoro vella?
 50,0,60
-I guess I'll just sleep here."
+Ydyr mersa.»
 256,2,0
 -- NEXT PAGE --
 40,90,80
-Vija: "Hey, I have a new test subject."
+Vija: «Aja, šyntel-nyrssen!»
 0,100,0
-Bad End #4 - What could possibly go wrong?
+En Cete Šymessa - Šan lelnyvpertenyte?
 0,100,0
-Try to clear Normal or higher without continues!
+Denecyd cyrcyn Erdan ysaen šymessehentes!
