@@ -1,12 +1,12 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["St5 Non4"]
-#Text["Fourth nonspell!"]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
 #Player["./../../player/player0.dnh"]
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 10;
+let level = 11;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -26,46 +26,34 @@ let level = 10;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let x = ObjMove_GetX(objBoss);
-	let y = ObjMove_GetY(objBoss);
-	let d = getDifficulty;
-	let period = 30 - 2 * d;
-	let p = 0.1 + 0.02 * d;
-	let a = 0;
-	task aimed {
-		wait(120);
-		while (!isDead) {
-			loop (30) {
-				if (isDead) {return;}
-				let a = GetAngleToPlayer(objBoss);
-				CreateShotOA1(objBoss, 10, a , DS_BALL_SS_BLUE, 0);
-				CreateShotOA1(objBoss, 10, a + 1.5, DS_BALL_SS_BLUE, 0);
-				CreateShotOA1(objBoss, 10, a - 1.5, DS_BALL_SS_BLUE, 0);
-				yield;
-			}
-			wait(60);
-		}
-	}
-	aimed;
-	task bulletTask(shot) {
-		wait(100);
-		if (!Obj_IsDeleted(shot)) {
-			let a = 90;
-			loop (8) {
-				CreateShotOA1(shot, 0.5, a, DS_BALL_SS_BLUE, 0);
-				a += 45;
-			}
-			Obj_Delete(shot);
-		}
-	}
+	let period = 16;
+	let t = rand(0, 360);
+	let u = 0;
+	let cl = 0;
 	while (!isDead) {
-		x = rand(0, width);
-		y = rand(0, height / 2);
-		ObjMove_SetDestAtFrame(objBoss, x, y, period);
-		loop (period) {
-			if (isDead) {return;}
-			if (rand(0, 1) < p) {bulletTask(CreateShotOA1(objBoss, rand(1, 2), rand(0, 360), [DS_SCALE_YELLOW, DS_SCALE_SKY][randIntH(0, 2)], 0))};
-			yield;
+		if (isDead) {return;}
+		loop (5) {
+			let r = 40 * polygon(4, u);
+			loop (4) {
+				CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0875, 180 + t, DS_STAR_S_RED + cl, 30);
+				t += 90;
+			}
+			t += 18;
+			u += 18;
+			cl = (cl + 1) % 8;
 		}
+		shotSound;
+		t += 23.7;
+		wait(5);
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
 	}
 }
