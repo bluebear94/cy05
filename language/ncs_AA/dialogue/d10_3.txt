@@ -2,59 +2,59 @@
 0
 /
 4
-I'm glad I wore a nice coat~
+Nade carpen myrata re tename~
 0
-I can hardly see in this blizzard, though.
+Ša ena, nadamyn genarercedjon meneavpertena ci.
 0
-When is it going to stop?
+Šan yšyr teara?
 0
 /
 4
-I hope it never does.
+Cynero teareta re amalte.
 1
-It's fine. I brought a nice coat.
+Nade. Nade carpen myrata.
 0
-I was lying that time. The nymphs want to be warm.
+Civyrta nyta. Cryssosnersson agnara ryvretnei.
 0
-And "look at the trees", as they said!
+Ša, «enyn varmenehentas» marayto!
 0
-If there are no trees, there's no oxygen either!
+Enyn veson ci so tesa senemia vella ci!
 0
-Wait... that makes sense.
+Martetas... emta neraha.
 1
-You know about Vija, though, right?
+Erayn, Vija arsnes ren?
 1
-Eh heh, Vija seems to be a nice person.
+Ehe, Vija anara mecera.
 0
-I'll see Vija later.
+Nemyron menea.
 0
-Anyway, let me introduce myself.
+Erayn, saere:
 1
 [ruby rb="Arcame Dernar" rt="Vanar-Cyren Erveadyr"]
 3
-Arcame Dernar, the keeper of this castle.
+Arcame Dernar, ele cyren erveadyr.
 1
-Elssecisso Rencron, last of the Protectors.
+Elssecisso Rencron, Amarda Erveadillyr.
 0
-You look brave, Esel Rygen.
+Čymera meceras, Esel Rygen.
 1
-Iyaaah, I think Rencron would like to fight you over the blizzard.
+Yjaaaa, tesa Rencron genarercedjon eas cissenavgevena re serta.
 0
-I'm no Protector myself, but the nymphs have feelings.
+Ner e Erveadililyr ci ner ena cryssosnersson scytro.
 0
-Of course, you're only 11/64-blooded.
+Nedorta. Eo, renyl 2C/x or vella.
 1
-How am I supposed to value your opinion?
+Šan asčyr varacrešyvtarpea?
 1
-And why should Vija value yours?
+Šan asčyr Vija eon varacrešyvtarpea?
 0
-Vija (at a distance): &osb; WHAT, WHAT DID YOU SAY ABOUT ME? &csb;
+Vija (enleamyn): &osb; VEN, ŠAN VEN EN EAS MARAYTAR? &csb;
 2
-&osb; I PREFER THAT WE AVOID DISCUSSING THIS MATTER. &csb;
+&osb; ELA EAS CER'MARAETASS RE DEMEA. &csb;
 2
-&osb; AFTER ALL, IT IS IRRELEVANT IN MODERN TIMES. &csb;
+&osb; ENDYR, ELA CYMTERO CI. &csb;
 2
-Then I shall stop the snowfall if you manage to defeat me in battle.
+Ela so, targayvdecernesas so genar-carsatan doteare.
 1
-Eh heh, you seem weak.
+Ehe, islja meceras.
 0
