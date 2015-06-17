@@ -1,0 +1,60 @@
+./../resource/boss/st10.png
+0
+/
+4
+Šan ves?
+0
+... Nerassan es, arcenda.
+0
+...
+0
+... šan eo ves?
+0
+/
+4
+Tesa Čyrden targaytas ren.
+1
+Carsesereygo re amalte.
+1
+Renyl nendo.
+0
+[ruby rb="Arcame Dernar" rt="Vanar-Cyren Erveadyr"]
+3
+Erayn, e...
+1
+«Arcame Dernar» o ercenčonare.
+1
+Emtamyn vecnytas ren?
+0
+«Vecnyd» telsavdemea ci.
+1
+Agnaren nadamyn mentea ci tan.
+1
+Nedorta. Relen perselto myres. Šan asčyr negas ci?
+0
+Pertena ci.
+1
+Ner enyr eas cvyssalillyr carso
+0
+ner cryssesra dentryn enenero.
+0
+Sa genar-carsatan dotearentas re elcrae.
+0
+Elcrahatan nadamyn mentea.
+1
+Yšyr šynamyn cinerana.
+1
+Enas myveon cynsso šyldryd tehen.
+0
+Enas cenčon orcras?
+0
+Enas cvetalja; doremyte ci.
+1
+Elssecisso Rencron, Amarda Erveadillyr.
+0
+Enas rentera ardas cryssoscen ervead.
+0
+Eon ress cete navan ar teno cenegre!
+0
+Nade cissenata cyrcyn elcrahatan nadamyn mentea ci!
+1

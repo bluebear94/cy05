@@ -1,0 +1,60 @@
+./../resource/boss/st10.png
+0
+/
+4
+I'm glad I wore a nice coat~
+0
+I can hardly see in this blizzard, though.
+0
+When is it going to stop?
+0
+/
+4
+I hope it never does.
+1
+It's fine. I brought a nice coat.
+0
+I was lying that time. The nymphs want to be warm.
+0
+And "look at the trees", as they said!
+0
+If there are no trees, there's no oxygen either!
+0
+Wait... that makes sense.
+1
+You know about Vija, though, right?
+1
+Eh heh, Vija seems to be a nice person.
+0
+I'll see Vija later.
+0
+Anyway, let me introduce myself.
+1
+[ruby rb="Arcame Dernar" rt="Vanar-Cyren Erveadyr"]
+3
+Arcame Dernar, the keeper of this castle.
+1
+Elssecisso Rencron, last of the Protectors.
+0
+You look brave, Esel Rygen.
+1
+Iyaaah, I think Rencron would like to fight you over the blizzard.
+0
+I'm no Protector myself, but the nymphs have feelings.
+0
+Of course, you're only 11/64-blooded.
+1
+How am I supposed to value your opinion?
+1
+And why should Vija value yours?
+0
+Vija (at a distance): &osb; WHAT, WHAT DID YOU SAY ABOUT ME? &csb;
+2
+&osb; I PREFER THAT WE AVOID DISCUSSING THIS MATTER. &csb;
+2
+&osb; AFTER ALL, IT IS IRRELEVANT IN MODERN TIMES. &csb;
+2
+Then I shall stop the snowfall if you manage to defeat me in battle.
+1
+Eh heh, you seem weak.
+0
