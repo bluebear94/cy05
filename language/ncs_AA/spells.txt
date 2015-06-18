@@ -215,8 +215,8 @@ Marahatesa asage «Osconesa Elan-Grentertess»
 Marahatesa asage «Osconesa Elan-Grentertess»
 Marahatesa asage «Osconesa Elan-Grentertess»
 «Maraha Ryselos»
-Tesesa asage «Sen-Vjesa [ruby rb="Vjertese-Sencys" rt="*Relgen"]»
-Tesesa asage «En-Vjesa [ruby rb="Vjertese-Sencys" rt="*Relgen"]»
+Tesesa asage «Sen-Vjesa Vjertese-Sencys»
+Tesesa asage «En-Vjesa Vjertese-Sencys»
 Tesesa asage «Enšyn Teser-Csserman»
 Tesesa asage «Enšyn Teser-Csserman»
 Tesesa asage «Enšyn Teser-Csserman»
@@ -388,57 +388,57 @@ haxx
 haxx
 haxx
 haxx
-Red Sign "Superluminal Expansion Impulse Laser"
-"Objects Expanding Farther and Farther (Red Shift)"
+Cenerssa asage «Lyre-re-Mytra Esmervylata Ynvesa SSGLE»
+«Enleamyn, Enleamyn Esmervylo So (Cenerssa Esmervylata)»
 haxx
 haxx
 haxx
 haxx
 haxx
-Green Sign "Familiar No. 1 Experimental Wall"
-"Barrier Advancement from All Sides (Four-Tailed Walls)"
+Anaresa asage «0 Efera Šyntesa Veollerasa»
+«Šyno Naldo eas Veollerasesa Tagrata (Tar-Mjaresa Veolleraso)»
 haxx
 haxx
 haxx
 haxx
 haxx
-Blue Sign "Fox's Cave-Searching Stygian Blue"
-"Vengeful Fox's Erratic Chase"
+Saega asage «Asendaryl Pyčyva-Marahata Acrynala-re-Acrynala Saega»
+«Acasaha Asendaryl Celnar Nelrata»
 haxx
 haxx
 haxx
 haxx
 haxx
-Cyan Sign "Mirror Orb Spherical Reflection"
-"Perfect Glass Sphere (Light Bending)"
+Yngarosaegesa asage «Menssesa Nase Ependesa Menssata»
+«Cidene Neredesa Ependo (Lyre-Agernata)»
 haxx
 haxx
 haxx
 haxx
 haxx
-Magenta Sign "Great Optics Sinusoidal Paddle"
-"Silver-Coated Wings (Pristine Mirror)"
+Eoremyca asage «Ar-Lyre-Gentrata Cretegesa Enerceljos»
+«Emetros-Trancesa Relcoran (Cidene Mensse)»
 haxx
 haxx
 haxx
 haxx
 haxx
-Yellow Sign "Familiar No. 2 Spiral Clock"
-"Past, Present, and Future Telling"
+Dendryna asage «1 Efera Cretesa Inepremor»
+«Marao Nealygo Endence Maeroce»
 haxx
 haxx
 haxx
 haxx
 haxx
-Nine Colors "Fading into Reality Neo-Impressionism"
-"Brush that Paints from Red to Violet"
+Atrano ni «Refterss esar Caressyd Trespo-Esnentrata»
+«Cenerssa eas Eoremyca ar Norae»
 haxx
 haxx
 haxx
 haxx
 haxx
-Rainbow Sign "Ladder Ascending the Cumulonimbus Climb the Rungs"
-"Double Rainbow Ladders of Fate"
+Eresa asage «Relčerotrosan Asendesa Emasa Ynvyn Invetad»
+«Emardor eas Eresa Emasan»
 haxx
 haxx
 haxx

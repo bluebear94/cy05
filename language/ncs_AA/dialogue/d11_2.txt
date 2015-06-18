@@ -1,18 +1,18 @@
 ./../resource/boss/st11.png
 0
-Iyaaaaaah~
+Yjaaaaaaa~
 1
-Did I knock you out of your trance?
+Šan eon cardoternayte?
 0
-Probably.
+Lerean.
 1
-There's no guarantee that you're out of your trance, though.
+Ša ena eo carternaesas re ante ci.
 1
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10. I still have all my fingers.
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9. Šyno esmo von.
 0
-Silly, that just means you're not dreaming.
+Esso, renyl asmelras ci re emyn vella.
 1
-Well, now we have evidence that this is all real.
+Erayn, endyr šypro refta re vyror vella.
 1
-It's almost morning. Go to the village.
+Enpramyn centel. Metraspon ar desetas.
 1

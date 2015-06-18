@@ -14,7 +14,7 @@ let level = 11;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(7000);
+		SetScriptResult(5000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(90);
@@ -83,7 +83,7 @@ task moveBoss {
 			shoot(90);
 		}
 		else if (y > height && dy > 0) {
-			let a = rand(-180, 0);
+			let a = -90;
 			ObjMove_SetSpeed(objBoss, 0);
 			DelayLaser(x, y, a, 600, 24, 2 * BOSS_DELAY, DS_BEAM_WHITE, 2 * BOSS_DELAY);
 			wait(BOSS_DELAY);
@@ -91,6 +91,7 @@ task moveBoss {
 			ObjMove_SetAngle(objBoss, a);
 			shoot(-90);
 		}
+		bossAngle += 3;
 		yield;
 	}
 }
