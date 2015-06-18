@@ -12,17 +12,17 @@ Is it night already?
 0
 /
 4
-It is simply an illusion. Outside of this garden,[r]it is still a snowy day.
+It is simply an illusion. Outside of this garden, it is still a snowy day.
 1
 [ruby rb="Genreto Narendani" rt="Resident of the Night Garden"]
 3
-If you wish to dwell here, then I command you to[r]kill theprotector of the forest.
+If you wish to dwell here, then I command you to kill theprotector of the forest.
 1
 What... I can't do that!
 0
 Why do many people want someone else to die?
 0
-I've been plotting for three years to take over[r]Armadereyn.
+I've been plotting for three years to take over Armadereyn.
 1
 Do it yourself!
 0
