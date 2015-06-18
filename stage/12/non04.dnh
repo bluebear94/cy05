@@ -14,7 +14,7 @@ let level = 11;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(8000);
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -23,34 +23,37 @@ let level = 11;
 
 @Finalize {}
 
-let explosion = false;
-
-task starTask(shot) {
-	while (!explosion) {yield;}
-	if (!Obj_IsDeleted(shot)) {
-		let a = rand(0, 360);
-		loop (4) {
-			CreateShotOA1(shot, 0.4 * ObjMove_GetSpeed(shot), a, DS_STAR_S_GREEN, 0);
-			a += 90;
-		}
-		Obj_Delete(shot);
-	}
-}
-
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let d = getDifficulty - 5;
-	while (!isDead) {
-		loop (120) {
-			if (isDead) {return;}
-			let star = CreateShotOA1(objBoss, rand(1, 3.5), rand(0, 360), DS_STAR_M_GREEN, 0);
-			starTask(star);
+	task moveBoss {
+		ObjMove_SetSpeed(objBoss, 1.2);
+		ObjMove_SetAngle(objBoss, 180 * randIntH(0, 2));
+		while (!isDead) {
+			let x = ObjMove_GetX(objBoss);
+			if (x < 0) {
+				ObjMove_SetAngle(objBoss, rand(-5, 5));
+				wait(5);
+			}
+			else if (x > width) {
+				ObjMove_SetAngle(objBoss, rand(175, 185));
+				wait(5);
+			}
 			yield;
 		}
-		explosion = true;
-		wait(120);
-		explosion = false;
+	}
+	moveBoss;
+	while (!isDead) {
+		ascent (i in 0 .. 6) {
+			if (isDead) {return;}
+			let a = GetAngleToPlayer(objBoss);
+			loop (30) {
+				CreateShotOA1(objBoss, 1 + 0.5 * i, a, [DS_BILL_GREEN, DS_BILL_YELLOW][i % 2], 0);
+				a += 12;
+			}
+			wait(5);
+		}
+		wait(20);
 	}
 }
 
