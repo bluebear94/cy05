@@ -14,7 +14,7 @@ let level = 11;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(7000);
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,26 +26,32 @@ let level = 11;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let period = 16;
-	let t = rand(0, 360);
-	let u = 0;
-	while (!isDead) {
-		ascent (i in 0 .. period) {
-			if (isDead) {return;}
-			loop (6) {
-				let r = 60 * polygon(4, u);
-				loop (4) {
-					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.06, t, DS_STAR_S_ORANGE, 30);
-					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, t, DS_STAR_S_ORANGE, 30);
-					t += 90;
-				}
-				t += 15;
-				u += 15;
+	task moveBoss {
+		ObjMove_SetSpeed(objBoss, 1.2);
+		ObjMove_SetAngle(objBoss, 180 * randIntH(0, 2));
+		while (!isDead) {
+			let x = ObjMove_GetX(objBoss);
+			if (x < 0) {
+				ObjMove_SetAngle(objBoss, 0);
+				wait(5);
 			}
-			shotSound;
-			t += 23.7;
-			wait(15);
+			else if (x > width) {
+				ObjMove_SetAngle(objBoss, 180);
+				wait(5);
+			}
+			yield;
 		}
+	}
+	moveBoss;
+	while (!isDead) {
+		let a = GetAngleToPlayer(objBoss);
+		loop (30) {
+			ascent (i in 0 .. 3) {
+				CreateShotOA1(objBoss, 1 + 0.7 * i, a, DS_BILL_GREEN, 20 * i);
+			}
+			a += 12;
+		}
+		wait(50);
 	}
 }
 

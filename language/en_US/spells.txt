@@ -460,3 +460,10 @@ haxx
 haxx
 Seed Sign "Spiked Seed Formation"
 "Planting into the Corpse"
+haxx
+haxx
+haxx
+haxx
+haxx
+Sprout Sign "From One Seed a Whole Forest is Planted"
+"Great Seed Storm"
