@@ -467,3 +467,10 @@ haxx
 haxx
 Sprout Sign "From One Seed a Whole Forest is Planted"
 "Great Seed Storm"
+haxx
+haxx
+haxx
+haxx
+haxx
+Tree Sign "Namu-Tori"
+"Vengeful Sylphae Trunks"
