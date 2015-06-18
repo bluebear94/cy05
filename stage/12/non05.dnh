@@ -1,0 +1,76 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Non1"]
+#Text["First nonspell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 0;
+let level = 11;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(7000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+}
+
+@Finalize {}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let rhythm = [1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0];
+	let period = 16;
+	let t = rand(0, 360);
+	let u = 0;
+	while (!isDead) {
+		ascent (i in 0 .. period) {
+			if (isDead) {return;}
+			if (rhythm[i]) {
+				loop (12) {
+					let r = 70 * polygon(3, u);
+					loop (3) {
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.05, 180 + t, DS_STAR_S_SKY, 30);
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.03, 180 + t, DS_STAR_S_SKY, 30);
+						t += 120;
+					}
+					t += 10;
+					u += 10;
+				}
+				shotSound;
+			}
+			if (i == 12) {
+				loop (10) {
+					let r = 70 * polygon(6, u);
+					loop (6) {
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.05, 180 + t, DS_STAR_S_SKY, 30);
+						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.03, 180 + t, DS_STAR_S_SKY, 30);
+						t += 60;
+					}
+					t += 6;
+					u += 6;
+				}
+				explosionShort;
+			}
+			t += 23.7;
+			wait(15);
+		}
+	}
+}
+
+task TWorkOD {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let d = getDifficulty;
+	let period = 30 - 3 * getDifficulty;
+	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
+		yield;
+	}
+}

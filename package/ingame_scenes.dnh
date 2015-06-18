@@ -49,7 +49,7 @@ function TEndScene(mode, rpSlot, settings) {
 		else {
 			let spell = mode - MODE_SPELL;
 			let i = 0;
-			while (i < NUM_STAGES) {
+			while (i < 12) {
 				if (spell <= cumSpellCounts[i]) {break;}
 				i++;
 			}

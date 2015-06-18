@@ -1,0 +1,122 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 60;
+let level = 11;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(80);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+let registeredPaddles = [];
+
+function paddleSide(bx, by, paddle) {
+	let x = bx - ObjMove_GetX(paddle);
+	let y = by - ObjMove_GetY(paddle);
+	let tp = ObjStLaser_GetAngle(paddle);
+	let tb = atan2(y, x);
+	let dt = (tb - tp) % 360;
+	if (dt > 180) {dt -= 360;}
+	return dt;
+}
+
+task bulletTask(shot) {
+	let px = ObjMove_GetX(shot);
+	let py = ObjMove_GetY(shot);
+	while (!Obj_IsDeleted(shot)) {
+		let x = ObjMove_GetX(shot);
+		let y = ObjMove_GetY(shot);
+		let l = length(registeredPaddles);
+		ascent (i in 0 .. l) {
+			let paddle = registeredPaddles[i];
+			let curps = paddleSide(x, y, paddle);
+			let prevps = paddleSide(px, py, paddle);
+			let prod = curps * prevps;
+			if (prod <= 0 && prod > -8100) {
+				let incident = ObjMove_GetAngle(shot);
+				let radial = ObjStLaser_GetAngle(paddle) + 90 * signum([curps, -prevps][curps == 0]);
+				if (cos(incident - radial) > 0) {
+					ObjMove_SetAngle(shot, 2 * radial - incident + 180);
+					ObjMove_SetSpeed(shot, 3);
+					ObjMove_SetAcceleration(shot, -0.05);
+					ObjMove_SetMaxSpeed(shot, 1);
+					wait(5);
+				}
+			}
+			i++;
+		}
+		px = ObjMove_GetX(shot);
+		py = ObjMove_GetY(shot);
+		yield;
+	}
+}
+
+task laserTask(laser, ad) {
+	wait(60);
+	registeredPaddles = registeredPaddles ~ [laser];
+	let ba = ObjStLaser_GetAngle(laser);
+	let t = 0;
+	while (!Obj_IsDeleted(laser)) {
+		ObjStLaser_SetAngle(laser, ba + ad * sin(t));
+		t += 0.8;
+		yield;
+	}
+}
+
+task createPaddle(x, y, ba, ad) {
+	laserTask(
+		CreateStraightLaserA1(x, y, ba, 600, 24, 99999, DS_BEAM_PURPLE, 60),
+		ad
+	);
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty - 5;
+	let period = 25 - 5 * d;
+	createPaddle(cx - 120, cy / 2, 110, 40);
+	createPaddle(cx + 120, cy / 2, 70, -40);
+	createPaddle(cx - 140, cy * 0.75, 155, 40);
+	createPaddle(cx + 140, cy * 0.75, 25, -40);
+	if (d) {
+		createPaddle(0, height * 0.8, 30, 50);
+		createPaddle(width, height * 0.8, 150, -50);
+	}
+	wait(60);
+	let t = rand(0, 360);
+	let u = rand(0, 360);
+	let v = 0;
+	while (!isDead) {
+		loop (4) {
+			bulletTask(CreateShotA1(cx, height / 4, 1, t, DS_ICE_PURPLE, period));
+			bulletTask(CreateShotA1(cx, 3 * height / 4, 1, u, DS_ICE_PURPLE, period));
+			t += 90;
+			u += 90;
+		}
+		t += 17 + 52 * sin(v);
+		u += 13 + 49 * cos(v);
+		wait(period);
+		v += period;
+	}
+}

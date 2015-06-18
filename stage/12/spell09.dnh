@@ -1,0 +1,165 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 64;
+let level = 11;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+let height = GetStgFrameHeight;
+let width = GetStgFrameWidth;
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(12000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(60);
+	}
+	case (EV_REQUEST_IS_DURABLE_SPELL) {
+		SetScriptResult(true);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task bullets {
+	let t = rand(0, 360);
+	let u = rand(0, 360);
+	let p = 7 - getDifficulty;
+	while (!isDead) {
+		CreateShotOA1(objBoss, 1.5, t, DS_BALL_S_A_RED + randIntH(0, 8), 30);
+		t += 17 + 13 * sin(u);
+		u += 5.7;
+		wait(p);
+	}
+}
+
+task movement {
+	ObjMove_SetDestAtFrame(objBoss, 60, 220, 60); // 264 x 160
+	let FRAMES = 7;
+	wait(60);
+	while (!isDead) {
+		ascent (i in 0 .. 8) {
+			if (isDead) {return;}
+			let x = 60 + 33 * i;
+			ObjMove_SetDestAtFrame(objBoss, x + 16, 60, FRAMES);
+			wait(FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, x + 33, 220, FRAMES);
+			wait(FRAMES);
+		}
+		ascent (i in 0 .. 4) {
+			if (isDead) {return;}
+			let y = 220 - 40 * i;
+			ObjMove_SetDestAtFrame(objBoss, 60, y - 20, 2 * FRAMES);
+			wait(2 * FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, 324, y - 40, 2 * FRAMES);
+			wait(2 * FRAMES);
+		}
+		ascent (i in 0 .. 8) {
+			if (isDead) {return;}
+			let x = 324 - 33 * i;
+			ObjMove_SetDestAtFrame(objBoss, x - 16, 220, FRAMES);
+			wait(FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, x - 33, 60, FRAMES);
+			wait(FRAMES);
+		}
+		ascent (i in 0 .. 4) {
+			if (isDead) {return;}
+			let y = 60 + 40 * i;
+			ObjMove_SetDestAtFrame(objBoss, 324, y + 20, 2 * FRAMES);
+			wait(2 * FRAMES);
+			ObjMove_SetDestAtFrame(objBoss, 60, y + 40, 2 * FRAMES);
+			wait(2 * FRAMES);
+		}
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty - 5;
+	// if (d) {TWorkOD;}
+	let p = 1 / 300 + d / 1200;
+	let speed = 1 + 0.1 * d;
+	let period = 400 / (1 + 0.15 * d);
+	movement;
+	bullets;
+	let t = rand(0, 360);
+	let cl = randIntH(0, 8);
+	while (!isDead) {
+		loop (5) {
+			loop (12) {
+				CreateShotA1(cx + cx * cos(t), cy + cx * sin(t), 1, t, DS_BILL_RED + cl, 60);
+				CreateShotA1(cx + cx * cos(t), cy + cx * sin(t), 1, 180 + t, DS_BILL_RED + cl, 60);
+				t += 3;
+			}
+			cl = (cl + 1) % 8;
+			t += 36;
+		}
+		t += rand(0, 18) + rand(0, 18);
+		let left = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF) /
+			ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_ORGTIMERF);
+		wait(90 + 90 * left);
+	}
+}
+
+task TWorkOD {
+	let SPEED = 3;
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let interval = 16;
+	let ih = height / interval;
+	let iw = width / interval;
+	let period = 300;
+	function redBullet(x, y) {
+		CreateShotA1(x, y, SPEED, getAngleToXY(GetPlayerObjectID, x, y) + 180, DS_BALL_M_A_RED, 0);
+	}
+	function orangeBullet(x, y) {
+		let direction = 0;
+		if (x == width) {direction = 180;}
+		else if (y == 0) {direction = 90;}
+		else if (y == height) {direction = 270;}
+		CreateShotA1(x, y, SPEED, direction, DS_BALL_M_A_ORANGE, 0);
+		CreateShotA1(x, y, SPEED * 0.6, direction, DS_BALL_M_A_ORANGE, 0);
+	}
+	function greenBullet(x, y) {
+		let direction = 0;
+		if (x == width) {direction = 180;}
+		else if (y == 0) {direction = 90;}
+		else if (y == height) {direction = 270;}
+		CreateShotA1(x, y, SPEED, direction + 20, DS_BALL_M_A_GREEN, 0);
+		CreateShotA1(x, y, SPEED, direction - 20, DS_BALL_M_A_GREEN, 0);
+	}
+	function shoot(x, y, n) {
+		alternative (n)
+		case (0) {redBullet(x, y);}
+		case (1) {orangeBullet(x, y);}
+		case (2) {greenBullet(x, y);}
+	}
+	while (!isDead) {
+		let n = randIntH(0, 2);
+		ascent (i in 0 .. iw) {
+			shoot(i * interval, 0, n);
+			shoot(i * interval, height, n);
+		}
+		ascent (i in 0 .. ih) {
+			shoot(0, i * interval, n);
+			shoot(width, i * interval, n);
+		}
+		wait(period);
+		period *= 0.99;
+	}
+}

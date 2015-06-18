@@ -1,0 +1,30 @@
+./../resource/boss/st12.png
+0
+/
+4
+Who's there?
+1
+/
+4
+I'm there!
+0
+What are you doing this late?
+1
+I'm hunting idiots like you!
+0
+Don't call me an idiot!
+1
+[ruby rb="Elssecisso Rencron" rt="One who Lurks in the Woods"]
+3
+I am Elssecisso Rencron, Last of the Protectors.
+1
+I was going to say that.
+0
+But I'm actually Esel Rygen, the Light Magician.
+0
+And I'm hunting Protectors.
+0
+And I'm hunting stupid magicians who think they can hunt me.
+1
+Iyaaah~
+0

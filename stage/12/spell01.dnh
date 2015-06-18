@@ -1,0 +1,98 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St7 Sp1"]
+#Text["First spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+let id = 66;
+let level = 12;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(15000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(80);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task wall(shot) {
+	let width = GetStgFrameWidth;
+	while (!Obj_IsDeleted(shot)) {
+		let x = ObjMove_GetX(shot);
+		let y = ObjMove_GetY(shot);
+		let canHitTop = true;
+		let angle = ObjMove_GetAngle(shot);
+		if (x < 0) {
+			ObjMove_SetAngle(shot, 180 - angle);
+			return;
+		}
+		else if (x > width) {
+			ObjMove_SetAngle(shot, 180 - angle);
+			return;
+		}
+		else if (y < 0 && canHitTop) {
+			ObjMove_SetAngle(shot, -angle);
+			wait(5);
+			canHitTop = false;
+		}
+		yield;
+	}
+}
+
+task familiar(x, y, a0, da) {
+	let d = getDifficulty - 5;
+	let period = 20 - 5 * d;
+	sub shoot {
+		wall(CreateShotA1(x, y, 1.5, a0, DS_SCALE_GREEN, 30));
+	}
+	loop {
+		loop (10) {
+			if (isDead) {return;}
+			shoot;
+			wait(period);
+		}
+		loop (20) {
+			if (isDead) {return;}
+			a0 += 2 * da * period;
+			shoot;
+			wait(period);
+		}
+	}
+}
+
+task TWork {
+	let width = GetStgFrameWidth;
+	let height = GetStgFrameHeight;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty - 5;
+	let p = 130 - 10 * d;
+	let lps = 3 + d;
+	familiar(cx - 150, 140, -135, 1/6);
+	familiar(cx + 150, 140, -45, -1/6);
+	familiar(cx - 110, 60, 90, -1/6);
+	familiar(cx + 110, 60, 90, 1/6);
+	familiar(cx - 90, 200, 0, 1/3);
+	familiar(cx + 90, 200, 180, -1/3);
+	familiar(cx - 50, 300, 45, 1/12);
+	familiar(cx + 50, 300, 135, -1/12);
+	familiar(cx - 170, 260, 10, 1/8);
+	familiar(cx + 170, 260, 170, -1/8);
+	while (!isDead) {
+		ObjShot_SetDeleteFrame(CreateShotOA1(objBoss, 2, rand(0, 360), DS_BALL_S_GREEN, 0), 60);
+		yield;
+	}
+}
+
+

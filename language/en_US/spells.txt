@@ -453,3 +453,10 @@ haxx
 haxx
 "Sight of a Sky after Heavy Rain"
 "Rygen's Chaotic Cloud Dance - Wave"
+haxx
+haxx
+haxx
+haxx
+haxx
+Seed Sign "Spiked Seed Formation"
+"Planting into the Corpse"

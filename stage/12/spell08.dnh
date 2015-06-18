@@ -1,0 +1,86 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["St1 Sp3"]
+#Text["Third spell!"]
+#Player["./../../player/player0.dnh"]
+#System["./../../system/system.dnh"]
+#include "./../../prologue.dnh"
+#include "./../../player/shotc.dnh"
+let id = 63;
+let level = 11;
+#include "./../spell_header.dnh"
+#include "./render_boss.dnh"
+#include "./bossfunc.dnh"
+
+let height = GetStgFrameHeight;
+let width = GetStgFrameWidth;
+
+@Event {
+	alternative (GetEventType)
+	case (EV_REQUEST_LIFE) {
+		SetScriptResult(20000);
+	}
+	case (EV_REQUEST_TIMER) {
+		SetScriptResult(140);
+	}
+	case (EV_REQUEST_SPELL_SCORE) {
+		SetScriptResult(spellBonus);
+	}
+}
+
+@Finalize {}
+
+task ladders {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let l = 150;
+	let r = 90;
+	while (!isDead) {
+		let t = rand(60, 120);
+		let c = cos(t);
+		let s = sin(t);
+		let y = rand(0, height / 4);
+		let x = rand(0, width - l * s);
+		let x0 = x;
+		let y0 = y;
+		let cl = randIntH(0, 7);
+		loop {
+			let x2 = x + l * s;
+			let y2 = y - l * c;
+			if ((x < 0 || x > width || y > height) &&
+				(x2 < 0 || x2 > width || y2 > height)) {
+				break;
+			}
+			ObjStLaser_SetSource(CreateStraightLaserA1(x, y, t - 90, l, 24, 120, DS_BEAM_RED + cl, 60), false);
+			cl = (cl + 1) % 7;
+			x += r * c;
+			y += r * s;
+		}
+		ObjStLaser_SetSource(CreateStraightLaserA1(x0 - r * c, y0 - r * s, t, 600, 24, 120, DS_BEAM_WHITE, 60), false);
+		ObjStLaser_SetSource(CreateStraightLaserA1(x0 - r * c + l * s, y0 - r * s - l * c, t, 600, 24, 120, DS_BEAM_WHITE, 60), false);
+		wait(180);
+	}
+}
+
+task TWork {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty - 5;
+	let dps = 2;
+	let y = height * 0.6;
+	let speed = 1 + 0.1 * d;
+	let period = 400 / (1 + 0.15 * d);
+	loop (1 + d) {
+		ladders;
+	}
+	while (!isDead) {
+		loop (dps) {
+			if (rand(0, 1) < 0.05) {CreateShotA1(rand(0, width), rand(0, y), rand(1, 3), 90, [DS_RICE_S_WHITE, DS_RICE_S_SKY][randIntH(0, 2)], 30);}
+		}
+		dps += 0.001;
+		y = min(y + 0.02, height * 0.8);
+		yield;
+	}
+}

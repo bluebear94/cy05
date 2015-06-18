@@ -1,0 +1,38 @@
+function createStar(x, y, s, t, a, b, l, w, av, g, d) {
+	task spin(br) {
+		while (!Obj_IsDeleted(br) && !Obj_IsDeleted(first)) {
+			ObjMove_SetPosition(br, ObjMove_GetX(first), ObjMove_GetY(first));
+			ObjStLaser_SetAngle(br, ObjStLaser_GetAngle(br) + av);
+			yield;
+		}
+		Obj_Delete(br);
+	}
+	let first;
+	ascent (i in 0 .. b) {
+		let br = CreateStraightLaserA1(x, y, a + 360 * i / b, l, w, 9999, g, d);
+		if (i == 0) {first = br;}
+		spin(br);
+	}
+	ObjMove_SetSpeed(first, s);
+	ObjMove_SetAngle(first, t);
+	return first;
+}
+
+function astroid(t, points) {
+	let scale = points / 4;
+	t *= scale;
+	let c = cos(t);
+	if (c == 0) {return 1;}
+	return
+		absolute(1 / c) / (
+			1 + absolute(tan(t)) ^ (2 / 3)
+		) ^ 1.5;
+}
+
+function polygon(n, t) {
+	return cos(180 / n) / (
+		cos(
+			(t % (360 / n)) - (180 / n)
+		)
+	);
+}

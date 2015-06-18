@@ -1,0 +1,14 @@
+./../resource/boss/st12.png
+0
+Fine, you win.
+0
+I can't fight you forever anyway.
+0
+You need some sleep. Go home.
+1
+You deserve a nice day off.
+1
+I was going to take one anyway~
+0
+You should get some sleep too.
+0
