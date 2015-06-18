@@ -14,7 +14,7 @@ let level = 11;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(7000);
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,42 +26,37 @@ let level = 11;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let rhythm = [1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0];
-	let period = 16;
-	let t = rand(0, 360);
-	let u = 0;
-	while (!isDead) {
-		ascent (i in 0 .. period) {
-			if (isDead) {return;}
-			if (rhythm[i]) {
-				loop (12) {
-					let r = 70 * polygon(3, u);
-					loop (3) {
-						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.05, 180 + t, DS_STAR_S_SKY, 30);
-						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.03, 180 + t, DS_STAR_S_SKY, 30);
-						t += 120;
-					}
-					t += 10;
-					u += 10;
-				}
-				shotSound;
+	task moveBoss {
+		ObjMove_SetSpeed(objBoss, 1.2);
+		ObjMove_SetAngle(objBoss, 180 * randIntH(0, 2));
+		while (!isDead) {
+			let x = ObjMove_GetX(objBoss);
+			if (x < 0) {
+				ObjMove_SetAngle(objBoss, 0);
+				wait(5);
 			}
-			if (i == 12) {
-				loop (10) {
-					let r = 70 * polygon(6, u);
-					loop (6) {
-						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.05, 180 + t, DS_STAR_S_SKY, 30);
-						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.03, 180 + t, DS_STAR_S_SKY, 30);
-						t += 60;
-					}
-					t += 6;
-					u += 6;
-				}
-				explosionShort;
+			else if (x > width) {
+				ObjMove_SetAngle(objBoss, 180);
+				wait(5);
 			}
-			t += 23.7;
-			wait(15);
+			yield;
 		}
+	}
+	moveBoss;
+	while (!isDead) {
+		ascent (i in 0 .. 3) {
+			if (isDead) {return;}
+			let a = GetAngleToPlayer(objBoss);
+			let x = ObjMove_GetX(objBoss);
+			let y = ObjMove_GetY(objBoss);
+			let t = rand(0, 360);
+			loop (30) {
+				CreateShotA1(x + 30 * cos(t), y + 30 * sin(t), 1 + 0.7 * i, a, DS_BILL_GREEN, 0);
+				a += 12;
+			}
+			wait(10);
+		}
+		wait(20);
 	}
 }
 
