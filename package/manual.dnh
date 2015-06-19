@@ -30,7 +30,7 @@ task main {
 		turnPage;
 		let entry = getManual(i);
 		ObjText_SetText(title, entry[0]);
-		ObjText_SetTextWW(body, entry[1], 360, 12, GetCommonData("DiaFont", "Consolas"));
+		ObjText_SetTextWW(body, entry[1], 340, 12, GetCommonData("DiaFont", "Consolas"));
 		ObjPrim_SetTexture(img, GetCurrentScriptDirectory ~ "images/manual/" ~ IntToString(i) ~ ".png");
 		ObjSprite2D_SetSourceRect(img, 0, 0, 320, 480);
 		ObjSprite2D_SetDestRect(img, 320 - l, -h, 640 - l, 480 - h);

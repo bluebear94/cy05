@@ -8,9 +8,9 @@ Semiadonan
 Semiadonan eas gjenčyr tar von: avona (dendryna), ardas (anaresa), nyrses (saega), senar (cenerssa).[r]* Avoneso donan vanoson telsad nysos domyrere. Dedeno avonadonan, darnalla cssysa vanosan nas tarpeheri regrys cesanoce.[r]* Ner ardeso donan vetenllyd nysos domyrere ner šyldrydyr nas tarpeheri cesanan regrys re asro.[r]* Ner nyrseso donan regan nysos domyrere ner regan nysos SEeS-domyrata dedeno re asro.[r]* Seneso donan saego evillyr trevyd nysos domyrere. Dedeno senardonan, dedeno semiadonan-domyrata daene trevyllatesa naldace.[r]Escysernyd semiadonan regrys re asra.
 Trevyr
 * Sadesa trevyr (1) - sade eas iss dedenamyn merva centara. Dedenamyn eradjona trevera yšyr dedenamyn sede.[r]* Anaresa trevyr (2) - Cissan carvon yšyr anaresa trevyr esvon. Sadesa trevyr eas saden eradjona mecro.[r]* Šyldrydyr vanosoce eas cesano (3) - Šyldrydillyn vanosopercen myrad nas trevetas![r]* Voro šyldrydillyr vanosopyrcen (4) - Ner von sranči myri.[r]* Semiesa trevyr (5) - Tar erpen ymyron esvon. Semiadonan myri. Dedenamyn eradjona trevera yšyr dedenamyn sede.
-Special mechanics
-* If the previous life had spellcards, the next will spawn without any.[r]* Rencron B has a 50% chance of activating the spellcard when hit. If the spellcard is activated this way, the number of elemental points will not decrease.[r]* Rygen B's spellcard will damage any enemy, even those that are normally immune to spellcards!
-Hidden mode
-Hidden mode can be accessed from the Options menu, and change some mechanics.[r]* The point item value cannot be increased.[r]* Green items and grazing will give points directly.[r]* Lives and bombs start at twelve fragments.[r]* The deathbomb window is fixed at five frames.[r]* The player's hitbox is not visible upon focusing.
-Spell Practice
-You can practice any spell that has been seen at least once.[r]In order to unlock the Overdrive version of a card, capture once or attempt 16 times its counterpart on each difficulty.
+Enear Arillyr
+* Desae šyryl vanoso myratesa so, asae šyryl myre ci.[r]* Cyntrynygo ysan, Rencron .1, 80/x senma vanosopen centaryme semiadonan desra ci.[r]* Rygen .1 eas vanosoper tesa gete vanosopen nysos anleago ci sranči anlea!
+Corcrygo matron
+«Etegyd» es corcrygo matron etegyvpertene. Corcrygo matron arillyn mecra.[r]* SSeS esmevylyvpertene ci.[r]* Anaresa trevillyr regance dono myri.[r]* Centaran es šyldrydillyr vanosopyrce cesano va tarpei.[r]* Šysono cssysa ynvi do.[r]* Genelo ysan, cytrynatesa sarta menehenyn ci.
+Vanoso-Nernahata
+Vylamyn ysaen myrago vanosoper nernayvpertenere.[r]Asenimarsesa vanosoper nernayd nas, aren venen eas vanosopen evenyge sradmyn nernaetas.

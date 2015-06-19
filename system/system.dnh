@@ -367,7 +367,7 @@ task TGainSpell(score) {
 	ObjRender_SetX(objScore, 40);
 	ObjRender_SetY(objScore, 140);
 	AddScore(roundScore(score * multiplier));
-	addElemPoints(EARTH, truncate(score * multiplier / 1048576));
+	addElemPoints(EARTH, truncate((score * multiplier / 1048576) ^ 0.9));
 	wait(240);
 	Obj_Delete(objText);
 	Obj_Delete(objScore);
