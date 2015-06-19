@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 11;
+let level = 12;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,7 +14,7 @@ let level = 11;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(7000);
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -26,39 +26,21 @@ let level = 11;
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let t = rand(0, 360);
-	let u = 0;
-	let period = 16;
 	while (!isDead) {
-		ascent (i in 0 .. period) {
+		ascent (i in 0 .. 3) {
 			if (isDead) {return;}
-			loop (12) {
-				let r = 70 * polygon(3, u);
-				loop (3) {
-					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.05, t, DS_STAR_S_BLUE, 30);
-					CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.03, t, DS_STAR_S_BLUE, 30);
-					t += 120;
-				}
-				t += 10;
-				u += 10;
+			let a = GetAngleToPlayer(objBoss);
+			let t = rand(0, 360);
+			let x = rand(0, width);
+			let y = rand(0, height / 3);
+			loop (30) {
+				CreateShotA1(x, y, 1 + 0.7 * i, a, DS_BILL_GREEN, 0);
+				a += 12;
 			}
 			shotSound;
-			if (i == 15) {
-				loop (10) {
-					let r = 70 * polygon(6, u);
-					loop (6) {
-						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, t, DS_STAR_S_BLUE, 30);
-						CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.04, 30 + t, DS_STAR_S_BLUE, 30);
-						t += 60;
-					}
-					t += 6;
-					u += 6;
-				}
-				explosionShort;
-			}
-			t += 27.9;
-			wait(20);
+			wait(10);
 		}
+		wait(20);
 	}
 }
 

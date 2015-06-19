@@ -488,3 +488,17 @@ haxx
 haxx
 Leaf Sign "Leaf-Ejecting Wind"
 "Summer Wind-Dance"
+haxx
+haxx
+haxx
+haxx
+haxx
+Howl Sign "Chase at 2 A. M. (the Wolf's Cry)"
+"Unknown Blood-Covered Ground"
+haxx
+haxx
+haxx
+haxx
+haxx
+Salamander Sign "Amphibious Crossing"
+"Wily Salamander"

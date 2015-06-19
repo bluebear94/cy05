@@ -173,6 +173,10 @@ sub whipSound {
 	playSE("whip00");
 }
 
+sub roar {
+	playSE("animal02");
+}
+
 task TTimer {
 	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
 		let ticks = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF);

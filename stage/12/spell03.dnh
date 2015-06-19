@@ -47,6 +47,7 @@ task spawnRow(x, y) {
 
 task spawnColumn(x, inv) {
 	let n = GetStgFrameHeight / 8;
+	whipSound;
 	if (inv) {
 		descent (i in 0 .. n) {
 			if (isDead) {return;}

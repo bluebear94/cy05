@@ -6,15 +6,15 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 62;
-let level = 11;
+let id = 72;
+let level = 12;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(18000);
+		SetScriptResult(15000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(120);
@@ -26,79 +26,20 @@ let level = 11;
 
 @Finalize {}
 
-task lasers {
+task water {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
 	while (!isDead) {
-		loop (8) {
-			CreateStraightLaserA1(rand(0, width), rand(0, height / 3), rand(45, 135), 600, 24, 240, DS_BEAM_RED, 240);
+		let remh = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_CURRENT_LIFE) /
+			ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_CURRENT_LIFE_MAX);
+		let remt = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF) /
+			ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_ORGTIMERF);
+		let rem = min(remh, remt);
+		let h = 0.25 * height * (1 - rem);
+		loop (max(1, 10 * (1 - rem))) {
+			CreateShotA1(0, height - rand(0, h), rand(5, 10), 0, DS_ICE_SKY, 0);
+			CreateShotA1(width, rand(0, h), rand(5, 10), 180, DS_ICE_SKY, 0);
 		}
-		wait(480);
-	}
-}
-
-task wall(shot) {
-	let width = GetStgFrameWidth;
-	while (!Obj_IsDeleted(shot)) {
-		let x = ObjMove_GetX(shot);
-		let y = ObjMove_GetY(shot);
-		let canHitTop = true;
-		let angle = ObjMove_GetAngle(shot);
-		if (x < 0) {
-			ObjMove_SetAngle(shot, 180 - angle);
-			return;
-		}
-		else if (x > width) {
-			ObjMove_SetAngle(shot, 180 - angle);
-			return;
-		}
-		else if (y < 0 && canHitTop) {
-			ObjMove_SetAngle(shot, -angle);
-			wait(5);
-			canHitTop = false;
-		}
-		yield;
-	}
-}
-
-task familiarTask(shot, t0) {
-	let height = GetStgFrameHeight;
-	let width = GetStgFrameWidth;
-	let cx = width / 2;
-	let cy = height / 2;
-	ObjShot_SetSpellResist(shot, true);
-	ObjShot_SetAutoDelete(shot, false);
-	let t = t0;
-	let px = ObjMove_GetX(shot);
-	let py = ObjMove_GetY(shot);
-	let r = 150;
-	let dr = 1;
-	let u = rand(0, 360);
-	let c = 0;
-	ObjMove_SetDestAtFrame(shot, cx + r * cos(t), cy + r * sin(t), 60);
-	wait(60);
-	while (!Obj_IsDeleted(shot)) {
-		px = ObjMove_GetX(shot);
-		py = ObjMove_GetY(shot);
-		ObjMove_SetPosition(shot, cx + r * cos(t), cy + r * sin(t));
-		let x = ObjMove_GetX(shot);
-		let y = ObjMove_GetY(shot);
-		let angle = atan2(y - py, x - px);
-		if (x != px && c % 40 == 0) {
-			CreateShotOA1(shot, 1.5, angle + 90, DS_STAR_S_GREEN, 30);
-			CreateShotOA1(shot, 1.5, angle - 90, DS_STAR_S_GREEN, 30);
-		}
-		if (c % 30 == 0) {
-			loop (4) {
-				CreateShotOA1(shot, 1.5, u, DS_BALL_S_YELLOW, 0);
-				u += 90;
-			}
-			u += 25.3;
-		}
-		t += 0.35;
-		r += 0.5 * dr;
-		c++;
-		if (r == 300 || r == 90) {dr *= -1;}
 		yield;
 	}
 }
@@ -109,26 +50,33 @@ task TWork {
 	let cx = width / 2;
 	let cy = height / 2;
 	let d = getDifficulty - 5;
-	let cl = 0;
-	let t = rand(0, 360);
-	let period = 60 - 7 * d;
-	let walls = 2 + d;
-	ascent (i in 0 .. walls) {
-		familiarTask(CreateShotA1(cx, cy, 0, 0, DS_BALL_L_GREEN, 0), i * 360 / walls);
-	}
-	lasers;
+	let flip = false;
+	let n = 6 + 2 * d;
+	let period = 70 - 5 * d;
+	let t = 0;
+	water;
 	while (!isDead) {
-		loop (5) {
-			ascent (i in 0 .. 10) {
-				let tp = t + 3.5 * i;
-				let shot = CreateShotA1(ObjMove_GetX(objBoss) + 30 * cos(tp), ObjMove_GetY(objBoss) + 30 * sin(tp), 1.5, t, DS_ICE_RED + cl, i);
-				wall(shot);
+		let v = cy / n * rand(-1, 1);
+		if (!flip || d) {
+			ascent (i in 0 .. n + 1) {
+				let shot = CreateShotA2(0, height * i / n + v, 1.5, 20 + 2 * sin(t) + rand(-2, 2), 0.01, 2.5, DS_KNIFE_KOUMA_ORANGE, 0);
+				ObjMove_SetAngularVelocity(shot, 0.1);
+				shot = CreateShotA2(0, height * i / n + v, 1.5, -20 - 2 * sin(t) + rand(-2, 2), 0.01, 2.5, DS_KNIFE_KOUMA_ORANGE, 0);
+				ObjMove_SetAngularVelocity(shot, -0.1);
 			}
-			t += 72;
-			cl = (cl + 1) % 8;
 		}
-		t = rand(0, 360);
+		if (flip || d) {
+			ascent (i in 0 .. n + 1) {
+				let shot = CreateShotA2(width, height * i / n + v, 1.5, 160 - 2 * sin(t) + rand(-2, 2), 0.01, 2.5, DS_KNIFE_KOUMA_YELLOW, 0);
+				ObjMove_SetAngularVelocity(shot, -0.1);
+				shot = CreateShotA2(width, height * i / n + v, 1.5, -160 + 2 * sin(t) + rand(-2, 2), 0.01, 2.5, DS_KNIFE_KOUMA_YELLOW, 0);
+				ObjMove_SetAngularVelocity(shot, 0.1);
+			}
+		}
+		shotSound;
+		flip = !flip;
 		wait(period);
+		t += 23;
 	}
 }
 

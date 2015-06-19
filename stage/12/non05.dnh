@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 11;
+let level = 12;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -54,6 +54,7 @@ task TWork {
 				CreateShotA1(x + 30 * cos(t), y + 30 * sin(t), 1 + 0.7 * i, a, DS_BILL_GREEN, 0);
 				a += 12;
 			}
+			shotSound;
 			wait(10);
 		}
 		wait(20);

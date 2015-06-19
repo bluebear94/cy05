@@ -48,13 +48,14 @@ task TWork {
 	let cy = height / 2;
 	let d = getDifficulty - 5;
 	let angle = 0;
+	swingSound;
 	while (!isDead) {
 		loop (12) {
 			leafTask(CreateShotOA1(objBoss, 4, angle, DS_ICE_GREEN, 0), 1);
 			leafTask(CreateShotOA1(objBoss, 4, angle, DS_ICE_GREEN, 0), -1);
 			angle += 30;
 		}
-		a += d;
+		angle += d;
 		wait(5);
 	}
 }
