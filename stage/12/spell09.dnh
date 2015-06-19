@@ -6,8 +6,8 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 64;
-let level = 11;
+let id = 74;
+let level = 12;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -33,55 +33,222 @@ let width = GetStgFrameWidth;
 
 @Finalize {}
 
-task bullets {
-	let t = rand(0, 360);
-	let u = rand(0, 360);
-	let p = 7 - getDifficulty;
+let RADIUS = 160;
+let SIDE = RADIUS * 2 ^ 0.5;
+let APOTHEM = SIDE / 2;
+
+task laserTask(shot, angle) {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let c = 0;
 	while (!isDead) {
-		CreateShotOA1(objBoss, 1.5, t, DS_BALL_S_A_RED + randIntH(0, 8), 30);
-		t += 17 + 13 * sin(u);
-		u += 5.7;
-		wait(p);
+		ObjMove_SetPosition(shot, cx + RADIUS * cos(angle), cy + RADIUS * sin(angle));
+		ObjStLaser_SetAngle(shot, angle + 135);
+		let left = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF) /
+			ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_ORGTIMERF);
+		let amt = 0.6 - 0.4 * left;
+		if (c % 6 == 0) {
+			ascent (i in -4 .. 5) {
+				CreateShotOA1(shot, 0.5 + 0.5 * absolute(i), angle + 30 * i, DS_BALL_SS_WHITE, 0);
+			}
+		}
+		angle += amt;
+		c++;
+		yield;
 	}
 }
 
-task movement {
-	ObjMove_SetDestAtFrame(objBoss, 60, 220, 60); // 264 x 160
-	let FRAMES = 7;
-	wait(60);
+task createLaser(angle, gfx) {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	laserTask(CreateStraightLaserA1(cx + RADIUS * cos(angle), cy + RADIUS * sin(angle), angle + 135, SIDE, 24, 9999, gfx, 120), angle);
+}
+
+task wall(shot) {
+	let width = GetStgFrameWidth;
+	while (!Obj_IsDeleted(shot)) {
+		let x = ObjMove_GetX(shot);
+		let y = ObjMove_GetY(shot);
+		let canHitTop = true;
+		let angle = ObjMove_GetAngle(shot);
+		if (x < 0) {
+			ObjMove_SetAngle(shot, 180 - angle);
+			return;
+		}
+		else if (x > width) {
+			ObjMove_SetAngle(shot, 180 - angle);
+			return;
+		}
+		else if (y < 0 && canHitTop) {
+			ObjMove_SetAngle(shot, -angle);
+			wait(5);
+			canHitTop = false;
+		}
+		yield;
+	}
+}
+
+task familiar(x, y, a0, da) {
+	let d = getDifficulty - 5;
+	let period = 20 - 5 * d;
+	sub shoot {
+		wall(CreateShotA1(x, y, 1.5, a0, DS_SCALE_GREEN, 30));
+	}
+	loop (5) {
+		if (isDead) {return;}
+		shoot;
+		wait(period);
+	}
+	loop (10) {
+		if (isDead) {return;}
+		a0 += 2 * da * period;
+		shoot;
+		wait(period);
+	}
+}
+
+task spawnBullet(x, y) {
+	let shot = CreateShotA1(x, y, 0, rand(0, 360), DS_ICE_GREEN, 60);
+	ObjMove_AddPatternA2(shot, 90, 0, NO_CHANGE, 0.025, 0, 1.5);
+	wait(150);
+	while (!Obj_IsDeleted(shot)) {
+		if (rand(0, 1) < 0.015) {Obj_Delete(shot);}
+		yield;
+	}
+}
+
+task spawnColumn(x, inv) {
+	let n = GetStgFrameHeight / 8;
+	whipSound;
+	if (inv) {
+		descent (i in 0 .. n) {
+			if (isDead) {return;}
+			spawnBullet(x, 8 * i);
+			yield;
+		}
+	}
+	else {
+		ascent (i in 0 .. n) {
+			if (isDead) {return;}
+			spawnBullet(x, 8 * i);
+			yield;
+		}
+	}
+}
+
+let theChosenOne = 0;
+
+task cycle {
+	loop {
+		ascent (i in 0 .. 8) {
+			if (isDead) {return;}
+			theChosenOne = i;
+			let a = 90;
+			loop (36) {
+				CreateShotOA1(objBoss, 2.5, a, DS_BALL_S_RED + i, 0);
+				a += 10;
+			}
+			shotSound;
+			wait(90);
+		}
+	}
+}
+
+task starTask(shot) {
+	let g = ObjShot_GetImageID(shot) - DS_STAR_S_RED;
+	let d = getDifficulty - 5;
+	let height = GetStgFrameHeight;
+	while (!Obj_IsDeleted(shot) && ObjMove_GetY(shot) < height) {
+		yield;
+	}
+	if (!Obj_IsDeleted(shot) && (g == theChosenOne || (d && g == theChosenOne + 3))) {
+		CreateStraightLaserA1(ObjMove_GetX(shot), height, rand(-100, -80), 600, 20, 60, DS_BEAM_RED + g, 30);
+	}
+}
+
+task leafTask(shot, sign) {
+	let d = getDifficulty - 5;
+	ObjMove_SetAngularVelocity(shot, 4 * sign);
+	wait(45);
+	if (rand(0, 1) > 0.2 - 0.1 * d) {Obj_Delete(shot);}
+	ObjMove_SetAngularVelocity(shot, 0);
+	ObjMove_SetAngle(shot, ObjMove_GetAngle(shot) + rand(-20, 20));
+	ObjMove_SetSpeed(shot, rand(1, 2));
+	if (d) {
+		let s = randomSign;
+		ObjMove_AddPatternB2(shot, rand(30, 90), NO_CHANGE, NO_CHANGE, rand(0.01, 0.02) * s, 0, 3 * s, 3);
+	}
+}
+
+task bullets {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let d = getDifficulty - 5;
+	familiar(cx - 110, 60, 90, -1/3);
+	familiar(cx + 110, 60, 90, 1/3);
+	familiar(cx - 90, 200, 0, 2/3);
+	familiar(cx + 90, 200, 180, -2/3);
+	wait(300);
+	// 5 seconds
+	let inv = false;
+	loop (4) {
+		spawnColumn(rand(0, width), inv);
+		inv = !inv;
+		wait(150);
+	}
+	// 15 seconds
+	cycle;
+	loop (75) {
+		starTask(CreateShotA2(rand(0, width), 0, 7, 90, -0.1, rand(2, 3), DS_STAR_S_RED + randIntH(0, 8), 0));
+		wait(10);
+	}
+	let angle = 0;
+	// 30 seconds
+	loop (30) {
+		loop (12) {
+			leafTask(CreateShotOA1(objBoss, 4, angle, DS_ICE_GREEN, 0), 1);
+			leafTask(CreateShotOA1(objBoss, 4, angle, DS_ICE_GREEN, 0), -1);
+			angle += 30;
+		}
+		angle += d;
+		wait(10);
+	}
+	// 35 seconds
+	wait(300);
+	// 40 seconds
+	task moveBoss {
+		ObjMove_SetSpeed(objBoss, 1.2);
+		ObjMove_SetAngle(objBoss, 180 * randIntH(0, 2));
+		while (!isDead) {
+			let x = ObjMove_GetX(objBoss);
+			if (x < 0) {
+				ObjMove_SetAngle(objBoss, 0);
+				wait(5);
+			}
+			else if (x > width) {
+				ObjMove_SetAngle(objBoss, 180);
+				wait(5);
+			}
+			yield;
+		}
+	}
+	moveBoss;
 	while (!isDead) {
-		ascent (i in 0 .. 8) {
-			if (isDead) {return;}
-			let x = 60 + 33 * i;
-			ObjMove_SetDestAtFrame(objBoss, x + 16, 60, FRAMES);
-			wait(FRAMES);
-			ObjMove_SetDestAtFrame(objBoss, x + 33, 220, FRAMES);
-			wait(FRAMES);
+		let a = GetAngleToPlayer(objBoss);
+		loop (10) {
+			ascent (i in 0 .. 3) {
+				CreateShotOA1(objBoss, 1 + 0.5 * i, a, DS_BILL_GREEN, 20 * i);
+			}
+			a += 36;
 		}
-		ascent (i in 0 .. 4) {
-			if (isDead) {return;}
-			let y = 220 - 40 * i;
-			ObjMove_SetDestAtFrame(objBoss, 60, y - 20, 2 * FRAMES);
-			wait(2 * FRAMES);
-			ObjMove_SetDestAtFrame(objBoss, 324, y - 40, 2 * FRAMES);
-			wait(2 * FRAMES);
-		}
-		ascent (i in 0 .. 8) {
-			if (isDead) {return;}
-			let x = 324 - 33 * i;
-			ObjMove_SetDestAtFrame(objBoss, x - 16, 220, FRAMES);
-			wait(FRAMES);
-			ObjMove_SetDestAtFrame(objBoss, x - 33, 60, FRAMES);
-			wait(FRAMES);
-		}
-		ascent (i in 0 .. 4) {
-			if (isDead) {return;}
-			let y = 60 + 40 * i;
-			ObjMove_SetDestAtFrame(objBoss, 324, y + 20, 2 * FRAMES);
-			wait(2 * FRAMES);
-			ObjMove_SetDestAtFrame(objBoss, 60, y + 40, 2 * FRAMES);
-			wait(2 * FRAMES);
-		}
+		shotSound;
+		wait(60);
 	}
 }
 
@@ -95,24 +262,23 @@ task TWork {
 	let p = 1 / 300 + d / 1200;
 	let speed = 1 + 0.1 * d;
 	let period = 400 / (1 + 0.15 * d);
-	movement;
+	let accel = (2 ^ 0.5) / 40 + !d / 80;
+	createLaser(0, DS_BEAM_GREEN);
+	createLaser(90, DS_BEAM_YELLOW);
+	createLaser(180, DS_BEAM_GREEN);
+	createLaser(270, DS_BEAM_YELLOW);
+	ObjMove_SetDestAtFrame(objBoss, cx, 0, 180);
+	wait(180);
 	bullets;
-	let t = rand(0, 360);
-	let cl = randIntH(0, 8);
 	while (!isDead) {
-		loop (5) {
-			loop (12) {
-				CreateShotA1(cx + cx * cos(t), cy + cx * sin(t), 1, t, DS_BILL_RED + cl, 60);
-				CreateShotA1(cx + cx * cos(t), cy + cx * sin(t), 1, 180 + t, DS_BILL_RED + cl, 60);
-				t += 3;
-			}
-			cl = (cl + 1) % 8;
-			t += 36;
-		}
-		t += rand(0, 18) + rand(0, 18);
 		let left = ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_TIMERF) /
 			ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_ORGTIMERF);
-		wait(90 + 90 * left);
+		let r = (2 - left) / 2;
+		ascent (i in 0 .. 120) {
+			let shot = CreateShotA2(cx, cy, 3 * r, 3 * i, -accel * r, r, [DS_BALL_SS_GREEN, DS_BALL_SS_YELLOW][i % 2], 0);
+			ObjShot_SetDeleteFrame(shot, (2 - left) / accel);
+		}
+		wait(180 + 180 * left);
 	}
 }
 

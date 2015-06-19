@@ -6,8 +6,8 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../player/shotc.dnh"
-let id = 63;
-let level = 11;
+let id = 73;
+let level = 12;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -30,34 +30,68 @@ let width = GetStgFrameWidth;
 
 @Finalize {}
 
-task ladders {
+task lasers {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let l = 150;
-	let r = 90;
+	let cx = width / 2;
+	let cy = height / 2;
+	let cl = 0;
 	while (!isDead) {
-		let t = rand(60, 120);
-		let c = cos(t);
-		let s = sin(t);
-		let y = rand(0, height / 4);
-		let x = rand(0, width - l * s);
-		let x0 = x;
-		let y0 = y;
-		let cl = randIntH(0, 7);
-		loop {
-			let x2 = x + l * s;
-			let y2 = y - l * c;
-			if ((x < 0 || x > width || y > height) &&
-				(x2 < 0 || x2 > width || y2 > height)) {
-				break;
-			}
-			ObjStLaser_SetSource(CreateStraightLaserA1(x, y, t - 90, l, 24, 120, DS_BEAM_RED + cl, 60), false);
-			cl = (cl + 1) % 7;
-			x += r * c;
-			y += r * s;
+		let a = rand(-120, -60);
+		ascent (i in -1 .. 2) {
+			CreateStraightLaserA1(cx, height, a + 30 * i, 600, 24, 120, DS_BEAM_RED + cl, 60);
 		}
-		ObjStLaser_SetSource(CreateStraightLaserA1(x0 - r * c, y0 - r * s, t, 600, 24, 120, DS_BEAM_WHITE, 60), false);
-		ObjStLaser_SetSource(CreateStraightLaserA1(x0 - r * c + l * s, y0 - r * s - l * c, t, 600, 24, 120, DS_BEAM_WHITE, 60), false);
+		cl = (cl + 1) % 8;
+		wait(180);
+	}
+}
+
+task starTask(shot) {
+	let sp = ObjMove_GetSpeed(shot);
+	let width = GetStgFrameWidth;
+	wait(rand(0, width / sp));
+	ObjMove_SetAngle(shot, rand(60, 120));
+}
+
+task spawnStars {
+	let height = GetStgFrameHeight;
+	let width = GetStgFrameWidth;
+	let cx = width / 2;
+	let cy = height / 2;
+	let speed = 1.5 + 0.2 * getDifficulty;
+	while (!isDead) {
+		let s = randomSign;
+		let y = 16 * randIntH(1, 10);
+		let x = cx * (1 + s);
+		ascent (i in 0 .. randIntH(3, 7)) {
+			starTask(CreateShotA1(x, y, speed, 90 + 90 * s, DS_STAR_S_RED + randIntH(0, 8), 20 * i));
+		}
+		wait(40);
+	}
+}
+
+task plantTree(x) {
+	let lifespan = 24 * getDifficulty + rand(0, 90) + rand(0, 90);
+	task stem(x, y, t, a, gen) {
+		ascent (i in 0 .. a) {
+			if (isDead) {return;}
+			ObjShot_SetDeleteFrame(CreateShotA1(x, y, 0, t, DS_ICE_GREEN, 30), lifespan);
+			x += 10 * cos(t);
+			y += 10 * sin(t);
+			wait(3);
+		}
+		loop (randIntH(2, 5)) {
+			if (rand(0, 1) < 1.3 * 0.6 ^ gen) {
+				stem(x, y, t + rand(-30, 30), a * rand(0.7, 0.8), gen + 1);
+			}
+		}
+	}
+	stem(x, GetStgFrameHeight, rand(-85, -95), rand(12, 16), 0);
+}
+
+task plantTrees {
+	while (!isDead) {
+		plantTree(rand(0, GetStgFrameWidth));
 		wait(180);
 	}
 }
@@ -68,19 +102,24 @@ task TWork {
 	let cx = width / 2;
 	let cy = height / 2;
 	let d = getDifficulty - 5;
-	let dps = 2;
-	let y = height * 0.6;
-	let speed = 1 + 0.1 * d;
-	let period = 400 / (1 + 0.15 * d);
-	loop (1 + d) {
-		ladders;
-	}
+	let speed = 0.1 + 0.05 * d;
+	lasers;
+	spawnStars;
+	plantTrees;
 	while (!isDead) {
-		loop (dps) {
-			if (rand(0, 1) < 0.05) {CreateShotA1(rand(0, width), rand(0, y), rand(1, 3), 90, [DS_RICE_S_WHITE, DS_RICE_S_SKY][randIntH(0, 2)], 30);}
+		ascent (i in 0 .. 4) {
+			if (isDead) {return;}
+			let a = GetAngleToPlayer(objBoss);
+			let t = rand(0, 360);
+			let x = rand(0, width);
+			let y = rand(0, height / 2.5);
+			loop (15) {
+				CreateShotA1(x, y, 1.4 + speed * i, a, [DS_BILL_GREEN, DS_BILL_YELLOW][i % 2], 0);
+				a += 24;
+			}
+			shotSound;
+			wait(20);
 		}
-		dps += 0.001;
-		y = min(y + 0.02, height * 0.8);
-		yield;
+		wait(120);
 	}
 }

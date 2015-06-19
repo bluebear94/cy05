@@ -6,7 +6,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 let id = 0;
-let level = 11;
+let level = 12;
 #include "./../spell_header.dnh"
 #include "./render_boss.dnh"
 #include "./bossfunc.dnh"
@@ -14,7 +14,7 @@ let level = 11;
 @Event {
 	alternative (GetEventType)
 	case (EV_REQUEST_LIFE) {
-		SetScriptResult(7000);
+		SetScriptResult(6000);
 	}
 	case (EV_REQUEST_TIMER) {
 		SetScriptResult(60);
@@ -23,28 +23,38 @@ let level = 11;
 
 @Finalize {}
 
+task shootAt(x, y, a) {
+	loop (10) {
+		CreateShotA1(x, y, 1.5, a, DS_BILL_RED, 0);
+		a += 36;
+	}
+}
+
 task TWork {
 	let height = GetStgFrameHeight;
 	let width = GetStgFrameWidth;
-	let period = 16;
-	let t = rand(0, 360);
-	let u = 0;
-	let cl = 0;
+	let cx = width / 2;
+	let cy = height / 2;
+	let r = 70;
 	while (!isDead) {
-		if (isDead) {return;}
-		loop (5) {
-			let r = 40 * polygon(4, u);
-			loop (4) {
-				CreateShotA1(ObjMove_GetX(objBoss) + r * cos(t), ObjMove_GetY(objBoss) + r * sin(t), r * 0.0875, 180 + t, DS_STAR_S_RED + cl, 30);
-				t += 90;
-			}
-			t += 18;
-			u += 18;
-			cl = (cl + 1) % 8;
+		let a = rand(0, 360);
+		ascent (i in -9 .. 10) {
+			if (isDead) {return;}
+			let t = 10 * i;
+			shootAt(cx + r * cos(t), cy + r * sin(t), a - t);
+			shotSound;
+			wait(5);
 		}
-		shotSound;
-		t += 23.7;
-		wait(5);
+		wait(120);
+		a = rand(0, 360);
+		ascent (i in -9 .. 10) {
+			if (isDead) {return;}
+			let t = 180 - 10 * i;
+			shootAt(cx + r * cos(t), cy + r * sin(t), a - t);
+			shotSound;
+			wait(5);
+		}
+		wait(120);
 	}
 }
 
