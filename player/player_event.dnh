@@ -39,9 +39,8 @@ let adb = false;
     }
 	case (EV_PLAYER_REBIRTH) {
 		// Revive
-		addPIV(524288);
-		setPIV(roundScore(max(0, getPIV * (1 - 0.1 * GetPlayerSpell))));
-		SetPlayerSpell((3 + (getCharacter >= 2)) * (GetPlayerSpell == 0));
+		setPIV(roundScore(getPIV * 0.8));
+		SetPlayerSpell(3 + (getCharacter >= 2));
 		SetPlayerInvincibilityFrame(180);
 		resetSurvivalTime;
 	}
