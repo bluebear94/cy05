@@ -1,0 +1,31 @@
+./../resource/boss/st12.png
+0
+/
+4
+Šan venor vella?
+1
+/
+4
+E ve!
+0
+Mersedan es šan vynssas?
+1
+Eon ress essan marae!
+0
+Esson o cer'cenčones!
+1
+[ruby rb="Elssecisso Rencron" rt="Crysson es Elynta Nava"]
+3
+Elssecisso Rencron, Amarda Erveadyr.
+1
+Emta marayvsenleate.
+0
+Ša vyrtamyn Lyresa Vanosonava, Esel Rygen.
+0
+Ša Erveadillyr marae.
+And I'm hunting Protectors.
+0
+Ša en marayvperteneni re serto essesa vanosonavon marae.
+1
+Yjaaaa~
+0
