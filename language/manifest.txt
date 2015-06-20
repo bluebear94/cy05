@@ -1,3 +1,2 @@
 ncs_AA
 en_US
-jp_JP
