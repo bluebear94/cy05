@@ -7,7 +7,7 @@
 #System["./../../system/system.dnh"]
 #include "./../../prologue.dnh"
 #include "./../../system/healthbar.dnh"
-let stage = "11";
+let stage = "12";
 let done = false;
 let dialogueData;
 let dialogueData2;
@@ -67,18 +67,87 @@ task TStage {
 	spawnEnemy53;
 	spawnEnemy54;
 	waitForClearScreen;
+	wait(180);
+	spawnEnemy50(width - 125);
+	spawnEnemy50(125);
+	loop (10) {
+		spawnEnemy55(false);
+		spawnEnemy55(true);
+		wait(30);
+	}
+	waitForClearScreen;
+	wait(90);
+	spawnEnemy51(width / 2);
+	spawnEnemy52(width / 2);
+	waitForClearScreen;
+	wait(90);
+	spawnEnemy03(50);
+	spawnEnemy03(width - 50);
+	spawnEnemy56(120);
+	spawnEnemy56(width - 120);
+	wait(150);
+	loop (6) {
+		spawnEnemy56(rand(0, width));
+		wait(120);
+	}
+	waitForClearScreen;
+	spawnEnemy50(width - 80);
+	spawnEnemy50(80);
+	spawnEnemy56(120);
+	spawnEnemy56(width - 120);
+	wait(180);
+	spawnEnemy50(width - 110);
+	spawnEnemy50(110);
+	wait(300);
+	spawnEnemy50(width - 150);
+	spawnEnemy50(150);
+	spawnEnemy56(width / 2);
+	waitForClearScreen;
+	wait(60);
+	spawnEnemy57(0, 120, 70, 150, -200, 200);
+	spawnEnemy57(width, 120, width - 70, 150, width + 200, 200);
+	spawnEnemy51(110);
+	spawnEnemy51(width - 110);
+	wait(120);
+	spawnEnemy56(width / 2);
+	waitForClearScreen;
+	wait(120);
+	loop (20) {
+		spawnEnemy49(width, 120, 165);
+		wait(15);
+	}
+	wait(90);
+	loop (20) {
+		spawnEnemy49(0, 120, 15);
+		wait(15);
+	}
+	waitForClearScreen;
+	loop (4) {
+		spawnEnemy58(0, 80, width + 200, 150);
+		wait(30);
+	}
+	loop (4) {
+		spawnEnemy58(width, 120, -200, 190);
+		wait(30);
+	}
+	waitForClearScreen;
+	spawnEnemy59(width / 3);
+	spawnEnemy59(2 * width / 3);
+	wait(60);
+	loop (4) {
+		spawnEnemy58(0, 80, width + 200, 150);
+		wait(30);
+	}
+	loop (4) {
+		spawnEnemy58(width, 120, -200, 190);
+		wait(30);
+	}
+	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 	// The Boss
 	TDialogue(dialogueData);
-	let dir = GetCurrentScriptDirectory;
-	let path = dir ~ "boss.dnh";
-	let idScript = LoadScriptInThread(path);
-	loop(60){yield;}
-	StartScript(idScript);
-	while (!IsCloseScript(idScript)) {
-		yield;
-	}
+	TBossPre;
 	wait(240);
 	TDialogue(dialogueData2);
 	TBossPost;
@@ -93,7 +162,8 @@ task spawnEnemy48(x, y) {
 		[0, 0, 0, 3]);
 	wait(y / 5);
 	ObjMove_SetSpeed(enemy, 0);
-	while (!Obj_IsDeleted(enemy)) {
+	ascent (i in 0 .. 50) {
+		if (Obj_IsDeleted(enemy)) {return;}
 		let a = rand(0, 360);
 		loop (30) {
 			CreateShotOA1(enemy, 1.5, a, DS_BALL_SS_YELLOW, 0);
@@ -101,6 +171,8 @@ task spawnEnemy48(x, y) {
 		}
 		wait(90);
 	}
+	ObjMove_SetAngle(enemy, 180 * randIntH(0, 2));
+	ObjMove_SetSpeed(enemy, 5);
 }
 
 task spawnEnemy49(x, y, angle) {
@@ -178,7 +250,7 @@ task spawnEnemy02 {
 }
 
 task spawnEnemy52(x) {
-	let enemy = enemyOf(x, 0, 2, 90,
+	let enemy = enemyOf(x, 0, 2.2, 90,
 		"./../resource/enemy.png", 0, 0, 16, 32,
 		900, 100, 100, 8, 8,
 		[25, 10, 0, 0]);
@@ -279,5 +351,143 @@ task spawnEnemy54 {
 			zigzag(shot, a - 45);
 			a += 24;
 		}
+	}
+}
+
+task spawnEnemy55(b) {
+	let enemy = enemyOf(width * b, rand(100, 200), 2, b * 180,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		150, 100, 100, 8, 8,
+		[5, 1, 0, 0]);
+	while (!Obj_IsDeleted(enemy)) {
+		let a = rand(0, 360);
+		loop (5) {
+			CreateShotOA1(enemy, rand(3, 4), a + rand(-1, 1), DS_BALL_S_GREEN, 0);
+			a += 72;
+		}
+		wait(60);
+	}
+}
+
+task spawnEnemy03(x) {
+	let shots = 2 * getDifficulty + 4;
+	let adiff = 360 / shots;
+	task shoot(enemy) {
+		ascent (j in 0 .. 10) {
+			if (Obj_IsDeleted(enemy)) {return;}
+			let a = rand(0, 360);
+			ascent (i in 0 .. shots) {
+				CreateShotOA1(enemy, 3, a + i * adiff, DS_STAR_M_GREEN, 30);
+			}
+			if (getDifficulty >= 2 && (j % 3) == 0) {
+				let angle = GetAngleToPlayer(enemy);
+				ascent (i in -4 .. 5) {
+					CreateShotOA1(enemy, 3 - 0.25 * absolute(i), angle + i * 4, DS_SCALE_SKY, 30);
+				}
+			}
+			wait(90);
+		}
+		wait(30);
+		ObjMove_SetSpeed(enemy, 3); // in Java: enemy.setSpeed(3);
+		homeToPlayer(enemy); // Yes, it was originally meant for shots, but...
+		let counter = 0;
+		while (!Obj_IsDeleted(enemy)) {
+			CreateShotOA1(enemy, 3, GetAngleToPlayer(enemy) + rand(-2, 2), DS_STAR_S_RED, 30);
+			counter++;
+			if (counter >= 600) {
+				CreateShotOA1(enemy, 4, rand(0, 360), DS_STAR_S_RED, 30);
+			}
+			yield;
+		}
+	}
+	let enemy = enemyOf(x, 0, 0.25, 90,
+		"./../resource/enemy.png", 0, 32, 16, 48,
+		250, 100, 100, 7, 7,
+		[10, 2, 0, truncate(rand(0, 2))]);
+	shoot(enemy);
+}
+
+task spawnEnemy56(x) {
+	let enemy = enemyOf(x, 0, 3, 90,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		600, 100, 100, 8, 8,
+		[35, 10, 0, 0]);
+	wait(30);
+	ObjMove_SetSpeed(enemy, 0);
+	ascent (i in 0 .. 180) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		let j = min(i, 20) * 3;
+		CreateShotOA1(enemy, 4, 90, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, -90, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, j, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, 180 - j, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, j - 30, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, 210 - j, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, j / 2 - 90, DS_KUNAI_BLUE, 0);
+		CreateShotOA1(enemy, 4, 270 - j / 2, DS_KUNAI_BLUE, 0);
+		wait(3);
+	}
+}
+
+task spawnEnemy57(x1, y1, x2, y2, x3, y3) {
+	let enemy = enemyOf(x1, y1, 0, 0,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		300, 100, 100, 8, 8,
+		[35, 10, 0, 0]);
+	ObjMove_SetDestAtFrame(enemy, x2, y2, 60);
+	wait(60);
+	loop (18) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		CreateShotOA1(enemy, rand(2, 3), rand(60, 120), DS_ICE_GREEN, 0);
+		wait(10);
+	}
+	ObjMove_SetDestAtFrame(enemy, x3, y3, 60);
+}
+
+task spawnEnemy58(x1, y1, x2, y2) {
+	let enemy = enemyOf(x1, y1, 0, 0,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		300, 100, 100, 8, 8,
+		[35, 10, 0, 0]);
+	ObjMove_SetDestAtSpeed(enemy, x2, y2, 1.2);
+	let x = 0;
+	let y = 0;
+	loop {
+		if (Obj_IsDeleted(enemy)) {
+			if (!canDeleteEnemy(enemy)) {
+				loop (30) {
+					CreateShotA2(x, y, rand(2, 3), rand(0, 360), -0.01, rand(1, 2), DS_BALL_SS_GREEN, 30);
+				}
+			}
+			return;
+		}
+		x = ObjMove_GetX(enemy);
+		y = ObjMove_GetY(enemy);
+		let a = GetAngleToPlayer(enemy);
+		ascent (i in -5 .. 6) {
+			CreateShotA1(x + 2 * i * sin(a), y - 2 * i * cos(a), 4, a, DS_ICE_GREEN, 0);
+		}
+		wait(rand(40, 75));
+	}
+}
+
+task spawnEnemy59(x) {
+	let enemy = enemyOf(x, 0, 3, 90,
+		"./../resource/enemy.png", 0, 0, 16, 32,
+		600, 100, 100, 8, 8,
+		[35, 10, 0, 0]);
+	wait(30);
+	ObjMove_SetSpeed(enemy, 0);
+	ascent (i in 0 .. 20) {
+		if (Obj_IsDeleted(enemy)) {return;}
+		let a = GetAngleToPlayer(enemy);
+		loop (8) {
+			CreateShotOA1(enemy, 2.5, a, DS_BALL_M_BLUE, 0);
+			a += 45;
+		}
+		ascent (i in 0 .. 7) {
+			CreateShotOA1(enemy, 1 + 0.5 * i, a, DS_ICE_RED, 0);
+		}
+		wait(120);
 	}
 }

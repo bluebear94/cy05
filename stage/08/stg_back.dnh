@@ -1,5 +1,5 @@
 // background
 
-let backgroundImage = ["./../resource/bg/st04.png"];
+let backgroundImage = ["./../resource/bg/st08a.png"];
 #include "./../back_header.dnh"
 

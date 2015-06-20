@@ -111,6 +111,7 @@ task TStage {
 	spawnEnemy22(width * 0.25, height / 3, -3);
 	spawnEnemy22(width * 0.75, height / 3, 3);
 	wait(360);
+	advanceBGIndex;
 	// 1440:
 	spawnEnemy03(50);
 	spawnEnemy03(width - 50);

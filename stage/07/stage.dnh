@@ -65,6 +65,7 @@ task TStage {
 		let a = 90 + 360 * i / fe;
 		spawnEnemy31(width / 2 + 100 * cos(a), 120 + 100 * sin(a), [1, -1][i % 2], false);
 	}
+	advanceBGIndex;
 	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
