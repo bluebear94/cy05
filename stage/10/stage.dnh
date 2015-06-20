@@ -25,6 +25,10 @@ task TStage {
 		dialogueData = readDD("d10_3");
 	}
 	let d = getDifficulty;
+	showStageTitle([192, 255, 255]);
+	spawnEnemy45;
+	spawnEnemy46;
+	spawnEnemy47;
 	waitForClearScreen;
 	wait(300);
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
@@ -35,3 +39,38 @@ task TStage {
 }
 
 // 64, 0, 96, 32
+
+task spawnEnemy45 {
+	let enemy = enemyOf(100, 100, 0, 180,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		1200, 100, 100, 8, 8,
+		[400, 400, 0, 0]);
+	wait(600);
+	ObjMove_SetSpeed(enemy, 3);
+}
+
+task spawnEnemy46 {
+	let enemy = enemyOf(width - 100, 100, 0, 0,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		1200, 100, 100, 8, 8,
+		[0, 0, 0, 0]);
+	task fork {
+		while (!Obj_IsDeleted(enemy)) {yield;}
+		if (!canDeleteEnemy(enemy)) {
+			createItemU1(WHOLE_BOMB, width - 96, 100, 0);
+			createItemU1(WHOLE_BOMB, width - 104, 100, 0);
+		}
+	}
+	fork;
+	wait(600);
+	ObjMove_SetSpeed(enemy, 3);
+}
+
+task spawnEnemy47 {
+	let enemy = enemyOf(width / 2, 100, 0, -90,
+		"./../resource/enemy.png", 0, 48, 16, 72,
+		1200, 100, 100, 8, 8,
+		[0, 0, 0, 0, 50, 50, 50, 50]);
+	wait(600);
+	ObjMove_SetSpeed(enemy, 3);
+}
