@@ -157,7 +157,7 @@ function lighter(x) {
 
 task stageTitle(name, location, flair, color) {
 	let textObjects = [
-		textOf("Stage " ~ [stage, "FINAL", "EX"][2 * (stage >= "11") + stage == "10"]),
+		textOf("Stage " ~ [stage, "FINAL", "EX"][2 * (stage >= "11") + (stage == "10")]),
 		textOf(name),
 		textOf(location),
 		textOf(flair)
