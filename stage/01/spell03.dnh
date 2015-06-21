@@ -77,6 +77,7 @@ task TWorkOD {
 					counter -= 0.02;
 					yield;
 				}
+				if (isDead) {return;}
 				CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1.8 + 0.2 * j, t - i * dt - j * du, -0.02, 0.3 + 0.2 * j, [DS_ICE_YELLOW, DS_RICE_S_R_BLUE][getDifficulty > 4], 0);
 				counter += 1 / w;
 			}
