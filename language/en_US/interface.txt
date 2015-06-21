@@ -64,3 +64,4 @@ History:
 Failed
 Get Spell Bonus!
 Extra is not available for this character.
+You can view more tracks by moving past the top or the bottom!

@@ -3,7 +3,7 @@
 #include "./textf.dnh"
 
 let NUM_ENTRIES = 27;
-let ENTRY_HEIGHT = min(NUM_ENTRIES, 14);
+let ENTRY_HEIGHT = min(NUM_ENTRIES, 11);
 
 @Initialize {
 	main;
@@ -24,11 +24,12 @@ task main {
 			str = getMusicRoom(i)[0];
 		}
 		entries = entries ~
-			[createTextS(16, 16 + 12 * i, str, true, [40, 240, 50], [128, 255, 144], 12)];
+			[createTextS(16, 16 + 18 * i, str, true, [40, 240, 50], [128, 255, 144], 18)];
 	}
 	let title = createTextS(16, 240, "", true, [128, 255, 255], [128, 255, 255], 16);
 	let desc = createTextS(16, 270, "", true, [128, 255, 255], [128, 255, 255], 16);
 	let body = createTextS(16, 290, "", true, [128, 255, 255], [128, 255, 255], 16);
+	let scroll = createTextS(16, 420, getInterfaceStrings(MUSIC_ROOM_SCROLL), true, [128, 255, 255], [128, 255, 255], 16);
 	ObjText_SetMaxWidth(body, 620);
 	ObjText_SetFontType(title, GetCommonData("DiaFont", "Consolas"));
 	ObjText_SetFontBorderType(title, BORDER_NONE);
@@ -39,6 +40,9 @@ task main {
 	ObjText_SetFontType(body, GetCommonData("DiaFont", "Consolas"));
 	ObjText_SetFontBorderType(body, BORDER_NONE);
 	ObjText_SetSidePitch(body, 1.05);
+	ObjText_SetFontType(scroll, GetCommonData("DiaFont", "Consolas"));
+	ObjText_SetFontBorderType(scroll, BORDER_NONE);
+	ObjText_SetSidePitch(scroll, 1.05);
 	function update(i) {
 		if (nowPlaying == i || !GetAreaCommonData("Cy05", "HeardBGM " ~ IntToString(i), false))
 			{return;}
@@ -56,6 +60,7 @@ task main {
 			Obj_Delete(title);
 			Obj_Delete(desc);
 			Obj_Delete(body);
+			Obj_Delete(scroll);
 			ascent (i in 0 .. ENTRY_HEIGHT) {Obj_Delete(entries[i]);}
 			while (GetVirtualKeyState(VK_CANCEL) != KEY_FREE) {yield;}
 			CloseScript(GetOwnScriptID);
