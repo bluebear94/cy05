@@ -62,11 +62,12 @@ function TEndScene(mode, rpSlot, settings) {
 }
 
 function RunPauseScene {
+	if (GetCommonData("pauseblocked", false)) {return;}
 	let dir = GetCurrentScriptDirectory;
 	let pathScript = dir ~ "../system/pause.dnh";
 	let idScript = LoadScript(pathScript);
 	StartScript(idScript);
-	while(!IsCloseScript(idScript)) {
+	while (!IsCloseScript(idScript)) {
 		yield;
 	}
 	PauseStageScene(false);

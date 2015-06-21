@@ -85,6 +85,7 @@ task reset {
 	resetSurvivalTime;
 	SetCommonData("Elem", [4096, 4096, 4096, 4096]);
 	SetCommonData("Age", 0);
+	SetCommonData("pauseblocked", false);
 }
 
 
@@ -463,6 +464,7 @@ task pollForGameOver {
 #include "./transparent_background.dnh"
 
 function continueMenu {
+	SetCommonData("pauseblocked", true);
 	if (gameMode == MODE_ALL && !IsReplay) {
 		WriteLog(getCharacter);
 		WriteLog(getDifficulty);
@@ -480,6 +482,7 @@ function continueMenu {
 	if (ok) {
 		reset;
 		continue;
+		SetCommonData("pauseblocked", false);
 		AddScore(getContinue - GetScore);
 	}
 	else {
