@@ -31,6 +31,10 @@ task TStage {
 		dialogueData = readDD("d4_3");
 		dialogueData2 = readDD("d4_4");
 	}
+	let d = getDifficulty;
+	let dc41 = 5 + truncate(d / 1.5);
+	let dp41 = 20 - truncate(d / 0.75);
+	let ds41 = 1.5;
 	// Opener
 	loop (4) {
 		spawnEnemy13(rand(0, width));
@@ -53,7 +57,7 @@ task TStage {
 	waitForClearScreen;
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 	// Stage Title + side mobs
-	showStageTitle([192, 128, 255]);
+	showStageTitle([216, 192, 255]);
 	wait(60);
 	spawnEnemy08(10, 2 * BEAT);
 	spawnEnemy08(width - 10, 2 * BEAT);
