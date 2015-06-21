@@ -63,3 +63,4 @@ History
 History: 
 Failed
 Get Spell Bonus!
+Extra is not available for this character.
