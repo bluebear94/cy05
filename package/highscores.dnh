@@ -127,8 +127,8 @@ function update(c, d, m) {
 }
 
 function scoreEntry(chara, diff, mode) {
-	let entries = getInterfaceStrings(SHOTTYPES + chara) ~ " " ~
-		getInterfaceStrings(I_DIFFICULTY + diff) ~
+	let entries = getInterfaceStrings(SHOTTYPES + chara) ~ " " ~ getInterfaceStrings(HS_LR) ~ " " ~
+		getInterfaceStrings(I_DIFFICULTY + diff) ~ " " ~ getInterfaceStrings(HS_UD) ~
 		["", " " ~ getInterfaceStrings(HIDDEN_MODE)][mode] ~ "[r]";
 	let hs = getHighScore(chara, diff, mode);
 	let hsn = getHighScoreNames(chara, diff, mode);

@@ -30,7 +30,7 @@ let bgmNames = [
 
 let endTimes = [
 	132,
-	106,
+	107,
 	75,
 	95,
 	103,
