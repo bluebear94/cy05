@@ -138,4 +138,8 @@ function replayString(slot) {
 function flushZ {
 	while (GetVirtualKeyState(VK_OK) != KEY_FREE) {yield;}
 }
+
+function flushX {
+	while (GetVirtualKeyState(VK_CANCEL) != KEY_FREE) {yield;}
+}
 function turnPage {playSE("paper00");}
