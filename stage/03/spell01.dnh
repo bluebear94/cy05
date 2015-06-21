@@ -37,8 +37,8 @@ task TWork {
 	if (getDifficulty >= 4) {TWorkOD;}
 	while (ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0) {
 		loop (density) {
-			CreateShotA2(rand(0, width), -32, 3, A, -0.01, -2, DS_LIGHT_RED, 0);
-			CreateShotA2(rand(0, width), height + 32, 3, 180 + A, -0.01, -2, DS_LIGHT_BLUE, 0);
+			CreateShotA2(rand(0, width), 0, 3, A, -0.01, -2, DS_LIGHT_RED, 45);
+			CreateShotA2(rand(0, width), height, 3, 180 + A, -0.01, -2, DS_LIGHT_BLUE, 45);
 		}
 		wait(60);
 	}
