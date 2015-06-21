@@ -3,6 +3,21 @@
 #include "../system/healthbar.dnh"
 let objBoss;
 
+task SetDamageRateAtFrame(obj, shot,bomb,frame){//Talos
+  ObjEnemy_SetDamageRate(obj, 0,0);
+  let time=frame;
+  // below modified by Fluffy8x to wait until player is also not invincible
+  while(GetPlayerInvincibilityFrame > 0 || IsPlayerSpellActive){ //Prevents Bomb Damage from previous attack. 
+    time--; //However, makes stage enemies immune to bombs because it just yields after time hits 0.
+    yield;
+  }
+  while(time>0){
+    time--;
+    yield;
+  }
+  ObjEnemy_SetDamageRate(obj,shot,bomb);
+}
+
 let bombDamageRates = [100, 100, 90, 80, 70, 60, 50, 40, -20, 0, 0, 0];
 
 let list = [];
@@ -31,10 +46,10 @@ let list = [];
 }
 
 task TCutIn {
-	while (GetPlayerInvincibilityFrame > 0 || IsPlayerSpellActive) {yield;}
+	//while (GetPlayerInvincibilityFrame > 0 || IsPlayerSpellActive) {yield;}
 	if (ObjEnemyBossScene_GetInfo(GetEnemyBossSceneObjectID, INFO_IS_DURABLE_SPELL)) {
 		ObjEnemy_SetDamageRate(objBoss, 0, 0);
-	} else {ObjEnemy_SetDamageRate(objBoss, 100, bombDamageRates[level - 1]);}
+	} else {SetDamageRateAtFrame(objBoss, 100, bombDamageRates[level - 1], 180);}
 	if (bombDamageRates[level - 1] < 0) {capHealth;}
 	if (id != 0) {
 		ObjEnemyBossScene_StartSpell(GetEnemyBossSceneObjectID);
