@@ -5,7 +5,7 @@ task TRender {
 		let angle = ObjMove_GetAngle(objBoss);
 		let speed = ObjMove_GetSpeed(objBoss);
 		if(speed == 0) {
-			ObjSprite2D_SetSourceRect(objBoss, 1, 1, 64, 96);
+			ObjSprite2D_SetSourceRect(objBoss, 1, 1, 64, 64);
 		}
 		else if(cos(angle) > 0){ObjSprite2D_SetSourceRect(objBoss, 65, 1, 128, 64);}
 		else if(cos(angle) < 0){ObjSprite2D_SetSourceRect(objBoss, 129, 1, 192, 64);}
