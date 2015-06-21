@@ -113,10 +113,10 @@ task TStage {
 	ascent (i in 0 .. 2) {
 		spawnEnemy12(width / 2 - 75 + 150 * i, 90);
 	}
-	loop (10) {
+	loop (6) {
 		spawnEnemy10(width, 118, -200, 123, 3);
 		spawnEnemy10(0, 118, width + 200, 123, 3);
-		wait(30);
+		wait(50);
 	}
 	waitForClearScreen;
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
@@ -251,7 +251,7 @@ task spawnEnemy11(x, y, hp) {
 				CreateShotOA1(enemy, 1.7, angle + 24 * i, DS_RICE_S_YELLOW, 0);
 			}
 		}
-		wait(dt / 4);
+		wait(dt / 3);
 	}
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 }
