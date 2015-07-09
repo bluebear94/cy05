@@ -427,6 +427,7 @@ task spawnEnemy56(x) {
 		CreateShotOA1(enemy, 4, 270 - j / 2, DS_KUNAI_BLUE, 0);
 		wait(3);
 	}
+	ObjMove_SetSpeed(enemy, 3.5);
 }
 
 task spawnEnemy57(x1, y1, x2, y2, x3, y3) {
