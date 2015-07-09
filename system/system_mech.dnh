@@ -26,7 +26,7 @@ task TMech {
 			ObjItem_SetDefinedMovePatternA1(p, ITEM_MOVE_TOPLAYER);
 			addPIV(2048);
 		}
-		let gdiff = GetGraze - oldGraze;
+		let gdiff = max(0, GetGraze - oldGraze);
 		addElemPoints(WATER, 24 * gdiff + truncate(0.5 * gdiff * gdiff));
 		if (isHidden) {
 			addScore(16384 * gdiff + getElemPoints(WATER));
