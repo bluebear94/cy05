@@ -434,7 +434,7 @@ task TElems {
 		ObjText_SetFontSize(t, 8);
 		ObjText_SetFontColorTop(t, colors[0][i], colors[1][i], colors[2][i]);
 		ObjText_SetFontColorBottom(t, colors[0][i], colors[1][i], colors[2][i]);
-		Obj_SetRenderPriority(t, 1.0);
+		Obj_SetRenderPriority(t, 0.89);
 		ObjText_SetHorizontalAlignment(t, ALIGNMENT_RIGHT);
 		ObjText_SetMaxWidth(t, 32);
 		ObjRender_SetX(t, -4);
