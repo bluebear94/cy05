@@ -3,6 +3,7 @@
 #include "../language.dnh"
 #include "../system/name_entry.dnh"
 #include "../sound.dnh"
+#include "../escape.dnh"
 
 let op;
 let data;
@@ -136,7 +137,7 @@ function scoreEntry(chara, diff, mode) {
 	ascent (i in 0 .. 16) {
 		let raw = hs[i];
 		entries = entries ~
-			"0123456789ABCDEF"[i .. i + 1] ~ ". " ~ vtos("-8s", hsn[i]) ~ " " ~
+			"0123456789ABCDEF"[i .. i + 1] ~ ". " ~ escape(vtos("-8s", hsn[i])) ~ " " ~
 			vtos("14s", IntToStringBase(raw[0], base)) ~ " (" ~
 			"0123456789FXC"[raw[1] .. raw[1] + 1]  ~ ")[r]";
 	}

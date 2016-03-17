@@ -119,7 +119,7 @@ function replayString(slot) {
 		let comR = com[1..length(com)];
 		if (comR == "Stage 11" || comR == "Stage 12") {comR = "Extra";}
 		return text ~
-			vtos("-8s", GetReplayInfo(slot, REPLAY_USER_NAME)) ~ " " ~
+			escape(vtos("-8s", GetReplayInfo(slot, REPLAY_USER_NAME))) ~ " " ~
 			GetReplayInfo(slot, REPLAY_DATE_TIME) ~ " " ~
 			(scoreStringR)[(length(scoreStringR) - 14) .. length(scoreStringR)] ~ " " ~
 			vtos("-8s", char2) ~ " " ~

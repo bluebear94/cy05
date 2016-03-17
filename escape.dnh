@@ -1,0 +1,11 @@
+function escape(s) {
+	let res = "";
+	let l = length(s);
+	ascent (i in 0 .. l) {
+		let c = s[i .. i + 1];
+		if (c == "[") { res = res ~ "&osb;"; }
+		else if (c == "]") { res = res ~ "&csb"; }
+		else { res = res ~ c; }
+	}
+	return s;
+}
