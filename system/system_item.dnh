@@ -30,7 +30,7 @@ task getItem(type, objItem) {
 	}
 	case (GREEN_ITEM) {
 		if (isHidden) {
-			let amt = 262144 + 128 * GetGraze;
+			let amt = roundScore(32768 + 8 * GetGraze);
 			addScore(amt);
 			renderScore(x, y, amt, [192, 255, 192]);
 		}
