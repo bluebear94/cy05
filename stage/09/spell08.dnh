@@ -73,9 +73,9 @@ task notOverdrive {
 	let cx = width / 2;
 	let cy = height / 2;
 	let d = getDifficulty;
-	let p = 1 / 300 + d / 1200;
-	let speed = 1 + 0.1 * d;
-	let period = 400 / (1 + 0.15 * d);
+	let p = 1 / 600 + d / 2400;
+	let speed = 0.6 + 0.05 * d;
+	let period = 500 / (1 + 0.15 * d);
 	flip1;
 	flip2;
 	flip3;
