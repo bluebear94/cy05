@@ -254,6 +254,11 @@ task spawnEnemy11(x, y, hp) {
 			}
 		}
 		wait(dt / 3);
+		if (c > 60) {
+			ObjMove_SetAngle(enemy, -90);
+			ObjMove_SetSpeed(enemy, 5);
+			return;
+		}
 	}
 	DeleteShotAll(TYPE_ALL, TYPE_ITEM);
 }

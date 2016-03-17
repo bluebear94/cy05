@@ -245,8 +245,8 @@ task spawnEnemy18(x1, y1, x2, y2, firingAngle) {
 		wait(60);
 		c++;
 	}
-	ObjMove_SetAngle(-90);
-	ObjMove_SetSpeed(5);
+	ObjMove_SetAngle(enemy, -90);
+	ObjMove_SetSpeed(enemy, 5);
 }
 
 task spawnEnemy19(x, y) {
