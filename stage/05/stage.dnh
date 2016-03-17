@@ -233,7 +233,8 @@ task spawnEnemy18(x1, y1, x2, y2, firingAngle) {
 		ObjMove_SetAngle(shot, firingAngle + dt);
 		ObjMove_SetSpeed(shot, 0.8);
 	}
-	while (!Obj_IsDeleted(enemy)) {
+	let c = 0;
+	while (!Obj_IsDeleted(enemy) && c < 6) {
 		interval += rand(-0.08, 0.08);
 		ascent (i in 0 .. n) {
 			let s1 = CreateShotOA1(enemy, interval * (i + 2), firingAngle, DS_KUNAI_ORANGE, 30);
@@ -242,7 +243,10 @@ task spawnEnemy18(x1, y1, x2, y2, firingAngle) {
 			move(s2, -90);
 		}
 		wait(60);
+		c++;
 	}
+	ObjMove_SetAngle(-90);
+	ObjMove_SetSpeed(5);
 }
 
 task spawnEnemy19(x, y) {
